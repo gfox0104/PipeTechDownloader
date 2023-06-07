@@ -1,29 +1,43 @@
-﻿using Microsoft.UI.Dispatching;
+﻿// <copyright file="AppNotificationActivationHandler.cs" company="Industrial Technology Group">
+// Copyright (c) Industrial Technology Group. All rights reserved.
+// </copyright>
+
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
-using Microsoft.Windows.AppNotifications;
 
 using PipeTech.Downloader.Contracts.Services;
-using PipeTech.Downloader.ViewModels;
 
 namespace PipeTech.Downloader.Activation;
 
+/// <summary>
+/// AppNotificationActivationHandler class.
+/// </summary>
 public class AppNotificationActivationHandler : ActivationHandler<LaunchActivatedEventArgs>
 {
-    private readonly INavigationService _navigationService;
-    private readonly IAppNotificationService _notificationService;
+    private readonly INavigationService navigationService;
+    private readonly IAppNotificationService notificationService;
 
-    public AppNotificationActivationHandler(INavigationService navigationService, IAppNotificationService notificationService)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AppNotificationActivationHandler"/> class.
+    /// </summary>
+    /// <param name="navigationService">Navigation service.</param>
+    /// <param name="notificationService">Notification service.</param>
+    public AppNotificationActivationHandler(
+        INavigationService navigationService, 
+        IAppNotificationService notificationService)
     {
-        _navigationService = navigationService;
-        _notificationService = notificationService;
+        this.navigationService = navigationService;
+        this.notificationService = notificationService;
     }
 
+    /// <inheritdoc/>
     protected override bool CanHandleInternal(LaunchActivatedEventArgs args)
     {
         return AppInstance.GetCurrent().GetActivatedEventArgs()?.Kind == ExtendedActivationKind.AppNotification;
     }
 
+    /// <inheritdoc/>
     protected async override Task HandleInternalAsync(LaunchActivatedEventArgs args)
     {
         // TODO: Handle notification activations.

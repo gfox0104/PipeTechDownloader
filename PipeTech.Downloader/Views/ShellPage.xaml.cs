@@ -1,4 +1,8 @@
-﻿using Microsoft.UI.Xaml;
+﻿// <copyright file="ShellPage.xaml.cs" company="Industrial Technology Group">
+// Copyright (c) Industrial Technology Group. All rights reserved.
+// </copyright>
+
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
@@ -11,52 +15,37 @@ using Windows.System;
 
 namespace PipeTech.Downloader.Views;
 
+/// <summary>
+/// ShellPage class.
+/// </summary>
 public sealed partial class ShellPage : Page
 {
-    public ShellViewModel ViewModel
-    {
-        get;
-    }
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ShellPage"/> class.
+    /// </summary>
+    /// <param name="viewModel">View model.</param>
     public ShellPage(ShellViewModel viewModel)
     {
-        ViewModel = viewModel;
-        InitializeComponent();
+        this.ViewModel = viewModel;
+        this.InitializeComponent();
 
-        ViewModel.NavigationService.Frame = NavigationFrame;
+        this.ViewModel.NavigationService.Frame = this.NavigationFrame;
 
         // TODO: Set the title bar icon by updating /Assets/WindowIcon.ico.
         // A custom title bar is required for full window theme and Mica support.
         // https://docs.microsoft.com/windows/apps/develop/title-bar?tabs=winui3#full-customization
         App.MainWindow.ExtendsContentIntoTitleBar = true;
-        App.MainWindow.SetTitleBar(AppTitleBar);
-        App.MainWindow.Activated += MainWindow_Activated;
-        AppTitleBarText.Text = "AppDisplayName".GetLocalized();
+        App.MainWindow.SetTitleBar(this.AppTitleBar);
+        App.MainWindow.Activated += this.MainWindow_Activated;
+        this.AppTitleBarText.Text = "AppDisplayName".GetLocalized();
     }
 
-    private void OnLoaded(object sender, RoutedEventArgs e)
+    /// <summary>
+    /// Gets the view model.
+    /// </summary>
+    public ShellViewModel ViewModel
     {
-        TitleBarHelper.UpdateTitleBar(RequestedTheme);
-
-        KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
-        KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
-
-        ShellMenuBarSettingsButton.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(ShellMenuBarSettingsButton_PointerPressed), true);
-        ShellMenuBarSettingsButton.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(ShellMenuBarSettingsButton_PointerReleased), true);
-    }
-
-    private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
-    {
-        var resource = args.WindowActivationState == WindowActivationState.Deactivated ? "WindowCaptionForegroundDisabled" : "WindowCaptionForeground";
-
-        AppTitleBarText.Foreground = (SolidColorBrush)App.Current.Resources[resource];
-        App.AppTitlebar = AppTitleBarText as UIElement;
-    }
-
-    private void OnUnloaded(object sender, RoutedEventArgs e)
-    {
-        ShellMenuBarSettingsButton.RemoveHandler(UIElement.PointerPressedEvent, (PointerEventHandler)ShellMenuBarSettingsButton_PointerPressed);
-        ShellMenuBarSettingsButton.RemoveHandler(UIElement.PointerReleasedEvent, (PointerEventHandler)ShellMenuBarSettingsButton_PointerReleased);
+        get;
     }
 
     private static KeyboardAccelerator BuildKeyboardAccelerator(VirtualKey key, VirtualKeyModifiers? modifiers = null)
@@ -80,6 +69,41 @@ public sealed partial class ShellPage : Page
         var result = navigationService.GoBack();
 
         args.Handled = result;
+    }
+
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        TitleBarHelper.UpdateTitleBar(this.RequestedTheme);
+
+        this.KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
+        this.KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
+
+        this.ShellMenuBarSettingsButton.AddHandler(
+            UIElement.PointerPressedEvent,
+            new PointerEventHandler(this.ShellMenuBarSettingsButton_PointerPressed),
+            true);
+        this.ShellMenuBarSettingsButton.AddHandler(
+            UIElement.PointerReleasedEvent,
+            new PointerEventHandler(this.ShellMenuBarSettingsButton_PointerReleased),
+            true);
+    }
+
+    private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
+    {
+        var resource = args.WindowActivationState == WindowActivationState.Deactivated ? "WindowCaptionForegroundDisabled" : "WindowCaptionForeground";
+
+        this.AppTitleBarText.Foreground = (SolidColorBrush)App.Current.Resources[resource];
+        App.AppTitlebar = this.AppTitleBarText as UIElement;
+    }
+
+    private void OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        this.ShellMenuBarSettingsButton.RemoveHandler(
+            UIElement.PointerPressedEvent,
+            (PointerEventHandler)this.ShellMenuBarSettingsButton_PointerPressed);
+        this.ShellMenuBarSettingsButton.RemoveHandler(
+            UIElement.PointerReleasedEvent,
+            (PointerEventHandler)this.ShellMenuBarSettingsButton_PointerReleased);
     }
 
     private void ShellMenuBarSettingsButton_PointerEntered(object sender, PointerRoutedEventArgs e)

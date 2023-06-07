@@ -33,9 +33,8 @@
                 </MenuBarItem>
                 <MenuBarItem x:Uid="ShellMenuBarItem_Views">
                     <MenuBarItem.Items>
-                        <MenuFlyoutItem x:Uid="ShellMenuItem_Views_Main" Command="{x:Bind ViewModel.MenuViewsMainCommand}" />
-                        <MenuFlyoutItem x:Uid="ShellMenuItem_Views_ListDetails" Command="{x:Bind ViewModel.MenuViewsListDetailsCommand}" />
                         <MenuFlyoutItem x:Uid="ShellMenuItem_Views_Downloads" Command="{x:Bind ViewModel.MenuViewsDownloadsCommand}" />
+                        <MenuFlyoutItem x:Uid="ShellMenuItem_Views_Main" Command="{x:Bind ViewModel.MenuViewsMainCommand}" />
                     </MenuBarItem.Items>
                 </MenuBarItem>
             </MenuBar>

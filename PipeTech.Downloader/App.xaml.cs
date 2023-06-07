@@ -2,8 +2,10 @@
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
+using CommunityToolkit.WinUI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 
@@ -65,14 +67,11 @@ public partial class App : Application
                 services.AddSingleton<INavigationService, NavigationService>();
 
                 // Core Services
-                services.AddSingleton<ISampleDataService, SampleDataService>();
                 services.AddSingleton<IFileService, FileService>();
 
                 // Views and ViewModels
                 services.AddTransient<SettingsViewModel>();
                 services.AddTransient<SettingsPage>();
-                services.AddTransient<ListDetailsViewModel>();
-                services.AddTransient<ListDetailsPage>();
                 services.AddTransient<MainViewModel>();
                 services.AddTransient<MainPage>();
                 services.AddTransient<ShellPage>();
@@ -148,15 +147,8 @@ public partial class App : Application
         // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
     }
 
-    private void OnActivated(object? sender, AppActivationArguments args)
+    private async void OnActivated(object? sender, AppActivationArguments args)
     {
-        if (args.Kind == ExtendedActivationKind.Protocol)
-        {
-            if (args.Data is Windows.ApplicationModel.Activation.ProtocolActivatedEventArgs cool)
-            {
-                ////GetService<IAppNotificationService>().Show(string.Format("OpenedSomething".GetLocalized(), AppContext.BaseDirectory, cool.Uri.AbsoluteUri));
-                App.MainWindow.BringToFront();
-            }
-        }
+        await App.GetService<IActivationService>().ActivateAsync(args);
     }
 }

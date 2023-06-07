@@ -16,7 +16,8 @@ public interface IHubRefitService
     /// Get the manifest.
     /// </summary>
     /// <param name="id">Manifest id.</param>
+    /// <param name="token">Cancellation token.</param>
     /// <returns>Manifest information.</returns>
     [Get("/manifest/{id}/")]
-    Task<ApiResponse<Manifest>> GetManifest(Guid id);
+    Task<ApiResponse<Manifest>> GetManifest(Guid id, CancellationToken token = default);
 }

@@ -1,4 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿// <copyright file="PageService.cs" company="Industrial Technology Group">
+// Copyright (c) Industrial Technology Group. All rights reserved.
+// </copyright>
+
+using CommunityToolkit.Mvvm.ComponentModel;
 
 using Microsoft.UI.Xaml.Controls;
 
@@ -8,24 +12,30 @@ using PipeTech.Downloader.Views;
 
 namespace PipeTech.Downloader.Services;
 
+/// <summary>
+/// Page service class.
+/// </summary>
 public class PageService : IPageService
 {
-    private readonly Dictionary<string, Type> _pages = new();
+    private readonly Dictionary<string, Type> pages = new();
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PageService"/> class.
+    /// </summary>
     public PageService()
     {
-        Configure<MainViewModel, MainPage>();
-        Configure<ListDetailsViewModel, ListDetailsPage>();
-        Configure<SettingsViewModel, SettingsPage>();
-        Configure<DownloadsViewModel, DownloadsPage>();
+        this.Configure<MainViewModel, MainPage>();
+        this.Configure<SettingsViewModel, SettingsPage>();
+        this.Configure<DownloadsViewModel, DownloadsPage>();
     }
 
+    /// <inheritdoc/>
     public Type GetPageType(string key)
     {
         Type? pageType;
-        lock (_pages)
+        lock (this.pages)
         {
-            if (!_pages.TryGetValue(key, out pageType))
+            if (!this.pages.TryGetValue(key, out pageType))
             {
                 throw new ArgumentException($"Page not found: {key}. Did you forget to call PageService.Configure?");
             }
@@ -34,25 +44,25 @@ public class PageService : IPageService
         return pageType;
     }
 
-    private void Configure<VM, V>()
-        where VM : ObservableObject
-        where V : Page
+    private void Configure<TVM, TV>()
+        where TVM : ObservableObject
+        where TV : Page
     {
-        lock (_pages)
+        lock (this.pages)
         {
-            var key = typeof(VM).FullName!;
-            if (_pages.ContainsKey(key))
+            var key = typeof(TVM).FullName!;
+            if (this.pages.ContainsKey(key))
             {
                 throw new ArgumentException($"The key {key} is already configured in PageService");
             }
 
-            var type = typeof(V);
-            if (_pages.ContainsValue(type))
+            var type = typeof(TV);
+            if (this.pages.ContainsValue(type))
             {
-                throw new ArgumentException($"This type is already configured with key {_pages.First(p => p.Value == type).Key}");
+                throw new ArgumentException($"This type is already configured with key {this.pages.First(p => p.Value == type).Key}");
             }
 
-            _pages.Add(key, type);
+            this.pages.Add(key, type);
         }
     }
 }

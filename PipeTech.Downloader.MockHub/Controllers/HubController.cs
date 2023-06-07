@@ -2,27 +2,27 @@
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
-namespace PipeTech.Downloader.MockHub.Controllers
-{
-    using Microsoft.AspNetCore.Mvc;
-    using PipeTech.Downloader.MockHub.Models;
-    using System.Text.Json;
+using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
+using PipeTech.Downloader.Core.Models;
 
+namespace PipeTech.Downloader.MockHub.Controllers;
+
+/// <summary>
+/// Hub controller class.
+/// </summary>
+[Controller]
+public class HubController : Controller
+{
     /// <summary>
-    /// Hub controller class.
+    /// Get the manifest.
     /// </summary>
-    [Controller]
-    public class HubController : Controller
+    /// <param name="id">ID of the manifest to retrieve.</param>
+    /// <returns>JSON of manifest information.</returns>
+    [HttpGet("manifest/{id}")]
+    public ActionResult<Manifest> GetManifest(Guid id)
     {
-        /// <summary>
-        /// Get the manifest.
-        /// </summary>
-        /// <param name="id">ID of the manifest to retrieve.</param>
-        /// <returns>JSON of manifest information.</returns>
-        [HttpGet("manifest/{id}")]
-        public ActionResult<Manifest> GetManifest(Guid id)
-        {
-            var inspectionJSON = @"
+        var inspectionJSON = @"
 {
   ""_schemaId"": ""Model.Sewer.NASSCOv7"",
   ""_schemaVersion"": ""20.15.171.0"",
@@ -8091,13 +8091,12 @@ namespace PipeTech.Downloader.MockHub.Controllers
 }
 ";
 
-            var ele = JsonSerializer.Deserialize<JsonElement>(inspectionJSON);
+        var ele = JsonSerializer.Deserialize<JsonElement>(inspectionJSON);
 
-            return this.Ok(new Manifest()
-            {
-                Id = id,
-                Inspections = new JsonElement[] { ele },
-            });
-        }
+        return this.Ok(new Manifest()
+        {
+            Id = id,
+            Inspections = new JsonElement[] { ele },
+        });
     }
 }

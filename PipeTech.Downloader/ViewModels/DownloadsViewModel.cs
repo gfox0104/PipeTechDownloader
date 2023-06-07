@@ -1,37 +1,45 @@
-﻿using System.Collections.ObjectModel;
+﻿// <copyright file="DownloadsViewModel.cs" company="Industrial Technology Group">
+// Copyright (c) Industrial Technology Group. All rights reserved.
+// </copyright>
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
 using PipeTech.Downloader.Contracts.ViewModels;
-using PipeTech.Downloader.Core.Contracts.Services;
-using PipeTech.Downloader.Core.Models;
 
 namespace PipeTech.Downloader.ViewModels;
 
+/// <summary>
+/// Downloads view model.
+/// </summary>
 public partial class DownloadsViewModel : ObservableRecipient, INavigationAware
 {
-    private readonly ISampleDataService _sampleDataService;
+    ////private readonly ISampleDataService _sampleDataService;
 
-    public ObservableCollection<SampleOrder> Source { get; } = new ObservableCollection<SampleOrder>();
+    ////public ObservableCollection<SampleOrder> Source { get; } = new ObservableCollection<SampleOrder>();
 
-    public DownloadsViewModel(ISampleDataService sampleDataService)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DownloadsViewModel"/> class.
+    /// </summary>
+    public DownloadsViewModel() // ISampleDataService sampleDataService)
     {
-        _sampleDataService = sampleDataService;
+        ////_sampleDataService = sampleDataService;
     }
 
-    public async void OnNavigatedTo(object parameter)
+    /// <inheritdoc/>
+    public void OnNavigatedTo(object parameter)
     {
-        Source.Clear();
+        ////Source.Clear();
 
-        // TODO: Replace with real data.
-        var data = await _sampleDataService.GetGridDataAsync();
+        ////// TODO: Replace with real data.
+        ////var data = await _sampleDataService.GetGridDataAsync();
 
-        foreach (var item in data)
-        {
-            Source.Add(item);
-        }
+        ////foreach (var item in data)
+        ////{
+        ////    Source.Add(item);
+        ////}
     }
 
+    /// <inheritdoc/>
     public void OnNavigatedFrom()
     {
     }

@@ -44,7 +44,7 @@ public class LocalSettingsService : ILocalSettingsService
         this.options = options.Value;
 
         this.applicationDataFolder = Path.Combine(
-            this.localApplicationData, 
+            this.localApplicationData,
             this.options.ApplicationDataFolder ?? DefaultApplicationDataFolder);
         this.localSettingsFile = this.options.LocalSettingsFile ?? DefaultLocalSettingsFile;
 
