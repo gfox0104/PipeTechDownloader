@@ -63,15 +63,33 @@
 
             <TextBlock x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" />
 
-            <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" />
+            <Grid Margin="{StaticResource XSmallTopMargin}"
+                        HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+        
+                <StackPanel Margin="{StaticResource XSmallTopMargin}">
+                    <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" 
+                           Style="{ThemeResource BodyTextBlockStyle}" />
 
-                <TextBlock
+                    <TextBlock
                     x:Uid="Settings_AboutDescription"
                     Margin="{StaticResource XSmallTopMargin}"
                     Style="{ThemeResource BodyTextBlockStyle}" />
-                <HyperlinkButton x:Uid="SettingsPage_PrivacyTermsLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
-            </StackPanel>
+                    <HyperlinkButton x:Uid="SettingsPage_PrivacyTermsLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+
+                </StackPanel>
+
+                <Button HorizontalAlignment="Right" 
+                        VerticalAlignment="Bottom"
+                        Grid.Column="1"
+                        Margin="{StaticResource XSmallTopMargin}"
+                        Content="Close"
+                        Command="{x:Bind ViewModel.CloseCommand}"/>
+            </Grid>
+
         </StackPanel>
     </Grid>
 </Page>

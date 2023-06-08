@@ -1,4 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// <copyright file="NavigationService.cs" company="Industrial Technology Group">
+// Copyright (c) Industrial Technology Group. All rights reserved.
+// </copyright>
+
+using System.Diagnostics.CodeAnalysis;
 
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -11,65 +15,61 @@ namespace PipeTech.Downloader.Services;
 
 // For more information on navigation between pages see
 // https://github.com/microsoft/TemplateStudio/blob/main/docs/WinUI/navigation.md
+
+/// <summary>
+/// Nagivation service class.
+/// </summary>
 public class NavigationService : INavigationService
 {
-    private readonly IPageService _pageService;
-    private object? _lastParameterUsed;
-    private Frame? _frame;
+    private readonly IPageService pageService;
+    private object? lastParameterUsed;
+    private Frame? frame;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NavigationService"/> class.
+    /// </summary>
+    /// <param name="pageService">Page service.</param>
+    public NavigationService(IPageService pageService)
+    {
+        this.pageService = pageService;
+    }
+
+    /// <inheritdoc/>
     public event NavigatedEventHandler? Navigated;
 
+    /// <inheritdoc/>
     public Frame? Frame
     {
         get
         {
-            if (_frame == null)
+            if (this.frame == null)
             {
-                _frame = App.MainWindow.Content as Frame;
-                RegisterFrameEvents();
+                this.frame = App.MainWindow.Content as Frame;
+                this.RegisterFrameEvents();
             }
 
-            return _frame;
+            return this.frame;
         }
 
         set
         {
-            UnregisterFrameEvents();
-            _frame = value;
-            RegisterFrameEvents();
+            this.UnregisterFrameEvents();
+            this.frame = value;
+            this.RegisterFrameEvents();
         }
     }
 
-    [MemberNotNullWhen(true, nameof(Frame), nameof(_frame))]
-    public bool CanGoBack => Frame != null && Frame.CanGoBack;
+    /// <inheritdoc/>
+    [MemberNotNullWhen(true, nameof(Frame), nameof(frame))]
+    public bool CanGoBack => this.Frame != null && this.Frame.CanGoBack;
 
-    public NavigationService(IPageService pageService)
-    {
-        _pageService = pageService;
-    }
-
-    private void RegisterFrameEvents()
-    {
-        if (_frame != null)
-        {
-            _frame.Navigated += OnNavigated;
-        }
-    }
-
-    private void UnregisterFrameEvents()
-    {
-        if (_frame != null)
-        {
-            _frame.Navigated -= OnNavigated;
-        }
-    }
-
+    /// <inheritdoc/>
     public bool GoBack()
     {
-        if (CanGoBack)
+        if (this.CanGoBack)
         {
-            var vmBeforeNavigation = _frame.GetPageViewModel();
-            _frame.GoBack();
+            var vmBeforeNavigation = this.frame.GetPageViewModel();
+            this.frame.GoBack();
             if (vmBeforeNavigation is INavigationAware navigationAware)
             {
                 navigationAware.OnNavigatedFrom();
@@ -81,18 +81,19 @@ public class NavigationService : INavigationService
         return false;
     }
 
+    /// <inheritdoc/>
     public bool NavigateTo(string pageKey, object? parameter = null, bool clearNavigation = false)
     {
-        var pageType = _pageService.GetPageType(pageKey);
+        var pageType = this.pageService.GetPageType(pageKey);
 
-        if (_frame != null && (_frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(_lastParameterUsed))))
+        if (this.frame != null && (this.frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(lastParameterUsed))))
         {
-            _frame.Tag = clearNavigation;
-            var vmBeforeNavigation = _frame.GetPageViewModel();
-            var navigated = _frame.Navigate(pageType, parameter);
+            this.frame.Tag = clearNavigation;
+            var vmBeforeNavigation = this.frame.GetPageViewModel();
+            var navigated = this.frame.Navigate(pageType, parameter);
             if (navigated)
             {
-                _lastParameterUsed = parameter;
+                this.lastParameterUsed = parameter;
                 if (vmBeforeNavigation is INavigationAware navigationAware)
                 {
                     navigationAware.OnNavigatedFrom();
@@ -103,6 +104,22 @@ public class NavigationService : INavigationService
         }
 
         return false;
+    }
+
+    private void RegisterFrameEvents()
+    {
+        if (this.frame != null)
+        {
+            this.frame.Navigated += this.OnNavigated;
+        }
+    }
+
+    private void UnregisterFrameEvents()
+    {
+        if (this.frame != null)
+        {
+            this.frame.Navigated -= this.OnNavigated;
+        }
     }
 
     private void OnNavigated(object sender, NavigationEventArgs e)
@@ -120,7 +137,7 @@ public class NavigationService : INavigationService
                 navigationAware.OnNavigatedTo(e.Parameter);
             }
 
-            Navigated?.Invoke(sender, e);
+            this.Navigated?.Invoke(sender, e);
         }
     }
 }

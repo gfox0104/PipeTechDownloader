@@ -3,7 +3,9 @@
 // </copyright>
 
 using Microsoft.UI.Dispatching;
+using Microsoft.VisualBasic;
 using Microsoft.Windows.AppLifecycle;
+using Syncfusion.Licensing;
 
 namespace PipeTech.Downloader;
 
@@ -23,11 +25,12 @@ public class Program
     public static async Task Main(string[] args)
     {
         WinRT.ComWrappersSupport.InitializeComWrappers();
-        var isRedirect = await DecideRedirection();
+        var isRedirect = DecideRedirection();
         if (!isRedirect)
         {
             Microsoft.UI.Xaml.Application.Start((p) =>
             {
+                SyncfusionLicenseProvider.RegisterLicense(PT.Inspection.Constants.SyncfusionLicenseCode);
                 var context = new DispatcherQueueSynchronizationContext(
                     DispatcherQueue.GetForCurrentThread());
                 SynchronizationContext.SetSynchronizationContext(context);
@@ -36,7 +39,7 @@ public class Program
         }
     }
 
-    private static async Task<bool> DecideRedirection()
+    private static bool DecideRedirection()
     {
         var isRedirect = false;
         var args = AppInstance.GetCurrent().GetActivatedEventArgs();
@@ -45,9 +48,24 @@ public class Program
         if (!keyInstance.IsCurrent)
         {
             isRedirect = true;
-            await keyInstance.RedirectActivationToAsync(args);
+            RedirectActivationTo(args, keyInstance);
+            ////await keyInstance.RedirectActivationToAsync(args);
         }
 
         return isRedirect;
+    }
+
+    // Do the redirection on another thread, and use a non-blocking
+    // wait method to wait for the redirection to complete.
+    private static void RedirectActivationTo(
+        AppActivationArguments args, AppInstance keyInstance)
+    {
+        var redirectSemaphore = new Semaphore(0, 1);
+        Task.Run(() =>
+        {
+            keyInstance.RedirectActivationToAsync(args).AsTask().Wait();
+            redirectSemaphore.Release();
+        });
+        redirectSemaphore.WaitOne();
     }
 }

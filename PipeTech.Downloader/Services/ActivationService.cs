@@ -2,6 +2,7 @@
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
+using System.Diagnostics.Eventing.Reader;
 using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -86,16 +87,30 @@ public class ActivationService : IActivationService
 
     private async Task HandleActivationAsync(object activationArgs)
     {
-        var activationHandler = this.activationHandlers.FirstOrDefault(h => h.CanHandle(activationArgs));
-
-        if (activationHandler != null)
+        async Task Handle()
         {
-            await activationHandler.HandleAsync(activationArgs);
+            var activationHandler = this.activationHandlers.FirstOrDefault(h => h.CanHandle(activationArgs));
+
+            if (activationHandler != null)
+            {
+                await activationHandler.HandleAsync(activationArgs);
+            }
+
+            if (this.defaultHandler.CanHandle(activationArgs))
+            {
+                await this.defaultHandler.HandleAsync(activationArgs);
+            }
         }
 
-        if (this.defaultHandler.CanHandle(activationArgs))
+        if (!App.MainWindow.DispatcherQueue.HasThreadAccess)
         {
-            await this.defaultHandler.HandleAsync(activationArgs);
+            await App.MainWindow.DispatcherQueue.EnqueueAsync(
+                Handle,
+                Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal);
+        }
+        else
+        {
+            await Handle();
         }
     }
 

@@ -24,6 +24,8 @@ public partial class SettingsViewModel : ObservableRecipient
 {
     private readonly IThemeSelectorService themeSelectorService;
 
+    private readonly INavigationService navigationService;
+
     [ObservableProperty]
     private ElementTheme elementTheme;
 
@@ -34,9 +36,13 @@ public partial class SettingsViewModel : ObservableRecipient
     /// Initializes a new instance of the <see cref="SettingsViewModel"/> class.
     /// </summary>
     /// <param name="themeSelectorService">Theme selector service.</param>
-    public SettingsViewModel(IThemeSelectorService themeSelectorService)
+    /// <param name="navigationService">Navigation service.</param>
+    public SettingsViewModel(
+        IThemeSelectorService themeSelectorService,
+        INavigationService navigationService)
     {
         this.themeSelectorService = themeSelectorService;
+        this.navigationService = navigationService;
         this.elementTheme = this.themeSelectorService.Theme;
         this.versionDescription = GetVersionDescription();
 
@@ -49,12 +55,32 @@ public partial class SettingsViewModel : ObservableRecipient
                     await this.themeSelectorService.SetThemeAsync(param);
                 }
             });
+
+        this.CloseCommand = new RelayCommand(() =>
+        {
+            if (this.navigationService.CanGoBack)
+            {
+                this.navigationService.GoBack();
+            }
+            else
+            {
+                this.navigationService.NavigateTo(typeof(DownloadsViewModel).FullName!, clearNavigation: true);
+            }
+        });
     }
 
     /// <summary>
     /// Gets the switch theme command.
     /// </summary>
     public ICommand SwitchThemeCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the switch theme command.
+    /// </summary>
+    public ICommand CloseCommand
     {
         get;
     }

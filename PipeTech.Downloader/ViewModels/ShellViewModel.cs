@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Navigation;
 
 using PipeTech.Downloader.Contracts.Services;
+using PipeTech.Downloader.Views;
 
 namespace PipeTech.Downloader.ViewModels;
 
@@ -83,7 +84,17 @@ public partial class ShellViewModel : ObservableRecipient
 
     private void OnMenuViewsDownloads() => this.NavigationService.NavigateTo(typeof(DownloadsViewModel).FullName!);
 
-    private void OnMenuSettings() => this.NavigationService.NavigateTo(typeof(SettingsViewModel).FullName!);
+    private void OnMenuSettings()
+    {
+        if (this.NavigationService.Frame?.Content?.GetType() == typeof(SettingsPage))
+        {
+            this.NavigationService.GoBack();
+        }
+        else
+        {
+            this.NavigationService.NavigateTo(typeof(SettingsViewModel).FullName!);
+        }
+    }
 
     private void OnMenuViewsMain() => this.NavigationService.NavigateTo(typeof(MainViewModel).FullName!);
 }

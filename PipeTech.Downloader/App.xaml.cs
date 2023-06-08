@@ -2,10 +2,8 @@
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
-using CommunityToolkit.WinUI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 
@@ -13,7 +11,6 @@ using PipeTech.Downloader.Activation;
 using PipeTech.Downloader.Contracts.Services;
 using PipeTech.Downloader.Core.Contracts.Services;
 using PipeTech.Downloader.Core.Services;
-using PipeTech.Downloader.Helpers;
 using PipeTech.Downloader.Models;
 using PipeTech.Downloader.Notifications;
 using PipeTech.Downloader.Services;
@@ -57,6 +54,7 @@ public partial class App : Application
 
                 // Other Activation Handlers
                 services.AddTransient<IActivationHandler, AppNotificationActivationHandler>();
+                services.AddTransient<IActivationHandler, AppProtocolActivationHandler>();
 
                 // Services
                 services.AddSingleton<IAppNotificationService, AppNotificationService>();
@@ -149,6 +147,14 @@ public partial class App : Application
 
     private async void OnActivated(object? sender, AppActivationArguments args)
     {
-        await App.GetService<IActivationService>().ActivateAsync(args);
+        if (args.Kind == ExtendedActivationKind.Protocol && 
+            args.Data is Windows.ApplicationModel.Activation.ProtocolActivatedEventArgs p)
+        {
+            await App.GetService<IActivationService>().ActivateAsync(p);
+        }
+        else
+        {
+            await App.GetService<IActivationService>().ActivateAsync(args);
+        }
     }
 }
