@@ -4,9 +4,37 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:treeView="using:Syncfusion.UI.Xaml.TreeView"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:models="using:PipeTech.Downloader.Models"
+    xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d">
+    <Page.Resources>
 
+        <DataTemplate x:Key="FolderTemplate" x:DataType="models:DownloadInspection">
+            <TreeViewItem AutomationProperties.Name="{x:Bind Name}"
+            ItemsSource="{x:Bind Files}" IsExpanded="True">
+                <StackPanel Orientation="Horizontal">
+                    <Image Width="10" Source="../Assets/folder.png"/>
+                    <TextBlock Margin="0,0,10,0"/>
+                    <TextBlock Text="{x:Bind Name, Mode=OneWay}" />
+                </StackPanel>
+            </TreeViewItem>
+        </DataTemplate>
+
+        <DataTemplate x:Key="FileTemplate" x:DataType="x:String">
+            <TreeViewItem AutomationProperties.Name="{x:Bind}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Width="10" Source="../Assets/file.png"/>
+                    <TextBlock Margin="0,0,10,0"/>
+                    <TextBlock Text="{x:Bind}"/>
+                </StackPanel>
+            </TreeViewItem>
+        </DataTemplate>
+
+        <models:DownloadTemplateSelector x:Key="DownloadTemplateSelector"
+                                         FileTemplate="{StaticResource FileTemplate}"
+                                         FolderTemplate="{StaticResource FolderTemplate}"/>
+    </Page.Resources>
     <Grid x:Name="ContentArea">
         <Grid.RowDefinitions>
             <RowDefinition Height="48" />
@@ -38,34 +66,41 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
                     VerticalAlignment="Center"
                     Text="{x:Bind ViewModel.DownloadName}"                    
                     Style="{StaticResource PageTitleStyle}" />
+                    <TextBlock VerticalAlignment="Center"
+                               Margin="15,10,0,0"
+                               Text="Loading..."
+                               FontSize="{StaticResource SmallFontSize}">
+                        <Interactivity:Interaction.Behaviors>
+                            <Core:DataTriggerBehavior Binding="{x:Bind ViewModel.ManifestLoading, Mode=OneWay}"
+                                                      ComparisonCondition="Equal"
+                                                      Value="False">
+                                <Core:ChangePropertyAction PropertyName="Visibility" Value="Collapsed" />
+                            </Core:DataTriggerBehavior>
+                        </Interactivity:Interaction.Behaviors>
+                    </TextBlock>
+                </StackPanel>
                 <StackPanel Grid.Column="1" Margin="{StaticResource LargeLeftRightMargin}">
                     <TextBlock Text="Inspections" />
                     <TextBlock Style="{StaticResource DownloadDataStyle}"
-                               Text="{x:Bind ViewModel.InspectionCountString}" />
+                               Text="{x:Bind ViewModel.InspectionCountString, Mode=OneWay}" />
                 </StackPanel>
                 <StackPanel Grid.Column="2">
                     <TextBlock
                         Text="Size" />
                     <TextBlock
                         Style="{StaticResource DownloadDataStyle}"
-                        Text="100 mb" />
+                        Text="{x:Bind ViewModel.TotalSizeinMB, Mode=OneWay}" />
                 </StackPanel>
             </Grid>
 
-            <treeView:SfTreeView x:Name="treeView" 
-                                 Grid.Row="1" >
-                <treeView:SfTreeView.Nodes>
-                    <treeView:TreeViewNode Content="Inspection 1" IsExpanded="True">
-                        <treeView:TreeViewNode.ChildNodes>
-                            <treeView:TreeViewNode Content="data.ptdx"/>
-                        </treeView:TreeViewNode.ChildNodes>
-                    </treeView:TreeViewNode>
-                </treeView:SfTreeView.Nodes>
-            </treeView:SfTreeView>
+            <TreeView Grid.Row="1"
+                      ItemsSource="{x:Bind ViewModel.Inspections}"
+                      ItemTemplateSelector="{StaticResource DownloadTemplateSelector}"/>
 
             <Grid Grid.Row="2"
                   Margin="{StaticResource XSmallTopMargin}">
@@ -76,21 +111,25 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBox Grid.Column="0"
+                         Text="{x:Bind ViewModel.DataFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          Margin="{StaticResource XSmallLeftMargin}"
                          VerticalAlignment="Center"/>
                 <Button Grid.Column="1"     
-                         Margin="{StaticResource XSmallLeftMargin}"          
+                        Command="{x:Bind ViewModel.BrowseFolderCommand}"
+                        Margin="{StaticResource XSmallLeftMargin}"          
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
                         Content="Browse"/>
                 <CheckBox Grid.Column="2"
                           Margin="{StaticResource XSmallLeftMargin}"
                           VerticalAlignment="Center"
+                          IsChecked="{x:Bind ViewModel.UseDefault, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           Content="Use as default path"/>
 
             </Grid>
 
             <Button Grid.Row="3"     
+                    Command="{x:Bind ViewModel.DownloadCommand}"
                     Margin="{StaticResource SmallTopBottomMargin}"           
                     HorizontalAlignment="Right"
                     Content="Download"/>

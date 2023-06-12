@@ -3,7 +3,6 @@
 // </copyright>
 
 using Microsoft.UI.Dispatching;
-using Microsoft.VisualBasic;
 using Microsoft.Windows.AppLifecycle;
 using Syncfusion.Licensing;
 
@@ -20,9 +19,8 @@ public class Program
     /// Main entry point.
     /// </summary>
     /// <param name="args">Arguments.</param>
-    /// <returns>Asynchronous task.</returns>
     [STAThread]
-    public static async Task Main(string[] args)
+    public static void Main(string[] args)
     {
         WinRT.ComWrappersSupport.InitializeComWrappers();
         var isRedirect = DecideRedirection();

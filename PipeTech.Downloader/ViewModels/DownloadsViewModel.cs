@@ -2,9 +2,11 @@
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 using PipeTech.Downloader.Contracts.ViewModels;
+using PipeTech.Downloader.Models;
 
 namespace PipeTech.Downloader.ViewModels;
 
@@ -13,30 +15,47 @@ namespace PipeTech.Downloader.ViewModels;
 /// </summary>
 public partial class DownloadsViewModel : ObservableRecipient, INavigationAware
 {
-    ////private readonly ISampleDataService _sampleDataService;
-
-    ////public ObservableCollection<SampleOrder> Source { get; } = new ObservableCollection<SampleOrder>();
+    private readonly IServiceProvider serviceProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DownloadsViewModel"/> class.
     /// </summary>
-    public DownloadsViewModel() // ISampleDataService sampleDataService)
+    /// <param name="serviceProvider">Service Provider.</param>
+    public DownloadsViewModel(
+        IServiceProvider serviceProvider)
     {
-        ////_sampleDataService = sampleDataService;
+        this.serviceProvider = serviceProvider;
+
+        this.Source = new ObservableCollection<DownloadInspection>();
+
+#if DEBUG
+        if (this.Source.Count <= 0)
+        {
+            this.Source.Add(new(this.serviceProvider)
+            {
+                DownloadPath = "Here",
+                Name = "name here",
+                Project = "proj name",
+                Size = 123,
+                TotalSize = 1234,
+                Progress = 0.2m,
+                State = DownloadInspection.States.Complete,
+            });
+        }
+#endif
+    }
+
+    /// <summary>
+    /// Gets the source data.
+    /// </summary>
+    public ObservableCollection<DownloadInspection> Source
+    {
+        get;
     }
 
     /// <inheritdoc/>
     public void OnNavigatedTo(object parameter)
     {
-        ////Source.Clear();
-
-        ////// TODO: Replace with real data.
-        ////var data = await _sampleDataService.GetGridDataAsync();
-
-        ////foreach (var item in data)
-        ////{
-        ////    Source.Add(item);
-        ////}
     }
 
     /// <inheritdoc/>

@@ -2,8 +2,12 @@
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
+using System.Net;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 
@@ -16,6 +20,22 @@ using PipeTech.Downloader.Notifications;
 using PipeTech.Downloader.Services;
 using PipeTech.Downloader.ViewModels;
 using PipeTech.Downloader.Views;
+using Prism.Ioc;
+using PT.Inspection;
+using PT.Inspection.Inspections;
+using PT.Inspection.LogicRegistry;
+using PT.Inspection.Model;
+using PT.Inspection.Packs;
+using PT.Inspection.Reporting;
+using PT.Inspection.Reporting.Default;
+using PT.Inspection.Reporting.Syncfusion;
+using PT.Inspection.Sewer.NASSCO.Logic;
+using PT.Inspection.Sewer.WSA.Logic;
+using PT.Inspection.Templates;
+using PT.Inspection.Wpf.Logic;
+using Serilog;
+using Serilog.Settings.Configuration;
+using Syncfusion.Licensing;
 
 namespace PipeTech.Downloader;
 
@@ -44,6 +64,19 @@ public partial class App : Application
             keyInstance.Activated += this.OnActivated;
         }
 
+        try
+        {
+            var extraAllowedTypes = new Type[]
+            {
+                typeof(PT.Model.DataTypes.Clock),
+            };
+
+            AppDomain.CurrentDomain.SetData("System.Data.DataSetDefaultAllowedTypes", extraAllowedTypes);
+        }
+        catch (Exception)
+        {
+        }
+
         this.Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()
             .UseContentRoot(AppContext.BaseDirectory)
@@ -55,6 +88,7 @@ public partial class App : Application
                 // Other Activation Handlers
                 services.AddTransient<IActivationHandler, AppNotificationActivationHandler>();
                 services.AddTransient<IActivationHandler, AppProtocolActivationHandler>();
+                services.AddTransient<IActivationHandler, AppProtocolFromLaunchActivationHandler>();
 
                 // Services
                 services.AddSingleton<IAppNotificationService, AppNotificationService>();
@@ -65,7 +99,46 @@ public partial class App : Application
                 services.AddSingleton<INavigationService, NavigationService>();
 
                 // Core Services
+                services.AddSingleton<IContainerExtension, Prism.DryIoc.DryIocContainerExtension>();
                 services.AddSingleton<IFileService, FileService>();
+                services.AddSingleton<IPackFactory, PackFactory>();
+                services.AddSingleton<ITemplateRegistry, TemplateRegistry>(sp =>
+                {
+                    var tr = new TemplateRegistry(
+                        sp.GetRequiredService<IPackFactory>(),
+                        sp.GetService<IOptions<SettingsDirectoryPaths>>());
+                    tr.LoadMachineTemplates();
+                    tr.LoadUserTemplates();
+                    return tr;
+                });
+                services.AddSingleton<ILogicRegistry, LogicRegistry>();
+                services.AddSingleton<IInspectionFactory, InspectionFactory>(sp =>
+                {
+                    return new InspectionFactory(
+                        sp,
+                        templateRegistry: sp.GetService<ITemplateRegistry>(),
+                        packFactory: sp.GetService<IPackFactory>(),
+                        logicRegistry: sp.GetService<ILogicRegistry>());
+                });
+                services.AddTransient<IJsonDeserializerV2, JsonDeserializerV2>();
+                services.AddTransient<IJsonSerializerV2, JsonSerializerV2>();
+                services.AddTransient<PT.Inspection.Wpf.Inspection>(sp =>
+                {
+                    var t = typeof(PT.Inspection.Wpf.Inspection);
+                    var constructors = t.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
+                    var constructor = constructors.FirstOrDefault();
+                    if (constructor is null)
+                    {
+#pragma warning disable CS8603 // Possible null reference return.
+                        return null;
+#pragma warning restore CS8603 // Possible null reference return.
+                    }
+
+                    var @params = new object[constructor.GetParameters().Length];
+                    var instance = constructor.Invoke(@params);
+                    return (PT.Inspection.Wpf.Inspection)instance;
+                });
+                services.AddSingleton<IReportRegistry, ReportRegistry>();
 
                 // Views and ViewModels
                 services.AddTransient<SettingsViewModel>();
@@ -77,13 +150,163 @@ public partial class App : Application
                 services.AddTransient<DownloadsViewModel>();
                 services.AddTransient<DownloadsPage>();
 
+                services.AddHttpClient<IHubService, HubService>()
+                    .ConfigureHttpMessageHandlerBuilder(builder =>
+                    {
+                        builder.PrimaryHandler = new HttpClientHandler()
+                        {
+                            DefaultProxyCredentials = CredentialCache.DefaultCredentials,
+                            Proxy = WebRequest.GetSystemWebProxy(),
+                            UseDefaultCredentials = true,
+                        };
+                    });
+
                 // Configuration
                 services.Configure<LocalSettingsOptions>(
                     context.Configuration.GetSection(nameof(LocalSettingsOptions)));
+                services.AddOptions<SettingsDirectoryPaths>()
+                .Configure(directories =>
+                {
+                    if (directories is null)
+                    {
+                        return;
+                    }
+
+                    directories.FamilyMachineSettingsDirectory =
+                        Path.Combine(
+                            Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                            @"PipeTech");
+
+                    if (!string.IsNullOrEmpty(directories?.FamilyMachineSettingsDirectory))
+                    {
+                        var di = new DirectoryInfo(directories.FamilyMachineSettingsDirectory);
+
+                        try
+                        {
+                            if (!di.Exists)
+                            {
+                                di = Directory.CreateDirectory(directories.FamilyMachineSettingsDirectory);
+                            }
+                        }
+                        catch
+                        {
+                        }
+
+                        try
+                        {
+                            if (di.Exists)
+                            {
+                                di.EnsureEveryonePermissions();
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    directories!.MachineSettingsDirectory =
+                        Path.Combine(
+                            directories.FamilyMachineSettingsDirectory,
+                            Assembly.GetEntryAssembly()?.GetName().Name ?? "PipeTech.Downloader");
+
+                    if (!string.IsNullOrEmpty(directories?.MachineSettingsDirectory))
+                    {
+                        var di = new DirectoryInfo(directories.MachineSettingsDirectory);
+
+                        try
+                        {
+                            if (!di.Exists)
+                            {
+                                di = Directory.CreateDirectory(directories.MachineSettingsDirectory);
+                            }
+                        }
+                        catch
+                        {
+                        }
+
+                        try
+                        {
+                            if (di.Exists)
+                            {
+                                di.EnsureEveryonePermissions();
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    directories!.FamilyUserSettingsDirectory =
+                        Path.Combine(
+                            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                            @"PipeTech");
+
+                    directories.UserSettingsDirectory =
+                        Path.Combine(
+                            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                            Assembly.GetEntryAssembly()?.GetName().Name ?? "PipeTech.Downloader");
+                });
             })
+            .UseSerilog(
+            (context, s, config) =>
+            {
+                var opt = s.GetService<IOptions<SettingsDirectoryPaths>>();
+                var cool = opt?.Value;
+
+                config?
+                ////.ReadFrom.Configuration(context.Configuration, "Logging")
+                .ReadFrom.Configuration(context.Configuration, new ConfigurationReaderOptions() { SectionName = "Logging" })
+                .ReadFrom.Services(s)
+                .Enrich.FromLogContext()
+                 .WriteTo.File(
+                         Path.Combine(
+                             cool?.MachineSettingsDirectory ?? string.Empty,
+                             $"PipeTech Downloader.log"),
+                         rollingInterval: RollingInterval.Day,
+                         buffered: true,
+                         flushToDiskInterval: TimeSpan.FromSeconds(1),
+                         outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}");
+            },
+            writeToProviders: true)
             .Build();
 
         App.GetService<IAppNotificationService>().Initialize();
+        _ = Task.Run(() =>
+        {
+            App.GetService<ITemplateRegistry>();
+
+            var rr = App.GetService<IReportRegistry>();
+            var container = App.GetService<IContainerExtension>();
+            container?.RegisterSingleton(typeof(IReportRegistry), () => rr);
+
+            var drm = new DefaultReportModule();
+            drm.RegisterTypes(container);
+            drm.OnInitialized(container);
+
+            var sdrm = new PT.Inspection.Reporting.Sewer.DefaultSewerReportModule();
+            sdrm.RegisterTypes(container);
+            sdrm.OnInitialized(container);
+
+            var scdrm = new PT.Inspection.Reporting.Sewer.Custom.CustomSewerReportingModule();
+            scdrm.RegisterTypes(container);
+            scdrm.OnInitialized(container);
+
+            var sndrm = new PT.Inspection.Reporting.Sewer.NASSCO.NASSCOReportModule();
+            sndrm.RegisterTypes(container);
+            sndrm.OnInitialized(container);
+
+            var swdrm = new PT.Inspection.Reporting.Sewer.WSA.WSAReportModule();
+            swdrm.RegisterTypes(container);
+            swdrm.OnInitialized(container);
+
+            var logicRegistry = App.GetService<ILogicRegistry>();
+            container?.Register<ModelLogic>();
+            logicRegistry?.Register<WSALogic>("Model.Sewer.WSA2020");
+            logicRegistry?.Register<NASSCOv6Logic>("Model.Sewer.NASSCOv6");
+            logicRegistry?.Register<NASSCOv7Logic>("Model.Sewer.NASSCOv7");
+
+            SyncfusionLicenseProvider.RegisterLicense(Constants.SyncfusionLicenseCode);
+        });
 
         this.UnhandledException += this.App_UnhandledException;
     }
@@ -147,7 +370,7 @@ public partial class App : Application
 
     private async void OnActivated(object? sender, AppActivationArguments args)
     {
-        if (args.Kind == ExtendedActivationKind.Protocol && 
+        if (args.Kind == ExtendedActivationKind.Protocol &&
             args.Data is Windows.ApplicationModel.Activation.ProtocolActivatedEventArgs p)
         {
             await App.GetService<IActivationService>().ActivateAsync(p);

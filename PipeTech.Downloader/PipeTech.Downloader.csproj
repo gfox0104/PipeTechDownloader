@@ -15,7 +15,13 @@
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<!--<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>-->
 		<DefineConstants>$(DefineConstants) DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+		<COMPOSITE_VERSION>5.3.12-pre.1840</COMPOSITE_VERSION>
+		<REPORTING_VERSION>2.13.5-pre.215</REPORTING_VERSION>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Content Remove="Assets\file.png" />
+	  <Content Remove="Assets\folder.png" />
+	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="stylecop.json" />
 	</ItemGroup>
@@ -35,13 +41,31 @@
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230502000" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
-		<PackageReference Include="PT.Inspection" Version="5.3.12-pre.1840" />
+		<PackageReference Include="Prism.DryIoc" Version="8.1.97" />
+		<PackageReference Include="PT.Build" Version="1.3.4" />
+		<PackageReference Include="PT.Inspection.Reporting.Core" Version="$(REPORTING_VERSION)" />
+		<PackageReference Include="PT.Inspection.Reporting.Default" Version="$(REPORTING_VERSION)" />
+		<PackageReference Include="PT.Inspection.Reporting.Sewer" Version="$(REPORTING_VERSION)" />
+		<PackageReference Include="PT.Inspection.Reporting.Sewer.Custom" Version="$(REPORTING_VERSION)" />
+		<PackageReference Include="PT.Inspection.Reporting.Sewer.NASSCO" Version="$(REPORTING_VERSION)" />
+		<PackageReference Include="PT.Inspection.Reporting.Sewer.WSA" Version="$(REPORTING_VERSION)" />
+		<PackageReference Include="PT.Inspection.Reporting.Syncfusion" Version="$(COMPOSITE_VERSION)" />
+		<PackageReference Include="PT.Inspection" Version="$(COMPOSITE_VERSION)" />
+		<PackageReference Include="PT.Inspection.Templates" Version="$(COMPOSITE_VERSION)" />
+		<PackageReference Include="PT.Inspection.Packs" Version="$(COMPOSITE_VERSION)" />
+		<PackageReference Include="PT.Inspection.Model.JsonConverter" Version="$(COMPOSITE_VERSION)" />
+		<PackageReference Include="PT.Inspection.Inspections.Wpf" Version="$(COMPOSITE_VERSION)" />
+		<PackageReference Include="PT.Inspection.LogicRegistry.Wpf" Version="$(COMPOSITE_VERSION)" />
+		<PackageReference Include="PT.Inspection.Sewer.NASSCO.Logic" Version="$(COMPOSITE_VERSION)" />
+		<PackageReference Include="PT.Inspection.Sewer.WSA.Logic" Version="$(COMPOSITE_VERSION)" />
 		<PackageReference Include="Refit.HttpClientFactory" Version="6.3.2" />
+		<PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
 		<PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Syncfusion.TreeView.WinUI" Version="20.1.0.61" />
+		<PackageReference Include="System.Text.Json" Version="7.0.2" />
 		<PackageReference Include="WinUIEx" Version="2.2" />
 	</ItemGroup>
 
@@ -52,6 +76,12 @@
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="Assets\file.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\folder.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
@@ -61,4 +91,6 @@
 	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
 		<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
 	</PropertyGroup>
+
+	<ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 </Project>

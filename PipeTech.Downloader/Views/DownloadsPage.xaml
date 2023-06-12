@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:models="using:PipeTech.Downloader.Models"
     mc:Ignorable="d">
 
     <Grid x:Name="ContentArea">
@@ -18,22 +19,30 @@
             x:Uid="Downloads_Title"
             Style="{StaticResource PageTitleStyle}" />
         <controls:DataGrid
-            Grid.Row="1"
+            Grid.Row="1"          
+            IsReadOnly="True"            
+            IsHitTestVisible="False"            
             AutoGenerateColumns="False"
-            GridLinesVisibility="Horizontal">
-            <!--ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}"-->
+            RowDetailsVisibilityMode="VisibleWhenSelected"
+            GridLinesVisibility="Horizontal"
+            ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}">
             <controls:DataGrid.Resources>
                 <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
             </controls:DataGrid.Resources>
             <controls:DataGrid.Columns>
-                <!-- TODO: Replace column definitions to match real data. Consider adding Header values to Resources.resw. -->
-                <controls:DataGridTextColumn Binding="{Binding OrderID}" Header="OrderID" />
-                <controls:DataGridTextColumn Binding="{Binding OrderDate}" Header="OrderDate" />
-                <controls:DataGridTextColumn Binding="{Binding Company}" Header="Company" />
-                <controls:DataGridTextColumn Binding="{Binding ShipTo}" Header="ShipTo" />
-                <controls:DataGridTextColumn Binding="{Binding OrderTotal}" Header="OrderTotal" />
-                <controls:DataGridTextColumn Binding="{Binding Status}" Header="Status" />
-                <controls:DataGridTemplateColumn Header="Symbol">
+                <controls:DataGridTemplateColumn Header="" >
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="models:DownloadInspection">
+                            <controls:Expander Header="" IsExpanded="{x:Bind Expanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+                <controls:DataGridTextColumn Binding="{Binding Project, Mode=OneWay}" Header="Project"/>
+                <controls:DataGridTextColumn Binding="{Binding DownloadPath, Mode=OneWay}" Header="Download Path" />
+                <controls:DataGridTextColumn Binding="{Binding Size, Mode=OneWay}" Header="Size" />
+                <controls:DataGridTextColumn Binding="{Binding Progress, Mode=OneWay}" Header="Progress" />
+                <controls:DataGridTextColumn Header="Actions" />
+                <!--<controls:DataGridTemplateColumn Header="Symbol">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <FontIcon
@@ -43,8 +52,25 @@
                                 AutomationProperties.Name="{Binding SymbolName}" />
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
-                </controls:DataGridTemplateColumn>
+                </controls:DataGridTemplateColumn>-->
             </controls:DataGrid.Columns>
+            <controls:DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <controls:DataGrid>
+                            <controls:DataGrid.Resources>
+                                <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
+                            </controls:DataGrid.Resources>
+                            <controls:DataGrid.Columns>
+                                <controls:DataGridTextColumn Header="Inspection" />
+                                <controls:DataGridTextColumn Header="Size" />
+                                <controls:DataGridTextColumn Header="Progress" />
+                                <controls:DataGridTextColumn Header="Actions" />
+                            </controls:DataGrid.Columns>
+                        </controls:DataGrid>
+                    </Grid>
+                </DataTemplate>
+            </controls:DataGrid.RowDetailsTemplate>
         </controls:DataGrid>
     </Grid>
 </Page>

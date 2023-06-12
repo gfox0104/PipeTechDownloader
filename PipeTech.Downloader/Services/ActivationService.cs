@@ -3,13 +3,16 @@
 // </copyright>
 
 using System.Diagnostics.Eventing.Reader;
+using CacheManager.Core.Logging;
 using CommunityToolkit.WinUI;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 using PipeTech.Downloader.Activation;
 using PipeTech.Downloader.Contracts.Services;
 using PipeTech.Downloader.Views;
+using Serilog.Data;
 
 namespace PipeTech.Downloader.Services;
 
@@ -21,6 +24,8 @@ public class ActivationService : IActivationService
     private readonly ActivationHandler<LaunchActivatedEventArgs> defaultHandler;
     private readonly IEnumerable<IActivationHandler> activationHandlers;
     private readonly IThemeSelectorService themeSelectorService;
+    private readonly ILogger<ActivationService>? logger;
+
     private UIElement? shell = null;
 
     /// <summary>
@@ -29,19 +34,24 @@ public class ActivationService : IActivationService
     /// <param name="defaultHandler">Default activation handler.</param>
     /// <param name="activationHandlers">All activation handlers.</param>
     /// <param name="themeSelectorService">Theme selector service.</param>
+    /// <param name="logger">Logger service.</param>
     public ActivationService(
         ActivationHandler<LaunchActivatedEventArgs> defaultHandler,
         IEnumerable<IActivationHandler> activationHandlers,
-        IThemeSelectorService themeSelectorService)
+        IThemeSelectorService themeSelectorService,
+        ILogger<ActivationService>? logger = null)
     {
         this.defaultHandler = defaultHandler;
         this.activationHandlers = activationHandlers;
         this.themeSelectorService = themeSelectorService;
+        this.logger = logger;
     }
 
     /// <inheritdoc/>
     public async Task ActivateAsync(object activationArgs)
     {
+        this.logger?.LogDebug($"ActivateAsync: {activationArgs}");
+
         // Execute tasks before activation.
         await this.InitializeAsync();
 
@@ -89,6 +99,7 @@ public class ActivationService : IActivationService
     {
         async Task Handle()
         {
+            this.logger?.LogDebug($"HandleActivationAsync: {activationArgs}");
             var activationHandler = this.activationHandlers.FirstOrDefault(h => h.CanHandle(activationArgs));
 
             if (activationHandler != null)

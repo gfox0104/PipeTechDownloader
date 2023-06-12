@@ -2,10 +2,9 @@
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
-using CommunityToolkit.WinUI;
+using CacheManager.Core.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
-using Microsoft.Windows.AppLifecycle;
 using PipeTech.Downloader.Contracts.Services;
 using PipeTech.Downloader.ViewModels;
 using Windows.ApplicationModel.Activation;
@@ -18,26 +17,32 @@ namespace PipeTech.Downloader.Activation;
 public class AppProtocolActivationHandler : ActivationHandler<ProtocolActivatedEventArgs>
 {
     private readonly INavigationService navigationService;
+    private readonly ILogger<AppProtocolActivationHandler>? logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AppProtocolActivationHandler"/> class.
     /// </summary>
     /// <param name="navigationService">Navigation service.</param>
+    /// <param name="logger">Logger service.</param>
     public AppProtocolActivationHandler(
-        INavigationService navigationService)
+        INavigationService navigationService,
+        ILogger<AppProtocolActivationHandler>? logger = null)
     {
         this.navigationService = navigationService;
+        this.logger = logger;
     }
 
     /// <inheritdoc/>
     protected override bool CanHandleInternal(ProtocolActivatedEventArgs args)
     {
+        this.logger?.LogDebug($"{nameof(this.CanHandleInternal)}: {args.Kind == ActivationKind.Protocol && args.Uri is Uri}");
         return args.Kind == ActivationKind.Protocol && args.Uri is Uri;
     }
 
     /// <inheritdoc/>
     protected async override Task HandleInternalAsync(ProtocolActivatedEventArgs args)
     {
+        this.logger?.LogDebug($"{nameof(this.HandleInternalAsync)}: {args.Uri}");
         var uri = args.Uri;
         if (uri is null)
         {
