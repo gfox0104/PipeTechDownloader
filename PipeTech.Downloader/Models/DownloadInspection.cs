@@ -4,65 +4,51 @@
 
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.Extensions.Logging;
-using PipeTech.Downloader.Contracts.Services;
-using PT.Inspection;
-using PT.Inspection.Inspections;
-using PT.Inspection.Model;
-using PT.Inspection.Packs;
-using PT.Inspection.Templates;
-using PT.Inspection.Wpf;
-using Refit;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 
 namespace PipeTech.Downloader.Models;
 
 /// <summary>
 /// Download inspection class.
 /// </summary>
-public partial class DownloadInspection : ObservableRecipient
+public partial class DownloadInspection : BindableRecipient, IDisposable
 {
-    private readonly ILogger<DownloadInspection>? logger;
-    private readonly IServiceProvider serviceProvider;
-
+    /// <summary>
+    /// Gets or sets the current state of the inspection.
+    /// </summary>
     [ObservableProperty]
     private States state;
 
-    [ObservableProperty]
-    private long? totalSize;
-
+    /// <summary>
+    /// Gets or sets the name for the inspection.
+    /// </summary>
     [ObservableProperty]
     private string? name;
 
+    /// <summary>
+    /// Gets or sets the project name.
+    /// </summary>
     [ObservableProperty]
     private string? project;
 
     [ObservableProperty]
     private string? downloadPath;
 
+    /// <summary>
+    /// Gets or sets the Json string.
+    /// </summary>
     [ObservableProperty]
-    private long size = 0;
-
-    [ObservableProperty]
-    private decimal progress = 0;
-
-    [ObservableProperty]
-    private bool expanded = false;
-
-    private string? json;
+    private JsonElement? json;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DownloadInspection"/> class.
     /// </summary>
-    /// <param name="serviceProvider">Service provider.</param>
-    public DownloadInspection(
-        IServiceProvider serviceProvider)
+    public DownloadInspection()
     {
-        this.serviceProvider = serviceProvider;
-        this.logger = serviceProvider.GetService(typeof(ILogger<DownloadInspection>)) as ILogger<DownloadInspection>;
-        this.Files = new();
+        this.Files.CollectionChanged += this.Files_CollectionChanged;
     }
 
     /// <summary>
@@ -84,170 +70,130 @@ public partial class DownloadInspection : ObservableRecipient
         /// Complete.
         /// </summary>
         Complete,
+
+        /// <summary>
+        /// Queued.
+        /// </summary>
+        Queued,
+
+        /// <summary>
+        /// Processing.
+        /// </summary>
+        Processing,
+
+        /// <summary>
+        /// Staged or ready for to confirm download.
+        /// </summary>
+        Staged,
+
+        /// <summary>
+        /// Paused.
+        /// </summary>
+        Paused,
+    }
+
+    /// <summary>
+    /// Gets or sets the files but only by parsing.
+    /// </summary>
+    [JsonPropertyName("Files")]
+    public File[] ParsingFiles
+    {
+        get => this.Files.ToArray();
+        set
+        {
+            this.Files.Clear();
+            this.Files.AddRange(value);
+        }
     }
 
     /// <summary>
     /// Gets the files.
     /// </summary>
-    public ObservableCollection<string> Files
-    {
-        get;
-    }
+    [JsonIgnore]
+    public ObservableCollection<File> Files { get; } = new();
 
     /// <summary>
-    /// Gets or sets the json.
+    /// Gets the total size of the inspection.
     /// </summary>
-    public string? Json
+    [JsonIgnore]
+    public long TotalSize => this.Files?.Sum(f => f.Size ?? 0) ?? 0;
+
+    /// <summary>
+    /// Gets the progress based on the files.
+    /// </summary>
+    [JsonIgnore]
+    public decimal Progress
     {
-        get => this.json;
-        set => this.SetProperty(ref this.json, value);
+        get
+        {
+            try
+            {
+                return (this.Files?.Sum(f => f?.DownloadedSize ?? 0) ?? 0) / (this.Files?.Sum(f => f?.Size ?? 0) ?? 0);
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
     }
 
     /// <inheritdoc/>
-    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+    public void Dispose()
     {
-        base.OnPropertyChanged(e);
-
-        switch (e.PropertyName)
+        if (this.Files is not null)
         {
-            case nameof(this.Json):
-                _ = this.LoadInspection();
-                break;
-            default:
-                break;
+            while (this.Files.Count > 0)
+            {
+                this.Files.RemoveAt(0);
+            }
+
+            this.Files.CollectionChanged -= this.Files_CollectionChanged;
         }
     }
 
-    private async Task LoadInspection()
+    private void Files_CollectionChanged(
+        object? sender,
+        System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        await Task.Yield();
-        this.State = States.Loading;
-        try
+        if (e.OldItems is not null)
         {
-            if (this.Json is null ||
-                string.IsNullOrEmpty(this.Json))
+            foreach (var oldItem in e.OldItems)
             {
-                throw new NullReferenceException($"{nameof(this.Json)} is empty.");
-            }
-
-            var ele = System.Text.Json.JsonSerializer.Deserialize<JsonElement>(this.Json);
-            if (!ele.TryGetProperty("$packId", out var value) ||
-                !Guid.TryParse(value.ToString(), out var packId))
-            {
-                throw new Exception($"Unable to retrieve pack Id of inspection.");
-            }
-
-            var tm = this.serviceProvider.GetService(typeof(ITemplateRegistry)) as ITemplateRegistry;
-            var pack = tm?.InstalledTemplates?
-                .Where(p => p.Metadata.ID == packId)
-                .OrderByDescending(p => p.Metadata.Version)
-                .FirstOrDefault();
-
-            if (pack is null)
-            {
-                // Get the pack from external services.
-                using var httpClient = this.serviceProvider.GetService(typeof(HttpClient)) as HttpClient;
-                if (httpClient is not null)
+                if (oldItem is File f)
                 {
-                    httpClient.BaseAddress = new(@"http://100.24.161.59:5000");
-                }
-
-                var externalServices = RestService.For<IExternalServices>(
-                     httpClient,
-                     new RefitSettings(
-                         new SystemTextJsonContentSerializer(new()
-                         {
-                             AllowTrailingCommas = true,
-                             PropertyNameCaseInsensitive = true,
-                             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                         })));
-
-                var tempFile = PathWrapper.GetTempFileNameUnique();
-                try
-                {
-                    var info = await externalServices.GetPack(packId, descending: true);
-                    if (info.Content is null)
-                    {
-                        throw new Exception("Unable to download pack");
-                    }
-
-                    using (var fs = new FileStream(tempFile, FileMode.Create, FileAccess.ReadWrite))
-                    {
-                        info.Content.CopyTo(fs);
-                    }
-
-                    var pf = this.serviceProvider.GetService(typeof(IPackFactory)) as IPackFactory;
-                    pack = pf?.OpenPackFile(tempFile);
-                    tm?.Register(pack, TemplateRegistryKnownLocationType.Machine);
-                }
-                finally
-                {
-                    if (externalServices is IDisposable d)
-                    {
-                        d.Dispose();
-                    }
-
-                    if (File.Exists(tempFile))
-                    {
-                        File.Delete(tempFile);
-                    }
+                    f.PropertyChanged -= this.File_PropertyChanged;
                 }
             }
-
-            var deserilizer = this.serviceProvider.GetService(typeof(IJsonDeserializerV2)) as IJsonDeserializerV2;
-            using var ds = deserilizer?.Deserialize(pack, this.Json, false);
-
-            if (ds is null)
-            {
-                throw new Exception($"Unable to deserialize inspection.");
-            }
-
-            if (!ds.TryGetInspectionRow(out var drInspection) || drInspection is null)
-            {
-                throw new Exception($"Unable to deserialize an inspection.");
-            }
-
-            var inspectionFactory = this.serviceProvider.GetService(typeof(IInspectionFactory)) as IInspectionFactory;
-            using var inspection = inspectionFactory?.InitializeInspection(pack, ds, drInspection.Table.TableName) as Inspection;
-
-            inspection?.AssetCollection.View.MoveCurrentToFirst();
-            inspection?.InspectionCollection.View.MoveCurrentToFirst();
-
-            var grouping = inspection?.ResolveInspectionFolderGroup();
-            if (grouping?.Count > 0)
-            {
-                this.Name = string.Join("/", grouping.Select(n => n.SanitizeFilename()));
-            }
-            else
-            {
-                this.Name = inspection?.ResolveInspectionFolderName().SanitizeFilename();
-            }
-
-            var filename = inspection.ResolveInspectionFileNameWithoutExtension();
-            this.Files.Add(filename + ".ptdx");
-
-            if (inspection?.MediaReferences is not null)
-            {
-                foreach (var media in inspection.MediaReferences)
-                {
-                    if (media.ExistsLocal())
-                    {
-                        this.Files.Add(media.GetName());
-                        this.TotalSize = (this.TotalSize ?? 0) + new FileInfo(media.GetAbsoluteUri().LocalPath).Length;
-                    }
-                    else
-                    {
-                        this.Files.Add(media.URI.OriginalString);
-                    }
-                }
-            }
-
-            this.State = States.Complete;
         }
-        catch (Exception ex)
+
+        if (e.NewItems is not null)
         {
-            this.logger?.LogError(ex, "Error loading download inspection.");
-            this.State = States.Errored;
+            foreach (var newItem in e.NewItems)
+            {
+                if (newItem is File f)
+                {
+                    f.PropertyChanged += this.File_PropertyChanged;
+                }
+            }
+        }
+
+        this.RaisePropertyChanged(nameof(this.TotalSize));
+        this.RaisePropertyChanged(nameof(this.Progress));
+    }
+
+    private void File_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(File.Size):
+                this.RaisePropertyChanged(nameof(this.TotalSize));
+                this.RaisePropertyChanged(nameof(this.Progress));
+                break;
+            case nameof(File.DownloadedSize):
+                this.RaisePropertyChanged(nameof(this.Progress));
+                break;
+            default:
+                break;
         }
     }
 }

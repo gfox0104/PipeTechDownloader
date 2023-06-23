@@ -12,8 +12,8 @@
     "PipeTech.Downloader.MockHub": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "launchUrl": "swagger",
+      "_launchBrowser": false,
+      "_launchUrl": "swagger",
       "applicationUrl": "http://localhost:5242",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

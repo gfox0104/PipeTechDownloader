@@ -23,6 +23,9 @@ public partial class ShellViewModel : ObservableRecipient
     [ObservableProperty]
     private bool isBackEnabled;
 
+    [ObservableProperty]
+    private bool canSettings;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ShellViewModel"/> class.
     /// </summary>
@@ -34,7 +37,7 @@ public partial class ShellViewModel : ObservableRecipient
 
         this.MenuFileExitCommand = new RelayCommand(this.OnMenuFileExit);
         this.MenuViewsDownloadsCommand = new RelayCommand(this.OnMenuViewsDownloads);
-        this.MenuSettingsCommand = new RelayCommand(this.OnMenuSettings);
+        this.MenuSettingsCommand = new RelayCommand(this.OnMenuSettings, this.CanMenuSettings);
         this.MenuViewsMainCommand = new RelayCommand(this.OnMenuViewsMain);
     }
 
@@ -78,11 +81,24 @@ public partial class ShellViewModel : ObservableRecipient
         get;
     }
 
-    private void OnNavigated(object sender, NavigationEventArgs e) => this.IsBackEnabled = this.NavigationService.CanGoBack;
+    private void OnNavigated(object sender, NavigationEventArgs e)
+    {
+        this.IsBackEnabled = this.NavigationService.CanGoBack;
+        this.CanSettings = e.Content is not MainPage;
+        if (this.MenuSettingsCommand is IRelayCommand rc)
+        {
+            rc.NotifyCanExecuteChanged();
+        }
+    }
 
     private void OnMenuFileExit() => Application.Current.Exit();
 
     private void OnMenuViewsDownloads() => this.NavigationService.NavigateTo(typeof(DownloadsViewModel).FullName!);
+
+    private bool CanMenuSettings()
+    {
+        return this.CanSettings;
+    }
 
     private void OnMenuSettings()
     {

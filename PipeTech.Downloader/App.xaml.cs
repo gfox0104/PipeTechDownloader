@@ -4,13 +4,15 @@
 
 using System.Net;
 using System.Reflection;
+using Hangfire;
+using Hangfire.Storage.SQLite;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
-
 using PipeTech.Downloader.Activation;
 using PipeTech.Downloader.Contracts.Services;
 using PipeTech.Downloader.Core.Contracts.Services;
@@ -79,6 +81,30 @@ public partial class App : Application
 
         this.Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()
+            .ConfigureWebHost(b =>
+            {
+                b.UseKestrel((c, o) =>
+                {
+                })
+                .UseUrls("http://*:9000")
+                .ConfigureServices(s =>
+                {
+                    s.AddHangfire((sp, c) =>
+                    {
+                        c
+                        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                        .UseSimpleAssemblyNameTypeSerializer()
+                        .UseRecommendedSerializerSettings()
+                        .UseSQLiteStorage("pipetech_downloader_jobs.db")
+                        .UseActivator(new ServiceProviderActivator(sp));
+                    })
+                    .AddHangfireServer();
+                })
+                .Configure(app =>
+                {
+                    app.UseHangfireDashboard();
+                });
+            })
             .UseContentRoot(AppContext.BaseDirectory)
             .ConfigureServices((context, services) =>
             {
@@ -97,8 +123,12 @@ public partial class App : Application
                 services.AddSingleton<IActivationService, ActivationService>();
                 services.AddSingleton<IPageService, PageService>();
                 services.AddSingleton<INavigationService, NavigationService>();
+                services.AddTransient<DownloadInspectionHandler>();
+                services.AddTransient<Project>();
+                services.AddSingleton<IDocumentFactory, SyncfusionDocumentFactory>();
 
                 // Core Services
+                services.AddSingleton<IDownloadService, DownloadService>();
                 services.AddSingleton<IContainerExtension, Prism.DryIoc.DryIocContainerExtension>();
                 services.AddSingleton<IFileService, FileService>();
                 services.AddSingleton<IPackFactory, PackFactory>();
@@ -161,9 +191,10 @@ public partial class App : Application
                         };
                     });
 
-                // Configuration
                 services.Configure<LocalSettingsOptions>(
                     context.Configuration.GetSection(nameof(LocalSettingsOptions)));
+                services.Configure<DownloadSettingsOptions>(
+                    context.Configuration.GetSection(nameof(DownloadSettingsOptions)));
                 services.AddOptions<SettingsDirectoryPaths>()
                 .Configure(directories =>
                 {
@@ -306,6 +337,15 @@ public partial class App : Application
             logicRegistry?.Register<NASSCOv7Logic>("Model.Sewer.NASSCOv7");
 
             SyncfusionLicenseProvider.RegisterLicense(Constants.SyncfusionLicenseCode);
+
+            try
+            {
+                App.GetService<IDownloadService>();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         });
 
         this.UnhandledException += this.App_UnhandledException;
@@ -356,6 +396,8 @@ public partial class App : Application
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
+
+        _ = this.Host.RunAsync();
 
         ////App.GetService<IAppNotificationService>().Show(string.Format("AppNotificationSamplePayload".GetLocalized(), AppContext.BaseDirectory));
 

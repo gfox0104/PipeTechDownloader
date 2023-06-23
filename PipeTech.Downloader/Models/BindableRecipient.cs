@@ -23,4 +23,15 @@ public class BindableRecipient : ObservableRecipient
     {
         this.OnPropertyChanged(propertyName);
     }
+
+    /// <summary>
+    /// Raises this object's PropertyChanging event.
+    /// </summary>
+    /// <param name="propertyName">Name of the property used to notify listeners. This
+    /// value is optional and can be provided automatically when invoked from compilers
+    /// that support <see cref="CallerMemberNameAttribute"/>.</param>
+    protected void RaisePropertyChanging([CallerMemberName] string? propertyName = null)
+    {
+        this.OnPropertyChanging(propertyName);
+    }
 }

@@ -104,6 +104,11 @@ public sealed partial class ShellPage : Page
         this.ShellMenuBarSettingsButton.RemoveHandler(
             UIElement.PointerReleasedEvent,
             (PointerEventHandler)this.ShellMenuBarSettingsButton_PointerReleased);
+
+        if (this.ViewModel?.NavigationService?.Frame?.Content is MainPage m)
+        {
+            m.ViewModel?.Dispose();
+        }
     }
 
     private void ShellMenuBarSettingsButton_PointerEntered(object sender, PointerRoutedEventArgs e)

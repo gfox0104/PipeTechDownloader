@@ -2,6 +2,7 @@
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 
 using PipeTech.Downloader.Contracts.Services;
@@ -35,7 +36,10 @@ public class DefaultActivationHandler : ActivationHandler<LaunchActivatedEventAr
     /// <inheritdoc/>
     protected async override Task HandleInternalAsync(LaunchActivatedEventArgs args)
     {
-        this.navigationService.NavigateTo(typeof(DownloadsViewModel).FullName!, args.Arguments);
+        App.MainWindow.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
+        {
+            this.navigationService.NavigateTo(typeof(DownloadsViewModel).FullName!, args.Arguments);
+        });
         await Task.CompletedTask;
     }
 }

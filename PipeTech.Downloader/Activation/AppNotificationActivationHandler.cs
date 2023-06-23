@@ -24,7 +24,7 @@ public class AppNotificationActivationHandler : ActivationHandler<LaunchActivate
     /// <param name="navigationService">Navigation service.</param>
     /// <param name="notificationService">Notification service.</param>
     public AppNotificationActivationHandler(
-        INavigationService navigationService, 
+        INavigationService navigationService,
         IAppNotificationService notificationService)
     {
         this.navigationService = navigationService;

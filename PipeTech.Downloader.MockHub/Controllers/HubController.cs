@@ -15,6 +15,17 @@ namespace PipeTech.Downloader.MockHub.Controllers;
 public class HubController : Controller
 {
     /// <summary>
+    /// Get the manifest uri.
+    /// </summary>
+    /// <param name="id">ID of the manifest to retrieve.</param>
+    /// <returns>JSON of manifest information.</returns>
+    [HttpGet("manifesturi/{id}")]
+    public ActionResult<Manifest> GetManifestUri(Guid id)
+    {
+        return this.Ok(new Uri($"https://api.pipetechproject.com/manifests/{id}.json").ToString());
+    }
+
+    /// <summary>
     /// Get the manifest.
     /// </summary>
     /// <param name="id">ID of the manifest to retrieve.</param>
@@ -210,8 +221,7 @@ public class HubController : Controller
                   ""createdOn"": ""2013-02-12T08:23:08.6670000"",
                   ""i002Guid"": ""968f3aa0-bfeb-4ae0-b555-1321ee27fa25"",
                   ""mediaGuid"": ""15ca6375-bf61-479e-ba92-9c79cf319392"",
-                  ""mediaParameters"": ""2D14-3025-0AB5-BC29-EDA0-B312-9520-3E7E-D96F-0282-50AF-9A88"",
-                  ""snapshotMediaGuid"": ""917da442-9411-402c-9bf9-97ff07bdc838""
+                  ""mediaParameters"": ""2D14-3025-0AB5-BC29-EDA0-B312-9520-3E7E-D96F-0282-50AF-9A88""
                 },
                 {
                   ""distance"": 35052.0,
@@ -234,8 +244,7 @@ public class HubController : Controller
                   ""createdOn"": ""2013-02-12T08:31:57.0000000"",
                   ""i002Guid"": ""968f3aa0-bfeb-4ae0-b555-1321ee27fa25"",
                   ""mediaGuid"": ""15ca6375-bf61-479e-ba92-9c79cf319392"",
-                  ""mediaParameters"": ""4B3E-E195-3964-52BA"",
-                  ""snapshotMediaGuid"": ""a5c2f5c8-6c2e-496f-93dd-4867b1accf85""
+                  ""mediaParameters"": ""4B3E-E195-3964-52BA""
                 }
               ]
             },
@@ -262,8 +271,7 @@ public class HubController : Controller
                   ""createdOn"": ""2013-02-12T08:32:26.5670000"",
                   ""i002Guid"": ""968f3aa0-bfeb-4ae0-b555-1321ee27fa25"",
                   ""mediaGuid"": ""15ca6375-bf61-479e-ba92-9c79cf319392"",
-                  ""mediaParameters"": ""150F-38C8-2127-441C-EDA0-B312-9520-3E7E-D96F-0282-50AF-9A88"",
-                  ""snapshotMediaGuid"": ""b347f5fd-c06a-46a5-902e-71bff4793c34""
+                  ""mediaParameters"": ""150F-38C8-2127-441C-EDA0-B312-9520-3E7E-D96F-0282-50AF-9A88""
                 }
               ]
             },
@@ -293,8 +301,7 @@ public class HubController : Controller
                   ""createdOn"": ""2013-02-12T08:29:42.6670000"",
                   ""i002Guid"": ""968f3aa0-bfeb-4ae0-b555-1321ee27fa25"",
                   ""mediaGuid"": ""15ca6375-bf61-479e-ba92-9c79cf319392"",
-                  ""mediaParameters"": ""A06A-2BAB-EF04-7096-EDA0-B312-9520-3E7E-D96F-0282-50AF-9A88"",
-                  ""snapshotMediaGuid"": ""a210f275-bde1-48f5-9123-a2e39eb22ffa""
+                  ""mediaParameters"": ""A06A-2BAB-EF04-7096-EDA0-B312-9520-3E7E-D96F-0282-50AF-9A88""
                 }
               ]
             }
@@ -302,7 +309,7 @@ public class HubController : Controller
           ""Media_002"": [
             {
               ""Media_GUID"": ""15ca6375-bf61-479e-ba92-9c79cf319392"",
-              ""Media_URI"": ""file://drobo/Media/Video/130212 (S3004--S3006) 0822.mp4"",
+              ""Media_URI"": ""https://media.pipetechproject.com/6342c0f37056fd7b942241a3/inspections/5b2a22c3-11c7-466f-82f0-eff1a9025ff0/230606%20(mh101--mh102)%201932.mp4"",
               ""Length"": 260006387,
               ""Hash"": null,
               ""Media_Info"": null,
@@ -311,7 +318,7 @@ public class HubController : Controller
             },
             {
               ""Media_GUID"": ""46fe2d6c-4f43-4450-8d59-f701e76e2403"",
-              ""Media_URI"": ""000.0 ft - MWL_4.jpg"",
+              ""Media_URI"": ""https://media.pipetechproject.com/6342c0f37056fd7b942241a3/inspections/5b2a22c3-11c7-466f-82f0-eff1a9025ff0/000.0%20ft%20-%20AMH.jpg"",
               ""Length"": 23409,
               ""Hash"": null,
               ""Media_Info"": null,
@@ -320,7 +327,7 @@ public class HubController : Controller
             },
             {
               ""Media_GUID"": ""d47af611-0e94-45dc-a333-ef8d72e3e569"",
-              ""Media_URI"": ""000.0 ft - AMH_4.jpg"",
+              ""Media_URI"": ""https://media.pipetechproject.com/6342c0f37056fd7b942241a3/inspections/5b2a22c3-11c7-466f-82f0-eff1a9025ff0/000.0 ft - MWL.jpg"",
               ""Length"": 28159,
               ""Hash"": null,
               ""Media_Info"": null,
@@ -329,44 +336,8 @@ public class HubController : Controller
             },
             {
               ""Media_GUID"": ""3ed34cea-1043-4eb1-a898-d6a8dd143ce3"",
-              ""Media_URI"": ""052.1 ft - MMC_4.jpg"",
+              ""Media_URI"": ""https://media.pipetechproject.com/6342c0f37056fd7b942241a3/inspections/5b2a22c3-11c7-466f-82f0-eff1a9025ff0/100.8 ft - AMH.jpg"",
               ""Length"": 23623,
-              ""Hash"": null,
-              ""Media_Info"": null,
-              ""I_002_GUID"": ""968f3aa0-bfeb-4ae0-b555-1321ee27fa25"",
-              ""Embedded_Overlay"": null
-            },
-            {
-              ""Media_GUID"": ""917da442-9411-402c-9bf9-97ff07bdc838"",
-              ""Media_URI"": ""004.0 ft - DAGS_4.jpg"",
-              ""Length"": 23781,
-              ""Hash"": null,
-              ""Media_Info"": null,
-              ""I_002_GUID"": ""968f3aa0-bfeb-4ae0-b555-1321ee27fa25"",
-              ""Embedded_Overlay"": null
-            },
-            {
-              ""Media_GUID"": ""a5c2f5c8-6c2e-496f-93dd-4867b1accf85"",
-              ""Media_URI"": ""115.0 ft - DAGS_4.jpg"",
-              ""Length"": 28508,
-              ""Hash"": null,
-              ""Media_Info"": null,
-              ""I_002_GUID"": ""968f3aa0-bfeb-4ae0-b555-1321ee27fa25"",
-              ""Embedded_Overlay"": null
-            },
-            {
-              ""Media_GUID"": ""b347f5fd-c06a-46a5-902e-71bff4793c34"",
-              ""Media_URI"": ""115.6 ft - AMH_4.jpg"",
-              ""Length"": 30010,
-              ""Hash"": null,
-              ""Media_Info"": null,
-              ""I_002_GUID"": ""968f3aa0-bfeb-4ae0-b555-1321ee27fa25"",
-              ""Embedded_Overlay"": null
-            },
-            {
-              ""Media_GUID"": ""a210f275-bde1-48f5-9123-a2e39eb22ffa"",
-              ""Media_URI"": ""078.6 ft - TFA_4.jpg"",
-              ""Length"": 26314,
               ""Hash"": null,
               ""Media_Info"": null,
               ""I_002_GUID"": ""968f3aa0-bfeb-4ae0-b555-1321ee27fa25"",
@@ -8096,6 +8067,16 @@ public class HubController : Controller
         return this.Ok(new Manifest()
         {
             Id = id,
+            AdditionalProperties = new()
+            {
+                { "what", 9 },
+                { "blamo", null },
+            },
+            DeliverableName = "Spring 2023",
+            IndividualNASSCOExchangeGenerate = true,
+            CombinedNASSCOExchangeGenerate = true,
+            CombinedReportIds = new[] { new Guid("74168c6c-b5f3-4a66-ba87-ec30a86c8fed") },
+            IndividualReportIds = new[] { new Guid("74168c6c-b5f3-4a66-ba87-ec30a86c8fed") },
             Inspections = new JsonElement[] { ele },
         });
     }

@@ -20,4 +20,13 @@ public interface IHubRefitService
     /// <returns>Manifest information.</returns>
     [Get("/manifest/{id}/")]
     public Task<ApiResponse<Manifest>> GetManifest(Guid id, CancellationToken token = default);
+
+    /// <summary>
+    /// Get the manifest link.
+    /// </summary>
+    /// <param name="id">Manifest id.</param>
+    /// <param name="token">Cancellation token.</param>
+    /// <returns>Manifest link.</returns>
+    [Get("/manifesturi/{id}/")]
+    public Task<ApiResponse<string>> GetManifestLink(Guid id, CancellationToken token = default);
 }

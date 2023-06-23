@@ -1,34 +1,51 @@
-﻿using System.Collections.Specialized;
+﻿// <copyright file="AppNotificationService.cs" company="Industrial Technology Group">
+// Copyright (c) Industrial Technology Group. All rights reserved.
+// </copyright>
+
+using System.Collections.Specialized;
 using System.Web;
-
 using Microsoft.Windows.AppNotifications;
-
 using PipeTech.Downloader.Contracts.Services;
-using PipeTech.Downloader.ViewModels;
 
 namespace PipeTech.Downloader.Notifications;
 
+/// <summary>
+/// App notification service class.
+/// </summary>
 public class AppNotificationService : IAppNotificationService
 {
-    private readonly INavigationService _navigationService;
+    private readonly INavigationService navigationService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AppNotificationService"/> class.
+    /// </summary>
+    /// <param name="navigationService">Navigation service.</param>
     public AppNotificationService(INavigationService navigationService)
     {
-        _navigationService = navigationService;
+        this.navigationService = navigationService;
     }
 
+    /// <summary>
+    /// Finalizes an instance of the <see cref="AppNotificationService"/> class.
+    /// </summary>
     ~AppNotificationService()
     {
-        Unregister();
+        this.Unregister();
     }
 
+    /// <inheritdoc/>
     public void Initialize()
     {
-        AppNotificationManager.Default.NotificationInvoked += OnNotificationInvoked;
+        AppNotificationManager.Default.NotificationInvoked += this.OnNotificationInvoked;
 
         AppNotificationManager.Default.Register();
     }
 
+    /// <summary>
+    /// Notification is invoke.
+    /// </summary>
+    /// <param name="sender">Sender.</param>
+    /// <param name="args">Arguments.</param>
     public void OnNotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
     {
         // TODO: Handle notification invocations when your app is already running.
@@ -44,12 +61,15 @@ public class AppNotificationService : IAppNotificationService
 
         App.MainWindow.DispatcherQueue.TryEnqueue(() =>
         {
-            App.MainWindow.ShowMessageDialogAsync("TODO: Handle notification invocations when your app is already running.", "Notification Invoked");
+            App.MainWindow.ShowMessageDialogAsync(
+                "TODO: Handle notification invocations when your app is already running.",
+                "Notification Invoked");
 
             App.MainWindow.BringToFront();
         });
     }
 
+    /// <inheritdoc/>
     public bool Show(string payload)
     {
         var appNotification = new AppNotification(payload);
@@ -59,11 +79,13 @@ public class AppNotificationService : IAppNotificationService
         return appNotification.Id != 0;
     }
 
+    /// <inheritdoc/>
     public NameValueCollection ParseArguments(string arguments)
     {
         return HttpUtility.ParseQueryString(arguments);
     }
 
+    /// <inheritdoc/>
     public void Unregister()
     {
         AppNotificationManager.Default.Unregister();

@@ -1,34 +1,17 @@
-﻿// <copyright file="Manifest.cs" company="Industrial Technology Group">
+﻿// <copyright file="IManifest.cs" company="Industrial Technology Group">
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using PipeTech.Downloader.Core.Contracts;
 
-namespace PipeTech.Downloader.Core.Models;
+namespace PipeTech.Downloader.Core.Contracts;
 
 /// <summary>
-/// Manifest class.
+/// Manifest interface.
 /// </summary>
-public class Manifest : IManifest
+public interface IManifest
 {
-    /// <summary>
-    /// Gets or sets the Id of the manifest.
-    /// </summary>
-    public Guid Id
-    {
-        get; set;
-    }
-
-    /// <summary>
-    /// Gets or sets the inspections in the manifest.
-    /// </summary>
-    public JsonElement[]? Inspections
-    {
-        get; set;
-    }
-
     /// <summary>
     /// Gets or sets a value indicating whether to generate NASSCO exchange databases individually for each of the inspections.
     /// </summary>

@@ -21,7 +21,8 @@ public interface IExternalServices
     /// <param name="token">Cancellation token.</param>
     /// <returns>Manifest information.</returns>
     [Get("/pipetech/getpack?packId={packId}&packVersion={packVersion}&descending={descending}")]
-    public Task<ApiResponse<Stream>> GetPack(Guid packId,
+    public Task<ApiResponse<Stream>> GetPack(
+        Guid packId,
         string? packVersion = null,
         bool? descending = null,
         CancellationToken token = default);

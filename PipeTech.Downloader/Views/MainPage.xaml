@@ -4,29 +4,47 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:models="using:PipeTech.Downloader.Models"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:helpers="using:PipeTech.Downloader.Helpers"
+    xmlns:behaviors="using:PipeTech.Downloader.Behaviors"
     mc:Ignorable="d">
     <Page.Resources>
 
-        <DataTemplate x:Key="FolderTemplate" x:DataType="models:DownloadInspection">
-            <TreeViewItem AutomationProperties.Name="{x:Bind Name}"
-            ItemsSource="{x:Bind Files}" IsExpanded="True">
+        <helpers:StringUriToFilenameConverter x:Key="StringUriToFilenameConverter"/>
+        <helpers:EnumToStringConverter x:Key="EnumToStringConverter" />
+
+        <DataTemplate x:Key="FolderTemplate" x:DataType="models:DownloadInspectionHandler">
+            <TreeViewItem AutomationProperties.Name="{x:Bind Inspection.Name}"
+            ItemsSource="{x:Bind Inspection.Files}" IsExpanded="True">
                 <StackPanel Orientation="Horizontal">
                     <Image Width="10" Source="../Assets/folder.png"/>
                     <TextBlock Margin="0,0,10,0"/>
-                    <TextBlock Text="{x:Bind Name, Mode=OneWay}" />
+                    <TextBlock Text="{x:Bind Inspection.Name, Mode=OneWay}" />
+
+                    <Button VerticalAlignment="Center"
+                            Margin="15,0,0,0"
+                            FontSize="{StaticResource XSmallFontSize}"
+                            Command="{x:Bind ReloadCommand}">
+                        <Interactivity:Interaction.Behaviors>
+                            <behaviors:VisibilityButtonBehavior State="{x:Bind Inspection.State, Mode=OneWay}" />
+                        </Interactivity:Interaction.Behaviors>
+                        <Button.Content>
+                            <TextBlock Text="{x:Bind Inspection.State, Mode=OneWay, Converter={StaticResource EnumToStringConverter}}"/>
+                        </Button.Content>
+                    </Button>
+
                 </StackPanel>
             </TreeViewItem>
         </DataTemplate>
 
-        <DataTemplate x:Key="FileTemplate" x:DataType="x:String">
-            <TreeViewItem AutomationProperties.Name="{x:Bind}">
+        <DataTemplate x:Key="FileTemplate" x:DataType="models:File">
+            <TreeViewItem AutomationProperties.Name="{x:Bind Name}">
                 <StackPanel Orientation="Horizontal">
                     <Image Width="10" Source="../Assets/file.png"/>
                     <TextBlock Margin="0,0,10,0"/>
-                    <TextBlock Text="{x:Bind}"/>
+                    <TextBlock Text="{x:Bind Name, Converter={StaticResource StringUriToFilenameConverter}}"/>
                 </StackPanel>
             </TreeViewItem>
         </DataTemplate>

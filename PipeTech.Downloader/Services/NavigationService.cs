@@ -86,7 +86,7 @@ public class NavigationService : INavigationService
     {
         var pageType = this.pageService.GetPageType(pageKey);
 
-        if (this.frame != null && (this.frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(lastParameterUsed))))
+        if (this.frame != null && (this.frame.Content?.GetType() != pageType || (parameter != null && !parameter.Equals(this.lastParameterUsed))))
         {
             this.frame.Tag = clearNavigation;
             var vmBeforeNavigation = this.frame.GetPageViewModel();

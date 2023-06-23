@@ -31,7 +31,7 @@ public class DownloadTemplateSelector : DataTemplateSelector
     /// <inheritdoc/>
     protected override DataTemplate SelectTemplateCore(object item)
     {
-        if (item is DownloadInspection di)
+        if (item is DownloadInspectionHandler)
         {
             return this.FolderTemplate ?? base.SelectTemplateCore(item);
         }
