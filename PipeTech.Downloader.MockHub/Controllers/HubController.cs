@@ -20,9 +20,44 @@ public class HubController : Controller
     /// <param name="id">ID of the manifest to retrieve.</param>
     /// <returns>JSON of manifest information.</returns>
     [HttpGet("manifesturi/{id}")]
-    public ActionResult<Manifest> GetManifestUri(Guid id)
+    public IActionResult GetManifestUri(Guid id)
     {
-        return this.Ok(new Uri($"https://api.pipetechproject.com/manifests/{id}.json").ToString());
+        return this.Ok(new Uri($"http://localhost:5242/manifestfile").ToString());
+        ////
+        //// https://pipetech-download-manifests.s3.us-east-2.amazonaws.com/649a0cf931633f78dbec1f26.json
+        ////
+        ////return this.Ok(new Uri($"https://api.pipetechproject.com/manifests/{id}.json").ToString());
+    }
+
+    /// <summary>
+    /// Get the manifest uri.
+    /// </summary>
+    /// <param name="id">ID of the manifest to retrieve.</param>
+    /// <returns>JSON of manifest information.</returns>
+    [HttpGet("manifestfile")]
+    [HttpHead("manifestfile")]
+    public IActionResult GetManifestFile()
+    {
+        ////try
+        ////{
+        ////    if (this.Request.Method.Equals("HEAD"))
+        ////    {
+        ////        this.Response.ContentLength = new FileInfo("cool.json").Length;
+        ////        return this.Ok();
+        ////    }
+        ////    else
+        ////    {
+        ////        return this.PhysicalFile(Path.GetFullPath("cool.json"), "application/json");
+        ////    }
+        ////}
+        ////catch (Exception)
+        ////{
+        ////    throw;
+        ////}
+
+        throw new Exception();
+
+        ////return this.Ok(new Uri($"https://api.pipetechproject.com/manifests/{id}.json").ToString());
     }
 
     /// <summary>
@@ -8064,6 +8099,10 @@ public class HubController : Controller
 
         var ele = JsonSerializer.Deserialize<JsonElement>(inspectionJSON);
 
+        ////return this.Ok(
+        ////    JsonSerializer.Deserialize<JsonElement>(
+        ////        System.IO.File.ReadAllText("cool.json")));
+
         return this.Ok(new Manifest()
         {
             Id = id,
@@ -8075,7 +8114,11 @@ public class HubController : Controller
             DeliverableName = "Spring 2023",
             IndividualNASSCOExchangeGenerate = true,
             CombinedNASSCOExchangeGenerate = true,
-            CombinedReportIds = new[] { new Guid("74168c6c-b5f3-4a66-ba87-ec30a86c8fed") },
+            CombinedReportIds = new[] {
+                new Guid("74168c6c-b5f3-4a66-ba87-ec30a86c8fed"),
+                new Guid("72F03502-C8C6-485B-BE64-30CD1F339796"),
+                new Guid("a3fdbee0-9b49-4346-b5c7-202221ad8e89"),
+            },
             IndividualReportIds = new[] { new Guid("74168c6c-b5f3-4a66-ba87-ec30a86c8fed") },
             Inspections = new JsonElement[] { ele },
         });

@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 
 namespace PipeTech.Downloader.Models;
 
@@ -21,6 +20,24 @@ public partial class DownloadInspection : BindableRecipient, IDisposable
     /// </summary>
     [ObservableProperty]
     private States state;
+
+    /// <summary>
+    /// Gets or sets completed path to the data.
+    /// </summary>
+    [ObservableProperty]
+    private string? dataCompletePath;
+
+    /// <summary>
+    /// Gets or sets the completed path of the report in the inspection.
+    /// </summary>
+    [ObservableProperty]
+    private string? reportCompletePath;
+
+    /// <summary>
+    /// Gets or sets the completed path of the exchange database in the inspection.
+    /// </summary>
+    [ObservableProperty]
+    private string? exchangeDBCompletePath;
 
     /// <summary>
     /// Gets or sets the name for the inspection.
@@ -148,6 +165,23 @@ public partial class DownloadInspection : BindableRecipient, IDisposable
             }
 
             this.Files.CollectionChanged -= this.Files_CollectionChanged;
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+    {
+        base.OnPropertyChanged(e);
+
+        switch (e.PropertyName)
+        {
+            case nameof(this.ReportCompletePath):
+            case nameof(this.ExchangeDBCompletePath):
+            case nameof(this.DataCompletePath):
+                this.RaisePropertyChanged(nameof(this.Progress));
+                break;
+            default:
+                break;
         }
     }
 

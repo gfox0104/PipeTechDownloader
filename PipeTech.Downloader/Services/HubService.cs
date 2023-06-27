@@ -135,7 +135,14 @@ public class HubService : IHubService, IDisposable
             using var sr = new StreamReader(ms);
             var json = sr.ReadToEnd();
 
-            return JsonSerializer.Deserialize<Manifest?>(json);
+            return JsonSerializer.Deserialize<Manifest?>(
+                json,
+                new JsonSerializerOptions()
+                {
+                    AllowTrailingCommas = true,
+                    PropertyNameCaseInsensitive = true,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                });
         }
         catch (Exception ex)
         {
@@ -210,7 +217,7 @@ public class HubService : IHubService, IDisposable
                 {
                     AllowTrailingCommas = true,
                     PropertyNameCaseInsensitive = true,
-                    PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 })));
     }
 }

@@ -52,7 +52,61 @@ public partial class Project : BindableRecipient, IManifest
     /// Gets the progress.
     /// </summary>
     [JsonIgnore]
-    public decimal Progress => this.Inspections?.Sum(h => h.Inspection?.Progress ?? 0) ?? 0 / this.Inspections?.Count ?? 0;
+    public decimal Progress
+    {
+        get
+        {
+            decimal count = this.Inspections?
+                .Where(h => h.Inspection?.State == DownloadInspection.States.Complete &&
+                 !string.IsNullOrEmpty(h.Inspection?.DataCompletePath) &&
+                System.IO.File.Exists(h.Inspection.DataCompletePath)).Count() ?? 0;
+            decimal total = this.Inspections?.Count ?? 0;
+
+            if (this.CombinedNASSCOExchangeGenerate == true &&
+            this.GetExchangeDBPath() is string dbPath &&
+            !string.IsNullOrEmpty(dbPath))
+            {
+                if (System.IO.File.Exists(dbPath))
+                {
+                    count++;
+                }
+
+                total++;
+            }
+
+            if (this.CombinedReportIds?.Any() == true &&
+            this.GetCombinedReportPath() is string reportPath &&
+            !string.IsNullOrEmpty(reportPath))
+            {
+                if (System.IO.File.Exists(reportPath))
+                {
+                    count++;
+                }
+
+                total++;
+            }
+
+            if (this.IndividualNASSCOExchangeGenerate == true)
+            {
+                count += this.Inspections?
+                    .Where(i => !string.IsNullOrEmpty(i.Inspection?.ExchangeDBCompletePath) &&
+                    System.IO.File.Exists(i.Inspection.ExchangeDBCompletePath))
+                    .Count() ?? 0;
+                total += this.Inspections?.Count() ?? 0;
+            }
+
+            if (this.IndividualReportIds?.Any() == true)
+            {
+                count += this.Inspections?
+                    .Where(i => !string.IsNullOrEmpty(i.Inspection?.ReportCompletePath) &&
+                    System.IO.File.Exists(i.Inspection.ReportCompletePath))
+                    .Count() ?? 0;
+                total += this.Inspections?.Count() ?? 0;
+            }
+
+            return count / (total == 0 ? 1 : total);
+        }
+    }
 
     /// <summary>
     /// Gets the progress.
@@ -89,6 +143,16 @@ public partial class Project : BindableRecipient, IManifest
     {
         get; set;
     }
+
+    /// <summary>
+    /// Gets the states.
+    /// </summary>
+    public DownloadInspection.States State =>
+        this.Inspections?.Any(h => h.Inspection?.State == DownloadInspection.States.Errored) == true ?
+        DownloadInspection.States.Errored :
+        (this.Inspections?.All(h => h.Inspection?.State == DownloadInspection.States.Complete) == true ?
+        DownloadInspection.States.Complete :
+        DownloadInspection.States.Processing);
 
     /// <inheritdoc/>
     [JsonExtensionData]
@@ -218,6 +282,36 @@ public partial class Project : BindableRecipient, IManifest
         });
     }
 
+    /// <summary>
+    /// Get the exchange database path.
+    /// </summary>
+    /// <returns>Exchange database path.</returns>
+    public string GetExchangeDBPath()
+    {
+        return Path.Combine(
+            this.DownloadPath ?? string.Empty,
+            ((this.DeliverableName ?? this.Name) ?? "NASSCO Exchange").SanitizeFilename() + ".mdb");
+    }
+
+    /// <summary>
+    /// Get the combine report path.
+    /// </summary>
+    /// <returns>Combined report path.</returns>
+    public string GetCombinedReportPath()
+    {
+        return Path.Combine(
+            this.DownloadPath ?? string.Empty,
+            $"{(this.DeliverableName ?? this.Name)?.SanitizeFilename() ?? "Project report"}.pdf");
+    }
+
+    /// <summary>
+    /// Inform that the progress somehow changed.
+    /// </summary>
+    internal void RaiseProgressChanged()
+    {
+        this.RaisePropertyChanged(nameof(this.Progress));
+    }
+
     /// <inheritdoc/>
     protected override void OnPropertyChanging(PropertyChangingEventArgs e)
     {
@@ -228,6 +322,21 @@ public partial class Project : BindableRecipient, IManifest
                 if (this.Inspections is not null)
                 {
                     this.Inspections.CollectionChanged -= this.Inspections_CollectionChanged;
+
+                    foreach (var oldItem in this.Inspections)
+                    {
+                        if (oldItem is DownloadInspectionHandler dlh)
+                        {
+                            dlh.PropertyChanging -= this.DownloadInspectionHandler_PropertyChanging;
+                            dlh.PropertyChanged -= this.DownloadInspectionHandler_PropertyChanged;
+
+                            if (dlh.Inspection is not null)
+                            {
+                                dlh.Inspection.PropertyChanging -= this.Inspection_PropertyChanging;
+                                dlh.Inspection.PropertyChanged -= this.Inspection_PropertyChanged;
+                            }
+                        }
+                    }
                 }
 
                 break;
@@ -246,6 +355,21 @@ public partial class Project : BindableRecipient, IManifest
                 if (this.Inspections is not null)
                 {
                     this.Inspections.CollectionChanged += this.Inspections_CollectionChanged;
+
+                    foreach (var newItem in this.Inspections)
+                    {
+                        if (newItem is DownloadInspectionHandler dlh)
+                        {
+                            dlh.PropertyChanging += this.DownloadInspectionHandler_PropertyChanging;
+                            dlh.PropertyChanged += this.DownloadInspectionHandler_PropertyChanged;
+
+                            if (dlh.Inspection is not null)
+                            {
+                                dlh.Inspection.PropertyChanging += this.Inspection_PropertyChanging;
+                                dlh.Inspection.PropertyChanged += this.Inspection_PropertyChanged;
+                            }
+                        }
+                    }
                 }
 
                 break;
@@ -315,6 +439,9 @@ public partial class Project : BindableRecipient, IManifest
                 break;
             case nameof(DownloadInspection.TotalSize):
                 this.RaisePropertyChanged(nameof(this.TotalSize));
+                break;
+            case nameof(DownloadInspection.State):
+                this.RaisePropertyChanged(nameof(this.State));
                 break;
             default:
                 break;

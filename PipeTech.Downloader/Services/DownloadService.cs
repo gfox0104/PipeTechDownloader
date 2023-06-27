@@ -159,8 +159,7 @@ public class DownloadService : ObservableObject, IDownloadService
                                     {
                                         this.Source.Add(project);
                                     }
-                                },
-                                DispatcherQueuePriority.Low);
+                                });
                         }
                         catch (Exception ex)
                         {
@@ -196,6 +195,8 @@ public class DownloadService : ObservableObject, IDownloadService
         var dq = App.MainWindow.DispatcherQueue;
 
         var project = default(Project);
+        var compositeExchangeDBPath = default(string);
+        var reportPath = default(string);
         try
         {
             if (token.IsCancellationRequested)
@@ -213,6 +214,18 @@ public class DownloadService : ObservableObject, IDownloadService
             var inspectionErrors = new ConcurrentBag<Exception>();
             var firstPack = default(IPack);
             var inspectionType = default(InspectionTable);
+            compositeExchangeDBPath = project.GetExchangeDBPath();
+            reportPath = project.GetCombinedReportPath();
+
+            if (project.CombinedNASSCOExchangeGenerate == true && System.IO.File.Exists(compositeExchangeDBPath))
+            {
+                System.IO.File.Delete(compositeExchangeDBPath);
+                await dq.EnqueueAsync(() =>
+                {
+                    project?.RaiseProgressChanged();
+                });
+            }
+
             if (project.Inspections?.Any() == true)
             {
                 await Parallel.ForEachAsync(
@@ -538,9 +551,10 @@ public class DownloadService : ObservableObject, IDownloadService
                             }
 
                             // Continue with writing the data, base.pack, making reports, and exchange dbs
-                            var packId = Guid.Empty;
-                            using (var dsTemp = this.jsonDeserializer.Deserialize(inspection.Json?.ToString() ?? string.Empty))
+                            var packId = handler.PackId ?? Guid.Empty;
+                            if (packId == Guid.Empty)
                             {
+                                using var dsTemp = this.jsonDeserializer.Deserialize(inspection.Json?.ToString() ?? string.Empty);
                                 if (dsTemp is null)
                                 {
                                     await dq.EnqueueAsync(() =>
@@ -624,7 +638,9 @@ public class DownloadService : ObservableObject, IDownloadService
                                                 UriKind.Relative)));
                                 }
 
+                                // This writes the base.pack and .ptdx
                                 inspectionObject.Save(inspectionObject.FileName);
+                                inspection.DataCompletePath = inspectionObject.FileName;
                             });
 
                             var reportPath = Path.Combine(
@@ -702,6 +718,11 @@ public class DownloadService : ObservableObject, IDownloadService
                                     {
                                         dis.Dispose();
                                     }
+
+                                    await dq.EnqueueAsync(() =>
+                                    {
+                                        inspection.ReportCompletePath = reportPath;
+                                    });
                                 }
                             }
                             finally
@@ -716,7 +737,8 @@ public class DownloadService : ObservableObject, IDownloadService
 
                             try
                             {
-                                if (project.IndividualNASSCOExchangeGenerate == true)
+                                if (project.IndividualNASSCOExchangeGenerate == true ||
+                                project.CombinedNASSCOExchangeGenerate == true)
                                 {
                                     // Validate
                                     var validate = default(IValidation);
@@ -894,6 +916,7 @@ public class DownloadService : ObservableObject, IDownloadService
                                         .Trim('_'),
                                         out var i);
 
+                                    var exchangeId = Utility.ExchangeDBIDs.Invalid;
                                     switch (Utility.ModelFileID(ds))
                                     {
                                         case Utility.ModelDBIDs.v7:
@@ -901,20 +924,48 @@ public class DownloadService : ObservableObject, IDownloadService
                                             switch (i)
                                             {
                                                 case 1:
+                                                    exchangeId = Utility.ExchangeDBIDs.MACPv7;
                                                     var emptyMACPv7ExchangePath = Path.GetFullPath(
                                                         Path.Combine(
                                                             AppDomain.CurrentDomain.BaseDirectory,
                                                             $".\\NASSCO\\MACPV706.src"));
-                                                    System.IO.File.Copy(emptyMACPv7ExchangePath, exportPath, true);
+                                                    if (project.IndividualNASSCOExchangeGenerate == true)
+                                                    {
+                                                        System.IO.File.Copy(emptyMACPv7ExchangePath, exportPath, true);
+                                                    }
+
+                                                    if (project.CombinedNASSCOExchangeGenerate == true &&
+                                                    !System.IO.File.Exists(compositeExchangeDBPath))
+                                                    {
+                                                        System.IO.File.Copy(
+                                                            emptyMACPv7ExchangePath,
+                                                            compositeExchangeDBPath,
+                                                            true);
+                                                    }
+
                                                     exchange = new ExO70MHExch();
                                                     break;
                                                 case 2:
                                                 case 3:
+                                                    exchangeId = Utility.ExchangeDBIDs.PLACPv7;
                                                     var emptyPLACPv7ExchangePath = Path.GetFullPath(
                                                         Path.Combine(
                                                             AppDomain.CurrentDomain.BaseDirectory,
                                                             $".\\NASSCO\\PACP_LACPv702.src"));
-                                                    System.IO.File.Copy(emptyPLACPv7ExchangePath, exportPath, true);
+                                                    if (project.IndividualNASSCOExchangeGenerate == true)
+                                                    {
+                                                        System.IO.File.Copy(emptyPLACPv7ExchangePath, exportPath, true);
+                                                    }
+
+                                                    if (project.CombinedNASSCOExchangeGenerate == true &&
+                                                    !System.IO.File.Exists(compositeExchangeDBPath))
+                                                    {
+                                                        System.IO.File.Copy(
+                                                            emptyPLACPv7ExchangePath,
+                                                            compositeExchangeDBPath,
+                                                            true);
+                                                    }
+
                                                     exchange = new ExO70PipeExch();
                                                     break;
                                                 default:
@@ -950,20 +1001,48 @@ public class DownloadService : ObservableObject, IDownloadService
                                             switch (i)
                                             {
                                                 case 1:
+                                                    exchangeId = Utility.ExchangeDBIDs.MACPv6;
                                                     var emptyMACPv6ExchangePath = Path.GetFullPath(
                                                         Path.Combine(
                                                             AppDomain.CurrentDomain.BaseDirectory,
                                                             $".\\NASSCO\\MACPV605.src"));
-                                                    System.IO.File.Copy(emptyMACPv6ExchangePath, exportPath, true);
+                                                    if (project.IndividualNASSCOExchangeGenerate == true)
+                                                    {
+                                                        System.IO.File.Copy(emptyMACPv6ExchangePath, exportPath, true);
+                                                    }
+
+                                                    if (project.CombinedNASSCOExchangeGenerate == true &&
+                                                    !System.IO.File.Exists(compositeExchangeDBPath))
+                                                    {
+                                                        System.IO.File.Copy(
+                                                            emptyMACPv6ExchangePath,
+                                                            compositeExchangeDBPath,
+                                                            true);
+                                                    }
+
                                                     exchange = new ExO60MHExch();
                                                     break;
                                                 case 2:
                                                 case 3:
+                                                    exchangeId = Utility.ExchangeDBIDs.PLACPv6;
                                                     var emptyPLACPv6ExchangePath = Path.GetFullPath(
                                                         Path.Combine(
                                                             AppDomain.CurrentDomain.BaseDirectory,
                                                             $".\\NASSCO\\PACP_LACPv602.src"));
-                                                    System.IO.File.Copy(emptyPLACPv6ExchangePath, exportPath, true);
+                                                    if (project.IndividualNASSCOExchangeGenerate == true)
+                                                    {
+                                                        System.IO.File.Copy(emptyPLACPv6ExchangePath, exportPath, true);
+                                                    }
+
+                                                    if (project.CombinedNASSCOExchangeGenerate == true &&
+                                                    !System.IO.File.Exists(compositeExchangeDBPath))
+                                                    {
+                                                        System.IO.File.Copy(
+                                                            emptyPLACPv6ExchangePath,
+                                                            compositeExchangeDBPath,
+                                                            true);
+                                                    }
+
                                                     exchange = new ExO60PipeExch();
                                                     break;
                                                 default:
@@ -1017,7 +1096,16 @@ public class DownloadService : ObservableObject, IDownloadService
                                     try
                                     {
                                         CultureInfo.CurrentUICulture = culture;
-                                        success = exchange.Exchange();
+                                        if (project.IndividualNASSCOExchangeGenerate == true)
+                                        {
+                                            success = exchange.Exchange();
+                                        }
+
+                                        if (success && project.CombinedNASSCOExchangeGenerate == true)
+                                        {
+                                            exchange.DestinationPath = compositeExchangeDBPath;
+                                            success = exchange.Exchange();
+                                        }
                                     }
                                     catch (Exception ex)
                                     {
@@ -1045,6 +1133,28 @@ public class DownloadService : ObservableObject, IDownloadService
                                     if (!success)
                                     {
                                         throw new DataException($"Error exchanging data in inspection [{inspectionPath}] in project [{projectFilePath}].");
+                                    }
+
+                                    if (exchangeId == Utility.ExchangeDBIDs.PLACPv7 ||
+                                    exchangeId == Utility.ExchangeDBIDs.MACPv7)
+                                    {
+                                        if (project.IndividualNASSCOExchangeGenerate == true)
+                                        {
+                                            Utility.GradeExchangeDB(exportPath, exchange.IsImperial);
+                                        }
+
+                                        if (project.CombinedNASSCOExchangeGenerate == true)
+                                        {
+                                            Utility.GradeExchangeDB(compositeExchangeDBPath, exchange.IsImperial);
+                                        }
+                                    }
+
+                                    if (project.IndividualNASSCOExchangeGenerate == true)
+                                    {
+                                        await dq.EnqueueAsync(() =>
+                                        {
+                                            inspection.ExchangeDBCompletePath = exportPath;
+                                        });
                                     }
                                 }
                             }
@@ -1092,6 +1202,11 @@ public class DownloadService : ObservableObject, IDownloadService
                         }
                     });
             }
+
+            await dq.EnqueueAsync(() =>
+            {
+                project?.RaiseProgressChanged();
+            });
 
             if (token.IsCancellationRequested)
             {
@@ -1143,7 +1258,7 @@ public class DownloadService : ObservableObject, IDownloadService
 
                     var inspectionPathsCount = project.Inspections?.Count() ?? 0;
 
-                    async Task<InspectionBase?> GetInspection(DownloadInspection inspection)
+                    async Task<InspectionBase?> GetInspection(DownloadInspection? inspection)
                     {
                         if (inspection is null)
                         {
@@ -1213,7 +1328,7 @@ public class DownloadService : ObservableObject, IDownloadService
                                     return (null, count, inspectionPathsCount, true);
                                 }
 
-                                var inspection = await GetInspection();
+                                var inspection = await GetInspection(project.Inspections!.ElementAt(count)?.Inspection);
                                 return (inspection, count, inspectionPathsCount, false);
                             }
                             catch
@@ -1244,63 +1359,63 @@ public class DownloadService : ObservableObject, IDownloadService
                         document.AddReport(report);
                     }
 
-                    foreach (var reportId in project.CombinedReportIds)
+                    if (project.Inspections is not null)
                     {
-                        var report = this.reportRegistry.GetReport<IInspectionReportDefinition>(reportId);
-                        if (report is null)
+                        foreach (var inspectionHandler in project.Inspections)
                         {
-                            continue;
-                        }
-
-                        ////report.Inspection = inspectionObject;
-
-                        if (report is ILetterheadAware letterheadAware)
-                        {
-                            var inspectionLetterhead = inspection as ILetterheadAware;
-                            var templatePack = this.templateRegistry?.GetTemplate(
-                                inspectionObject!.SourcePack?.Metadata?.ID ?? Guid.Empty);
-
-                            var letterhead = inspectionLetterhead?.Letterhead ??
-                                inspectionObject!
-                                .SourcePack?.GetExternalReportLetterheadDefinition() ??
-                                templatePack?.GetExternalReportLetterheadDefinition() ??
-                                inspectionObject.SourcePack?
-                                    .GetReportLetterheadDefinition(inspectionObject.InspectionTableName) ??
-                                    templatePack?
-                                    .GetReportLetterheadDefinition(inspectionObject.InspectionTableName);
-
-                            if (letterhead is not null)
+                            foreach (var report in project.CombinedReportIds
+                                .Select(rId => this.reportRegistry.GetReport<IInspectionReportDefinition>(rId))
+                                .Where(r => r is not null))
                             {
-                                letterheadAware.Letterhead = letterhead;
+                                report.DisposeInspectionWhenComplete = true;
+                                report.GetInspectionAsync = async () =>
+                                {
+                                    try
+                                    {
+                                        return await GetInspection(inspectionHandler.Inspection);
+                                    }
+                                    catch (Exception)
+                                    {
+                                        return null;
+                                    }
+                                };
+
+                                if (report is ILetterheadAware letterheadAware)
+                                {
+                                    letterheadAware.Letterhead = firstPack?.GetReportLetterheadDefinition(inspectionType);
+                                }
+
+                                if (report is ICanRenderSalesWatermark sales)
+                                {
+                                    sales.ShouldRenderSalesWatermark = false;
+                                }
+
+                                if (report is ICanRenderSupportAndTestingWatermark support)
+                                {
+                                    support.ShouldRenderSupportAndTestingWatermark = false;
+                                }
+
+                                if (report is ICanRenderEnumeratedWatermark watermark)
+                                {
+                                    watermark.Watermark = ICanRenderEnumeratedWatermark.Watermarks.None;
+                                }
+
+                                document.AddReport(report);
                             }
                         }
-
-                        if (report is ICanRenderSalesWatermark sales)
-                        {
-                            sales.ShouldRenderSalesWatermark = false;
-                        }
-
-                        if (report is ICanRenderSupportAndTestingWatermark support)
-                        {
-                            support.ShouldRenderSupportAndTestingWatermark = false;
-                        }
-
-                        if (report is ICanRenderEnumeratedWatermark watermark)
-                        {
-                            watermark.Watermark = ICanRenderEnumeratedWatermark.Watermarks.None;
-                        }
-
-                        document.AddReport(report);
                     }
 
 #if SLOWDOWN
                     await Task.Delay(10000, token);
 #endif
 
-                    using (var fs = new FileStream(reportPath, FileMode.Create))
+                    await dq.EnqueueAsync(async () =>
                     {
-                        await document.Generate(fs);
-                    }
+                        using (var fs = new FileStream(reportPath, FileMode.Create))
+                        {
+                            await document.GeneratePackage(fs);
+                        }
+                    });
 
                     if (document is IDisposable dis)
                     {
@@ -1316,10 +1431,29 @@ public class DownloadService : ObservableObject, IDownloadService
                 }
 
                 GC.Collect();
+
+                await dq.EnqueueAsync(() =>
+                {
+                    project?.RaiseProgressChanged();
+                });
             }
 
-            if (project.CombinedNASSCOExchangeGenerate == true)
+            if (project.Inspections is not null)
             {
+                foreach (var i in project.Inspections.Select(i => i.Inspection).Where(i => i is not null))
+                {
+                    switch (i!.State)
+                    {
+                        case DownloadInspection.States.Queued:
+                        case DownloadInspection.States.Processing:
+                        case DownloadInspection.States.Staged:
+                            await dq.EnqueueAsync(() =>
+                            {
+                                i.State = DownloadInspection.States.Complete;
+                            });
+                            break;
+                    }
+                }
             }
         }
         catch (TaskCanceledException)
@@ -1327,6 +1461,30 @@ public class DownloadService : ObservableObject, IDownloadService
             this.logger?.LogInformation($"Downloading project [{projectFilePath}] was cancelled");
             if (project != default)
             {
+                try
+                {
+                    if (!string.IsNullOrEmpty(reportPath) &&
+                        System.IO.File.Exists(reportPath))
+                    {
+                        System.IO.File.Delete(reportPath);
+                    }
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
+                    if (!string.IsNullOrEmpty(compositeExchangeDBPath) &&
+                        System.IO.File.Exists(compositeExchangeDBPath))
+                    {
+                        System.IO.File.Delete(compositeExchangeDBPath);
+                    }
+                }
+                catch (Exception)
+                {
+                }
+
                 try
                 {
                     if (project.Inspections is not null)
@@ -1361,6 +1519,30 @@ public class DownloadService : ObservableObject, IDownloadService
             {
                 try
                 {
+                    if (!string.IsNullOrEmpty(reportPath) &&
+                        System.IO.File.Exists(reportPath))
+                    {
+                        System.IO.File.Delete(reportPath);
+                    }
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
+                    if (!string.IsNullOrEmpty(compositeExchangeDBPath) &&
+                        System.IO.File.Exists(compositeExchangeDBPath))
+                    {
+                        System.IO.File.Delete(compositeExchangeDBPath);
+                    }
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
                     if (project.Inspections is not null)
                     {
                         foreach (var inspection in project.Inspections)
@@ -1391,163 +1573,6 @@ public class DownloadService : ObservableObject, IDownloadService
             }
         }
     }
-
-    /////// <inheritdoc/>
-    ////public async Task DownloadProject(string projectFilePath, CancellationToken token)
-    ////{
-    ////    await Task.Yield();
-    ////    var project = default(Project);
-    ////    try
-    ////    {
-    ////        if (token.IsCancellationRequested)
-    ////        {
-    ////            this.logger?.LogInformation($"Downloading project [{projectFilePath}] was cancelled");
-    ////            return;
-    ////        }
-
-    ////        project = this.Source.FirstOrDefault(p => p.FilePath?.ToUpperInvariant() == projectFilePath.ToUpperInvariant());
-    ////        if (project is null)
-    ////        {
-    ////            this.logger?.LogWarning($"Project [{projectFilePath}] no longer exists.");
-    ////            return;
-    ////        }
-
-    ////        if (token.IsCancellationRequested)
-    ////        {
-    ////            this.logger?.LogInformation($"Downloading project [{projectFilePath}] was cancelled");
-    ////            return;
-    ////        }
-
-    ////        // Check the download path if it exists
-    ////        if (string.IsNullOrEmpty(project.DownloadPath))
-    ////        {
-    ////            this.logger?.LogWarning($"Project [{projectFilePath}] download path is not defined.");
-    ////            return;
-    ////        }
-
-    ////        // Check the download path if it exists
-    ////        if (!Directory.Exists(project.DownloadPath))
-    ////        {
-    ////            this.logger?.LogWarning($"Project [{projectFilePath}] download path [{project.DownloadPath}] does not exist. Re-scheduling");
-    ////            this.jobClient.Schedule<IDownloadService>(
-    ////                s => s.DownloadProject(projectFilePath, CancellationToken.None),
-    ////                TimeSpan.FromMinutes(this.downloadSettings.RescheduleProjectDownloadInMinutes));
-    ////            return;
-    ////        }
-
-    ////        if (project.Inspections is not null)
-    ////        {
-    ////            var monitor = this.jobClient.Storage.GetMonitoringApi();
-
-    ////            // Check for existing jobs for each inspection
-    ////            foreach (var inspection in project.Inspections)
-    ////            {
-    ////                if (token.IsCancellationRequested)
-    ////                {
-    ////                    this.logger?.LogInformation($"Downloading project [{projectFilePath}] was cancelled");
-    ////                    return;
-    ////                }
-
-    ////                var path = inspection.Inspection?.DownloadPath;
-    ////                if (string.IsNullOrEmpty(path))
-    ////                {
-    ////                    this.logger?.LogWarning($"An Inspection in project [{projectFilePath}] is empty.");
-    ////                    if (inspection.Inspection is not null)
-    ////                    {
-    ////                        inspection.Inspection.State = Models.DownloadInspection.States.Errored;
-    ////                    }
-
-    ////                    continue;
-    ////                }
-
-    ////                // Schedule the inspection download
-    ////                var job = default(Job);
-    ////                try
-    ////                {
-    ////                    // ASSUMPTION: We are going to assume that the number of
-    ////                    // jobs will NEVER exceed an integer. (2,147,483,647)
-    ////                    var jobs = monitor.EnqueuedJobs(
-    ////                        "default",
-    ////                        0,
-    ////                        (int)Math.Min(int.MaxValue, monitor.EnqueuedCount("default")))
-    ////                        .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-    ////                        j.Value.Job.Method.Name == nameof(this.DownloadInspection) &&
-    ////                        j.Value.Job.Args.Count >= 2 &&
-    ////                        j.Value.Job.Args[0] is string projectPath &&
-    ////                        j.Value.Job.Args[1] is string inspectionPath &&
-    ////                        projectPath.ToUpperInvariant() == project.FilePath!.ToUpperInvariant() &&
-    ////                        inspectionPath.ToUpperInvariant() == path.ToUpperInvariant());
-    ////                    if (jobs.Any())
-    ////                    {
-    ////                        job = jobs.FirstOrDefault().Value.Job;
-    ////                    }
-
-    ////                    if (job == default)
-    ////                    {
-    ////                        var processing = monitor.ProcessingJobs(
-    ////                            0,
-    ////                            (int)Math.Min(int.MaxValue, monitor.ProcessingCount()))
-    ////                            .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-    ////                            j.Value.Job.Method.Name == nameof(this.DownloadInspection) &&
-    ////                            j.Value.Job.Args.Count >= 2 &&
-    ////                            j.Value.Job.Args[0] is string projectPath &&
-    ////                            j.Value.Job.Args[1] is string inspectionPath &&
-    ////                            projectPath.ToUpperInvariant() == project.FilePath!.ToUpperInvariant() &&
-    ////                            inspectionPath.ToUpperInvariant() == path.ToUpperInvariant());
-    ////                        if (processing.Any())
-    ////                        {
-    ////                            job = processing.FirstOrDefault().Value.Job;
-    ////                        }
-    ////                    }
-
-    ////                    if (job == default)
-    ////                    {
-    ////                        var scheduled = monitor.ScheduledJobs(
-    ////                            0,
-    ////                            (int)Math.Min(int.MaxValue, monitor.ScheduledCount()))
-    ////                            .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-    ////                            j.Value.Job.Method.Name == nameof(this.DownloadInspection) &&
-    ////                            j.Value.Job.Args.Count >= 2 &&
-    ////                            j.Value.Job.Args[0] is string projectPath &&
-    ////                            j.Value.Job.Args[1] is string inspectionPath &&
-    ////                            projectPath.ToUpperInvariant() == project.FilePath!.ToUpperInvariant() &&
-    ////                            inspectionPath.ToUpperInvariant() == path.ToUpperInvariant());
-    ////                        if (scheduled.Any())
-    ////                        {
-    ////                            job = scheduled.FirstOrDefault().Value.Job;
-    ////                        }
-    ////                    }
-    ////                }
-    ////                catch (Exception)
-    ////                {
-    ////                }
-
-    ////                if (job == default)
-    ////                {
-    ////                    this.jobClient.Enqueue<IDownloadService>(
-    ////                        s => s.DownloadInspection(
-    ////                            projectFilePath,
-    ////                            path,
-    ////                            CancellationToken.None));
-    ////                }
-    ////            }
-    ////        }
-    ////    }
-    ////    catch (Exception ex)
-    ////    {
-    ////        this.logger?.LogError(ex, $"Error download project [{projectFilePath}]");
-    ////        if (project != default)
-    ////        {
-    ////            try
-    ////            {
-    ////            }
-    ////            catch (Exception ex2)
-    ////            {
-    ////                this.logger?.LogError(ex2, $"Error in error handler while downloading project [{projectFilePath}]");
-    ////            }
-    ////        }
-    ////    }
-    ////}
 
     private async Task<(long? Size, bool AcceptsRangeAsBytes, string? Etag)> GetUriInfo(Uri uri)
     {
@@ -1667,9 +1692,10 @@ public class DownloadService : ObservableObject, IDownloadService
 
         if (e.NewItems is not null)
         {
+            var localItems = e.NewItems.Cast<Project>().ToArray();
             Task.Run(async () =>
             {
-                foreach (var newItem in e.NewItems)
+                foreach (var newItem in localItems)
                 {
                     if (newItem is not Project project || string.IsNullOrEmpty(project.FilePath))
                     {
@@ -1737,37 +1763,91 @@ public class DownloadService : ObservableObject, IDownloadService
 
                         if (job is null)
                         {
-                            foreach (var inspection in project.Inspections)
+                            var createJob = false;
+
+                            // There is no pre-existing job, so check if we need one.
+                            if (project.CombinedNASSCOExchangeGenerate == true &&
+                            project.GetExchangeDBPath() is string dbPath &&
+                            !string.IsNullOrEmpty(dbPath) &&
+                            !System.IO.File.Exists(dbPath))
                             {
-                                var path = inspection.Inspection?.DownloadPath;
-                                if (string.IsNullOrEmpty(path))
-                                {
-                                    this.logger?.LogWarning($"An inspection in project [{project.FilePath}] is empty.");
-                                    if (inspection.Inspection is not null)
-                                    {
-                                        await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
-                                        {
-                                            inspection.Inspection.State = Models.DownloadInspection.States.Errored;
-                                        });
-                                    }
-
-                                    continue;
-                                }
-
-                                if (inspection.Inspection is not null)
-                                {
-                                    await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
-                                    {
-                                        inspection.Inspection.State = Models.DownloadInspection.States.Queued;
-                                    });
-                                }
+                                // Create the job
+                                createJob = true;
                             }
 
-                            await this.WriteProject(project);
-                            this.jobClient.Enqueue<IDownloadService>(
-                                s => s.DownloadProject(
-                                    project.FilePath!,
-                                    CancellationToken.None));
+                            if (!createJob && project.CombinedReportIds?.Any() == true &&
+                            project.GetCombinedReportPath() is string reportPath &&
+                            !string.IsNullOrEmpty(reportPath) &&
+                            !System.IO.File.Exists(reportPath))
+                            {
+                                // Create the job
+                                createJob = true;
+                            }
+
+                            if (!createJob && project.Inspections is not null &&
+                            project.Inspections
+                            .Any(i => i.Inspection?.State != DownloadInspection.States.Complete ||
+                                string.IsNullOrEmpty(i.Inspection?.DataCompletePath) ||
+                                !System.IO.File.Exists(i.Inspection.DataCompletePath)))
+                            {
+                                createJob = true;
+                            }
+
+                            if (!createJob && project.Inspections is not null &&
+                            project.IndividualReportIds?.Any() == true &&
+                            project.Inspections
+                            .Any(i => string.IsNullOrEmpty(i.Inspection?.ReportCompletePath) ||
+                                !System.IO.File.Exists(i.Inspection.ReportCompletePath)))
+                            {
+                                createJob = true;
+                            }
+
+                            if (!createJob && project.Inspections is not null &&
+                            project.IndividualNASSCOExchangeGenerate == true &&
+                            project.Inspections
+                            .Any(i => string.IsNullOrEmpty(i.Inspection?.ExchangeDBCompletePath) ||
+                                !System.IO.File.Exists(i.Inspection.ExchangeDBCompletePath)))
+                            {
+                                createJob = true;
+                            }
+
+                            if (createJob)
+                            {
+                                if (project.Inspections is not null)
+                                {
+                                    foreach (var inspection in project.Inspections)
+                                    {
+                                        var path = inspection.Inspection?.DownloadPath;
+                                        if (string.IsNullOrEmpty(path))
+                                        {
+                                            this.logger?.LogWarning($"An inspection in project [{project.FilePath}] is empty.");
+                                            if (inspection.Inspection is not null)
+                                            {
+                                                await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
+                                                {
+                                                    inspection.Inspection.State = Models.DownloadInspection.States.Errored;
+                                                });
+                                            }
+
+                                            continue;
+                                        }
+
+                                        if (inspection.Inspection is not null)
+                                        {
+                                            await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
+                                            {
+                                                inspection.Inspection.State = Models.DownloadInspection.States.Queued;
+                                            });
+                                        }
+                                    }
+                                }
+
+                                await this.WriteProject(project);
+                                this.jobClient.Enqueue<IDownloadService>(
+                                    s => s.DownloadProject(
+                                        project.FilePath!,
+                                        CancellationToken.None));
+                            }
                         }
                     }
                 }

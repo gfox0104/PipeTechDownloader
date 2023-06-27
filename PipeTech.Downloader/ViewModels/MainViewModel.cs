@@ -78,7 +78,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
         this.paths = options.Value;
         this.logger = logger;
 
-        this.Inspections = new ObservableCollection<DownloadInspectionHandler>();
+        this.Inspections = new ObservableCollection<object>();
         this.Inspections.CollectionChanged += this.Inspections_CollectionChanged;
         this.CloseCommand = new RelayCommand(() =>
         {
@@ -119,9 +119,9 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
     }
 
     /// <summary>
-    /// Gets the inspections.
+    /// Gets the inspections/combined objects.
     /// </summary>
-    public ObservableCollection<DownloadInspectionHandler> Inspections
+    public ObservableCollection<object> Inspections
     {
         get;
     }
@@ -141,7 +141,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
     {
         get
         {
-            var value = $"{this.Inspections.Count()}";
+            var value = $"{this.Inspections.Where(item => item is DownloadInspectionHandler).Count()}";
             if (this.TotalCount is int totalCount)
             {
                 return value + $" of {totalCount}";
@@ -152,27 +152,59 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
     }
 
     /// <summary>
-    /// Gets the total size string in MB.
+    /// Gets the total size.
     /// </summary>
-    public string? TotalSizeinMB
+    public long? TotalSize
     {
         get
         {
-            var sizeInBytes = 0L;
-            try
+            if (this.Inspections?.Any() == true)
             {
-                foreach (var i in this.Inspections)
+                var sizeInBytes = 0L;
+                try
                 {
-                    sizeInBytes += i.Inspection?.TotalSize ?? 0;
+                    foreach (var i in this.Inspections
+                        .Select(item => item as DownloadInspectionHandler)
+                        .Where(item => item is not null))
+                    {
+                        sizeInBytes += i!.Inspection?.TotalSize ?? 0;
+                    }
                 }
-            }
-            catch (Exception)
-            {
+                catch (Exception)
+                {
+                }
+
+                return sizeInBytes;
             }
 
-            return (sizeInBytes / 1024 / 1024).ToString("0.0 MB");
+            return null;
         }
     }
+
+    /////// <summary>
+    /////// Gets the total size string in MB.
+    /////// </summary>
+    ////public string? TotalSizeinMB
+    ////{
+    ////    get
+    ////    {
+    ////        var sizeInBytes = 0L;
+    ////        try
+    ////        {
+    ////            foreach (var i in this.Inspections
+    ////                .Select(item => item as DownloadInspectionHandler)
+    ////                .Where(item => item is not null))
+    ////            {
+    ////                sizeInBytes += i!.Inspection?.TotalSize ?? 0;
+    ////            }
+    ////        }
+    ////        catch (Exception)
+    ////        {
+    ////        }
+
+    ////        return (sizeInBytes / 1024 / 1024).ToString("0.0 MB");
+    ////    }
+    ////}
 
     /// <inheritdoc/>
     public void Dispose()
@@ -186,9 +218,9 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 
         if (this.Inspections is not null)
         {
-            foreach (var i in this.Inspections)
+            foreach (var i in this.Inspections.Select(item => item as DownloadInspectionHandler))
             {
-                i.Dispose();
+                i?.Dispose();
             }
 
             while (this.Inspections.Count > 0)
@@ -244,7 +276,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
         {
             case nameof(this.TotalCount):
                 this.RaisePropertyChanged(nameof(this.InspectionCountString));
-                this.RaisePropertyChanged(nameof(this.TotalSizeinMB));
+                this.RaisePropertyChanged(nameof(this.TotalSize));
                 break;
             case nameof(this.DataFolder):
             case nameof(this.ManifestLoading):
@@ -322,9 +354,21 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                 return;
             }
 
-            var manifestUri = await this.hubService.GetManifestLink(
-                g,
-                new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token);
+            var manifestUri = default(Uri?);
+            try
+            {
+                manifestUri = await this.hubService.GetManifestLink(
+                    g,
+                    new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token);
+            }
+            catch (TaskCanceledException)
+            {
+                this.logger?.LogWarning($"Cancelled getting the manifest link [{host}][{g}]");
+            }
+            catch (Exception ex)
+            {
+                this.logger?.LogError(ex, $"Error getting the manifest link [{host}][{g}]");
+            }
 
 #if SLOWDOWN
             await Task.Delay(10000, token);
@@ -337,9 +381,20 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 
             if (manifestUri is not null)
             {
-                this.Manifest = await this.hubService.GetManifest(
-                    manifestUri,
-                    new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
+                try
+                {
+                    this.Manifest = await this.hubService.GetManifest(
+                        manifestUri,
+                        new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
+                }
+                catch (TaskCanceledException)
+                {
+                    this.logger?.LogWarning($"Cancelled getting the manifest via link [{manifestUri}]");
+                }
+                catch (Exception ex)
+                {
+                    this.logger?.LogError(ex, $"Error getting the manifest via link [{manifestUri}]");
+                }
             }
 
             if (token.IsCancellationRequested)
@@ -347,9 +402,20 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                 return;
             }
 
-            this.Manifest ??= await this.hubService.GetManifest(
-                    g,
-                    new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
+            try
+            {
+                this.Manifest ??= await this.hubService.GetManifest(
+                        g,
+                        new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
+            }
+            catch (TaskCanceledException)
+            {
+                this.logger?.LogWarning($"Cancelled getting the manifest via id [{host}][{g}]");
+            }
+            catch (Exception ex)
+            {
+                this.logger?.LogError(ex, $"Error getting the manifest via id [{host}][{g}]");
+            }
 
 #if SLOWDOWN
             await Task.Delay(10000, token);
@@ -362,6 +428,11 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 
             if (this.Manifest is not null)
             {
+                if (this.Manifest.Id == Guid.Empty)
+                {
+                    this.Manifest.Id = g;
+                }
+
                 if (!string.IsNullOrEmpty(this.Manifest.DeliverableName))
                 {
                     this.DownloadName = this.Manifest.DeliverableName;
@@ -386,6 +457,19 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                                 this.Inspections.Add(dlh);
                             },
                             DispatcherQueuePriority.Normal);
+                    }
+
+                    if (this.Manifest.Inspections.Any())
+                    {
+                        if (this.Manifest.CombinedReportIds?.Any() == true)
+                        {
+                            this.Inspections.Add($"{(this.Manifest.DeliverableName ?? this.DownloadName)?.SanitizeFilename() ?? "Project report"}.pdf");
+                        }
+
+                        if (this.Manifest.CombinedNASSCOExchangeGenerate == true)
+                        {
+                            this.Inspections.Add($"{(this.Manifest.DeliverableName ?? this.DownloadName)?.SanitizeFilename() ?? "NASSCO Exchange"}.mdb");
+                        }
                     }
                 }
             }
@@ -446,7 +530,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
         }
 
         this.RaisePropertyChanged(nameof(this.InspectionCountString));
-        this.RaisePropertyChanged(nameof(this.TotalSizeinMB));
+        this.RaisePropertyChanged(nameof(this.TotalSize));
     }
 
     private void Files_CollectionChanged(
@@ -475,7 +559,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
             }
         }
 
-        this.RaisePropertyChanged(nameof(this.TotalSizeinMB));
+        this.RaisePropertyChanged(nameof(this.TotalSize));
     }
 
     private void File_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -483,7 +567,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
         switch (e.PropertyName)
         {
             case nameof(Models.File.Size):
-                this.RaisePropertyChanged(nameof(this.TotalSizeinMB));
+                this.RaisePropertyChanged(nameof(this.TotalSize));
                 break;
             default:
                 break;
@@ -519,7 +603,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                 }
 
                 this.RaisePropertyChanged(nameof(this.InspectionCountString));
-                this.RaisePropertyChanged(nameof(this.TotalSizeinMB));
+                this.RaisePropertyChanged(nameof(this.TotalSize));
                 break;
             default:
                 break;
@@ -531,7 +615,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
         switch (e.PropertyName)
         {
             case nameof(DownloadInspection.TotalSize):
-                this.RaisePropertyChanged(nameof(this.TotalSizeinMB));
+                this.RaisePropertyChanged(nameof(this.TotalSize));
                 break;
             case nameof(DownloadInspection.Files):
                 break;
@@ -566,7 +650,12 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
         return !this.ManifestLoading &&
             this.Inspections is not null &&
             this.Inspections.Any() == true &&
-            !this.Inspections.Any(i => i.Inspection?.State == DownloadInspection.States.Loading || i.Inspection?.State == DownloadInspection.States.Errored || i.Inspection?.State == DownloadInspection.States.Paused) &&
+            !this.Inspections
+            .Select(i => i as DownloadInspectionHandler)
+            .Where(i => i is not null)
+            .Any(i => i!.Inspection?.State == DownloadInspection.States.Loading ||
+            i.Inspection?.State == DownloadInspection.States.Errored ||
+            i.Inspection?.State == DownloadInspection.States.Paused) &&
             !string.IsNullOrEmpty(this.DataFolder) &&
             Directory.Exists(this.DataFolder);
     }
@@ -580,7 +669,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                 await this.localSettingsService.SaveSettingAsync(LASTDATAFOLDERSETTING, this.DataFolder);
             }
 
-            foreach (var item in this.Inspections)
+            foreach (var item in this.Inspections.Select(i => i as DownloadInspectionHandler).Where(i => i is not null))
             {
                 if (item?.Inspection is not null)
                 {
@@ -604,18 +693,16 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                 Directory.CreateDirectory(dir);
             }
 
-            var p = default(Project);
-            ////App.MainWindow.DispatcherQueue.TryEnqueue(
-            ////    DispatcherQueuePriority.Low,
-            ////    () =>
-            ////    {
-            p = Project.FromJson(string.Empty);
+            var p = Project.FromJson(string.Empty);
             p.Id = Guid.NewGuid();
             p.Name = this.DownloadName;
             p.ConfirmationTime = DateTime.Now;
             p.DownloadPath = this.DataFolder;
             p.Inspections ??= new();
-            p.Inspections.AddRange(this.Inspections);
+            p.Inspections!.AddRange(
+                this.Inspections
+                .Select(i => i as DownloadInspectionHandler)
+                .Where(i => i is not null));
             if (p is IManifest m)
             {
                 m.AdditionalProperties = this.Manifest?.AdditionalProperties;
@@ -626,7 +713,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                 m.CombinedReportIds = this.Manifest?.CombinedReportIds;
                 m.IndividualReportIds = this.Manifest?.IndividualReportIds;
             }
-            ////});
+
             var data = p.ToJson();
             System.IO.File.WriteAllText(Path.Combine(dir, "info.json"), data);
 

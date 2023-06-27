@@ -5,6 +5,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using PipeTech.Downloader.Core.Contracts;
+using PipeTech.Downloader.Core.Helpers;
 
 namespace PipeTech.Downloader.Core.Models;
 
@@ -16,6 +17,7 @@ public class Manifest : IManifest
     /// <summary>
     /// Gets or sets the Id of the manifest.
     /// </summary>
+    [JsonConverter(typeof(GuidJsonConverter))]
     public Guid Id
     {
         get; set;

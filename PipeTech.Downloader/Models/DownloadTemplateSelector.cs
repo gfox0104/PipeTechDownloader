@@ -28,12 +28,24 @@ public class DownloadTemplateSelector : DataTemplateSelector
         get; set;
     }
 
+    /// <summary>
+    /// Gets or sets the file template.
+    /// </summary>
+    public DataTemplate? FileTemplateString
+    {
+        get; set;
+    }
+
     /// <inheritdoc/>
     protected override DataTemplate SelectTemplateCore(object item)
     {
         if (item is DownloadInspectionHandler)
         {
             return this.FolderTemplate ?? base.SelectTemplateCore(item);
+        }
+        else if (item is string)
+        {
+            return this.FileTemplateString ?? base.SelectTemplateCore(item);
         }
 
         return this.FileTemplate ?? base.SelectTemplateCore(item);

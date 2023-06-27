@@ -1,0 +1,596 @@
+{
+  "individualNASSCOExchangeGenerate": true,
+  "combinedNASSCOExchangeGenerate": false,
+  "individualReportIds": [
+    "74168c6c-b5f3-4a66-ba87-ec30a86c8fed"
+  ],
+  "combinedReportIds": null,
+  "inspections": [
+    {
+      "$packId": "0481129d-431b-496a-8a0b-2a6f7ba1d248",
+      "_schemaId": "Model.Sewer.NASSCOv7",
+      "_schemaVersion": "20.15.168.0",
+      "A_002": [
+        {
+          "owner": "RVSS",
+          "drainage_area": "13",
+          "pipe_segment_reference": "11377",
+          "street": "FOSS RD",
+          "city": "TALENT",
+          "location_code": "B",
+          "height": 203.2,
+          "shape": "C",
+          "material": "PVC",
+          "upstream_ap": "TA187J08801",
+          "downstream_ap": "TA840003",
+          "surveyed_by": "BRIAN",
+          "certificate_number": "U-915-070R0089",
+          "customer": "RVSS",
+          "inspection_timestamp": "2022-12-27T18:48:12.276Z",
+          "pre_cleaning": "Z",
+          "purpose": "F",
+          "direction": "D",
+          "length_surveyed": 148590,
+          "I_002": [
+            {
+              "owner": "RVSS",
+              "drainage_area": "13",
+              "pipe_segment_reference": "11377",
+              "street": "FOSS RD",
+              "city": "TALENT",
+              "location_code": "Parking lot",
+              "height": 203.2,
+              "shape": "C",
+              "material": "PVC",
+              "upstream_ap": "TA187J08801",
+              "downstream_ap": "TA840003",
+              "surveyed_by": "BRIAN",
+              "certificate_number": "U-915-070R0089",
+              "customer": "RVSS",
+              "inspection_timestamp": "May 1, 2022",
+              "pre_cleaning": "Z",
+              "purpose": "F",
+              "direction": "D",
+              "length_surveyed": 148590,
+              "location_details": "123456",
+              "iGuid": "ED40F7A9-1B3B-4316-8978-1542E400239C",
+              "OS_002": [
+                {
+                  "distance": 0,
+                  "pacp_code": "AMH",
+                  "remarks": "Starting MH",
+                  "id": "20f17e43-476b-4b60-bd9f-5632dde2f11c",
+                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                  "OS_GUID": "20f17e43-476b-4b60-bd9f-5632dde2f11c",
+                  "OF_002": [
+                    {
+                      "OF_GUID": "799f90cc-9842-422b-b626-2ba52e5d029d",
+                      "OS_GUID": "20f17e43-476b-4b60-bd9f-5632dde2f11c",
+                      "lastModified": "2022-12-27T10:49:41.9536038-08:00",
+                      "createdOn": "2022-12-27T10:49:35.5629085-08:00",
+                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
+                      "Media_Parameters": "1128-0A66-B95C-9A38",
+                      "Snapshot_Media_GUID": "f44b1c0b-f104-424a-8d8f-a84e9cf02564",
+                      "media": {
+                        "Media_GUID": "f44b1c0b-f104-424a-8d8f-a84e9cf02564",
+                        "Media_URI": "000.0 ft - AMH.jpg",
+                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
+                      },
+                      "joint": false
+                    }
+                  ]
+                },
+                {
+                  "distance": 0,
+                  "pacp_code": "MWL",
+                  "value_percent": 0.05,
+                  "id": "14d09b31-bfd7-4bd3-9d81-690181019444",
+                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                  "OS_GUID": "14d09b31-bfd7-4bd3-9d81-690181019444",
+                  "OF_002": [
+                    {
+                      "OF_GUID": "866d22da-3536-4e2d-b334-59b137b942a4",
+                      "OS_GUID": "14d09b31-bfd7-4bd3-9d81-690181019444",
+                      "lastModified": "2022-12-27T11:14:37.5243318-08:00",
+                      "createdOn": "2022-12-27T10:49:42.5709537-08:00",
+                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
+                      "Media_Parameters": "F8CD-8025-8884-8E69",
+                      "Snapshot_Media_GUID": "553b8300-549c-4627-b377-203bd8884b94",
+                      "media": {
+                        "Media_GUID": "553b8300-549c-4627-b377-203bd8884b94",
+                        "Media_URI": "000.0 ft - MWL.jpg",
+                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
+                      },
+                      "joint": false
+                    }
+                  ]
+                },
+                {
+                  "distance": 16306.8,
+                  "pacp_code": "TFA",
+                  "clock_at_from": 3,
+                  "clock_to": null,
+                  "value_1st_dimension": 101.6,
+                  "remarks": "WYE",
+                  "id": "c54f6010-ce38-4082-a413-1eec49b2c4a7",
+                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                  "OS_GUID": "c54f6010-ce38-4082-a413-1eec49b2c4a7",
+                  "OF_002": [
+                    {
+                      "OF_GUID": "1cbeca46-dfe2-41dd-9c24-825021e2e4ad",
+                      "OS_GUID": "c54f6010-ce38-4082-a413-1eec49b2c4a7",
+                      "lastModified": "2022-12-27T10:54:23.2937875-08:00",
+                      "createdOn": "2022-12-27T10:54:14.2380935-08:00",
+                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
+                      "Media_Parameters": "FF23-71AD-8001-106C",
+                      "Snapshot_Media_GUID": "3cb65194-a2d4-4149-ba6d-a1ebe866ebfe",
+                      "media": {
+                        "Media_GUID": "3cb65194-a2d4-4149-ba6d-a1ebe866ebfe",
+                        "Media_URI": "053.5 ft - TFA.jpg",
+                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
+                      },
+                      "joint": false
+                    }
+                  ]
+                },
+                {
+                  "distance": 34350.96,
+                  "pacp_code": "TFA",
+                  "clock_at_from": 3,
+                  "clock_to": null,
+                  "value_1st_dimension": 101.6,
+                  "remarks": "WYE",
+                  "id": "5c50d042-af42-4b58-8d6d-5d25ee0dc4b0",
+                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                  "OS_GUID": "5c50d042-af42-4b58-8d6d-5d25ee0dc4b0",
+                  "OF_002": [
+                    {
+                      "OF_GUID": "ffe86a91-2c10-4bcd-aaba-23574284cfe9",
+                      "OS_GUID": "5c50d042-af42-4b58-8d6d-5d25ee0dc4b0",
+                      "lastModified": "2022-12-27T10:56:10.1620603-08:00",
+                      "createdOn": "2022-12-27T10:56:07.5666789-08:00",
+                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
+                      "Media_Parameters": "F614-0C56-F1B6-362C",
+                      "Snapshot_Media_GUID": "33ddc962-2096-441c-95b6-ca4af1462e4f",
+                      "media": {
+                        "Media_GUID": "33ddc962-2096-441c-95b6-ca4af1462e4f",
+                        "Media_URI": "112.7 ft - TFA.jpg",
+                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
+                      },
+                      "joint": false
+                    }
+                  ]
+                },
+                {
+                  "distance": 59009.28,
+                  "pacp_code": "TFA",
+                  "clock_at_from": 3,
+                  "clock_to": null,
+                  "value_1st_dimension": 101.6,
+                  "remarks": "WYE",
+                  "id": "415d2e77-8d96-446d-955d-21a69403c2cd",
+                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                  "OS_GUID": "415d2e77-8d96-446d-955d-21a69403c2cd",
+                  "OF_002": [
+                    {
+                      "OF_GUID": "cb080d72-ad4a-4246-adee-30a837bcd339",
+                      "OS_GUID": "415d2e77-8d96-446d-955d-21a69403c2cd",
+                      "lastModified": "2022-12-27T10:58:42.8337687-08:00",
+                      "createdOn": "2022-12-27T10:58:37.5390874-08:00",
+                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
+                      "Media_Parameters": "62FF-7930-0069-E95B",
+                      "Snapshot_Media_GUID": "3f0fd98e-c018-4d7c-be69-2cb5288af5b0",
+                      "media": {
+                        "Media_GUID": "3f0fd98e-c018-4d7c-be69-2cb5288af5b0",
+                        "Media_URI": "193.6 ft - TFA.jpg",
+                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
+                      },
+                      "joint": false
+                    }
+                  ]
+                },
+                {
+                  "distance": 72146.16,
+                  "pacp_code": "TFC",
+                  "clock_at_from": 12,
+                  "clock_to": null,
+                  "value_1st_dimension": 152.4,
+                  "remarks": "WYE",
+                  "id": "b08c5ff9-566f-4d80-8185-0a2da59bce55",
+                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                  "OS_GUID": "b08c5ff9-566f-4d80-8185-0a2da59bce55",
+                  "OF_002": [
+                    {
+                      "OF_GUID": "77eb1e7f-a0ab-4d85-9bff-d17df04ed417",
+                      "OS_GUID": "b08c5ff9-566f-4d80-8185-0a2da59bce55",
+                      "lastModified": "2022-12-27T11:00:40.7437401-08:00",
+                      "createdOn": "2022-12-27T10:59:56.1222035-08:00",
+                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
+                      "Media_Parameters": "F650-ECF3-10F4-1B44",
+                      "Snapshot_Media_GUID": "49570be4-10e3-4bea-ab6d-698e09ac5043",
+                      "media": {
+                        "Media_GUID": "49570be4-10e3-4bea-ab6d-698e09ac5043",
+                        "Media_URI": "236.7 ft - TFC.jpg",
+                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
+                      },
+                      "joint": false
+                    }
+                  ]
+                },
+                {
+                  "distance": 76931.52,
+                  "pacp_code": "TFA",
+                  "clock_at_from": 3,
+                  "clock_to": null,
+                  "value_1st_dimension": 101.6,
+                  "remarks": "WYE",
+                  "id": "71d799d8-8a0d-41ef-aa27-87817a5dabb5",
+                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                  "OS_GUID": "71d799d8-8a0d-41ef-aa27-87817a5dabb5",
+                  "OF_002": [
+                    {
+                      "OF_GUID": "19750ff4-e2d2-4e4b-8095-aada70b98465",
+                      "OS_GUID": "71d799d8-8a0d-41ef-aa27-87817a5dabb5",
+                      "lastModified": "2022-12-27T11:01:24.8132069-08:00",
+                      "createdOn": "2022-12-27T11:01:18.36191-08:00",
+                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
+                      "Media_Parameters": "8FBE-6AA6-8CB3-D05D",
+                      "Snapshot_Media_GUID": "965178da-5f85-4acf-8a0e-b13d1821f08d",
+                      "media": {
+                        "Media_GUID": "965178da-5f85-4acf-8a0e-b13d1821f08d",
+                        "Media_URI": "252.4 ft - TFA.jpg",
+                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
+                      },
+                      "joint": false
+                    }
+                  ]
+                },
+                {
+                  "distance": 94274.64,
+                  "pacp_code": "TFA",
+                  "clock_at_from": 9,
+                  "clock_to": null,
+                  "value_1st_dimension": 101.6,
+                  "remarks": "WYE",
+                  "id": "a76dd77a-ee75-4e66-bf09-41b939bdd65d",
+                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                  "OS_GUID": "a76dd77a-ee75-4e66-bf09-41b939bdd65d",
+                  "OF_002": [
+                    {
+                      "OF_GUID": "e970a313-1e13-4eae-8fa5-21f2faa3f086",
+                      "OS_GUID": "a76dd77a-ee75-4e66-bf09-41b939bdd65d",
+                      "lastModified": "2022-12-27T11:06:40.0271248-08:00",
+                      "createdOn": "2022-12-27T11:06:35.4435062-08:00",
+                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
+                      "Media_Parameters": "3EAD-E403-976D-AA6F",
+                      "Snapshot_Media_GUID": "83bdda74-cb0c-4a3e-8f7d-4119178ab870",
+                      "media": {
+                        "Media_GUID": "83bdda74-cb0c-4a3e-8f7d-4119178ab870",
+                        "Media_URI": "309.3 ft - TFA.jpg",
+                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
+                      },
+                      "joint": false
+                    }
+                  ]
+                },
+                {
+                  "distance": 97322.64,
+                  "pacp_code": "TFA",
+                  "clock_at_from": 3,
+                  "clock_to": null,
+                  "value_1st_dimension": 101.6,
+                  "remarks": "WYE",
+                  "id": "31a17698-0d5f-4323-b404-216e86dfecda",
+                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                  "OS_GUID": "31a17698-0d5f-4323-b404-216e86dfecda",
+                  "OF_002": [
+                    {
+                      "OF_GUID": "8125fe81-72b1-4a35-bf78-478e20aaf23d",
+                      "OS_GUID": "31a17698-0d5f-4323-b404-216e86dfecda",
+                      "lastModified": "2022-12-27T11:07:23.7237749-08:00",
+                      "createdOn": "2022-12-27T11:07:21.6383689-08:00",
+                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
+                      "Media_Parameters": "F56A-0618-00E0-BB63",
+                      "Snapshot_Media_GUID": "736ac20f-c6c2-4964-8720-7e869b793afd",
+                      "media": {
+                        "Media_GUID": "736ac20f-c6c2-4964-8720-7e869b793afd",
+                        "Media_URI": "319.3 ft - TFA.jpg",
+                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
+                      },
+                      "joint": false
+                    }
+                  ]
+                },
+                {
+                  "distance": 135910.32,
+                  "pacp_code": "TFC",
+                  "clock_at_from": 12,
+                  "clock_to": null,
+                  "value_1st_dimension": 152.4,
+                  "remarks": "WYE ",
+                  "id": "7e79637d-8158-482a-b337-ceb11dc8648b",
+                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                  "OS_GUID": "7e79637d-8158-482a-b337-ceb11dc8648b",
+                  "OF_002": [
+                    {
+                      "OF_GUID": "7d2ed9b7-3254-4f73-9116-d43c3ae1fc96",
+                      "OS_GUID": "7e79637d-8158-482a-b337-ceb11dc8648b",
+                      "lastModified": "2022-12-27T11:11:37.9698796-08:00",
+                      "createdOn": "2022-12-27T11:10:58.0958904-08:00",
+                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
+                      "Media_Parameters": "ECA5-0BFD-2B01-697A",
+                      "Snapshot_Media_GUID": "cd3ecb65-df78-403e-893a-562db4549ea9",
+                      "media": {
+                        "Media_GUID": "cd3ecb65-df78-403e-893a-562db4549ea9",
+                        "Media_URI": "445.9 ft - TFC.jpg",
+                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
+                      },
+                      "joint": false
+                    }
+                  ]
+                },
+                {
+                  "distance": 148590,
+                  "pacp_code": "AMH",
+                  "remarks": "Ending MH",
+                  "id": "19ca6f3f-6904-43b1-b16f-78e763449494",
+                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                  "OS_GUID": "19ca6f3f-6904-43b1-b16f-78e763449494",
+                  "OF_002": [
+                    {
+                      "OF_GUID": "e66f2549-d9cc-4359-a3cc-a72c61a71d22",
+                      "OS_GUID": "19ca6f3f-6904-43b1-b16f-78e763449494",
+                      "lastModified": "2022-12-27T11:13:50.2342596-08:00",
+                      "createdOn": "2022-12-27T11:13:05.3416237-08:00",
+                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
+                      "Media_Parameters": "FA31-D78D-819F-529E",
+                      "Snapshot_Media_GUID": "521284b9-ad82-4593-83c9-95a6cee7670d",
+                      "media": {
+                        "Media_GUID": "521284b9-ad82-4593-83c9-95a6cee7670d",
+                        "Media_URI": "487.5 ft - AMH.jpg",
+                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
+                      },
+                      "joint": false
+                    }
+                  ]
+                },
+                {
+                  "distance": 1981.2,
+                  "pacp_code": "MGO",
+                  "remarks": "STARTING POINT",
+                  "id": "676d6357-054a-47f8-b213-a4f300c1d8f6",
+                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                  "OS_GUID": "676d6357-054a-47f8-b213-a4f300c1d8f6",
+                  "OF_002": [
+                    {
+                      "OF_GUID": "f1d20838-b170-40d2-a61c-dbed4c0ea628",
+                      "OS_GUID": "676d6357-054a-47f8-b213-a4f300c1d8f6",
+                      "lastModified": "2022-12-27T11:15:11.4261849-08:00",
+                      "createdOn": "2022-12-27T11:14:50.4413296-08:00",
+                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
+                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
+                      "Media_Parameters": "7809-FBF4-F632-33F1",
+                      "Snapshot_Media_GUID": "9065ab00-a889-4e2f-b2b3-afc8fd3f53d6",
+                      "media": {
+                        "Media_GUID": "9065ab00-a889-4e2f-b2b3-afc8fd3f53d6",
+                        "Media_URI": "006.5 ft - MGO.jpg",
+                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
+                      },
+                      "joint": false
+                    }
+                  ]
+                }
+              ],
+              "Media_002": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "$packId": "0481129d-431b-496a-8a0b-2a6f7ba1d248",
+      "_schemaId": "Model.Sewer.NASSCOv7",
+      "_schemaVersion": "20.15.168.0",
+      "A_002": [
+        {
+          "owner": "RVSS",
+          "drainage_area": "4",
+          "pipe_segment_reference": null,
+          "street": "ANTELOPE RD",
+          "city": "White City",
+          "location_code": "Main Highway - Urban",
+          "location_details": "4",
+          "height": 457.1999853696005,
+          "width": null,
+          "shape": "C",
+          "material": "CP",
+          "lining_method": null,
+          "pipe_joint_length": null,
+          "total_length": null,
+          "year_renewed": null,
+          "upstream_ap": "WCA5101A",
+          "up_rim_to_invert": null,
+          "up_rim_to_grade": null,
+          "up_grade_to_invert": null,
+          "downstream_ap": "WCA51",
+          "down_rim_to_invert": null,
+          "down_rim_to_grade": null,
+          "down_grade_to_invert": null,
+          "mh_coordinate_system": null,
+          "gps_accuracy": null,
+          "po_number": null,
+          "work_order": null,
+          "project": "42-1",
+          "surveyed_by": "Michael Atchley",
+          "certificate_number": "U-915-070R0089",
+          "customer": null,
+          "inspection_timestamp": "2021-11-10T16:31:00.000Z",
+          "date": "2021-11-10T16:31:00.000Z",
+          "time": "2021-11-10T18:31:00",
+          "weather": "Damp",
+          "pre_cleaning": "X",
+          "date_cleaned": null,
+          "flow_control": null,
+          "purpose": "F",
+          "direction": "D",
+          "length_surveyed": 70439.27774594311,
+          "is_imperial": true,
+          "comments": null,
+          "inspection_id": 1,
+          "I_002": [
+            {
+              "drainage_area": "1",
+              "street": "WESTMORE DRIVE",
+              "city": "TORONTO",
+              "location_code": "Parking lot",
+              "height": 100,
+              "shape": "C",
+              "material": "PVC",
+              "pipe_joint_length": 4000,
+              "upstream_ap": "CMH5",
+              "downstream_ap": "CDS",
+              "project": "136 WESTMORE DRIVE",
+              "surveyed_by": "KEVIN",
+              "certificate_number": "P0037133-042022",
+              "customer": "DASS GROUP",
+              "inspection_timestamp": "May 1, 2022",
+              "weather": "3",
+              "pre_cleaning": "J",
+              "date_cleaned": "2023-03-27T00:00:00-04:00",
+              "purpose": "Z",
+              "direction": "D",
+              "length_surveyed": 5430,
+              "location_details": "123456",
+              "iGuid": "C27DDA2A-9FCF-4A78-ADB8-82601935DB81",
+              "OS_002": [
+                {
+                  "distance": 0,
+                  "pacp_code": "AMH",
+                  "remarks": "START-CMH5",
+                  "id": "02f8e504-4d63-4753-b62e-bde48d8c8d89",
+                  "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
+                  "OS_GUID": "02f8e504-4d63-4753-b62e-bde48d8c8d89",
+                  "OF_002": [
+                    {
+                      "OF_GUID": "7b2b8eb5-5ad5-4031-91b1-66ff5f066c7a",
+                      "OS_GUID": "02f8e504-4d63-4753-b62e-bde48d8c8d89",
+                      "lastModified": "2023-03-27T12:16:21.241652-04:00",
+                      "createdOn": "2023-03-27T12:16:14.6486806-04:00",
+                      "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
+                      "Media_GUID": "a4581f2b-b1cd-4cb4-b03f-b11ec020e1dc",
+                      "Media_Parameters": "79A2-5A18-9D87-3EDC",
+                      "Snapshot_Media_GUID": "45159e15-1c2e-4edf-b39d-f84720fd5b8c",
+                      "media": {
+                        "Media_GUID": "45159e15-1c2e-4edf-b39d-f84720fd5b8c",
+                        "Media_URI": "000.00 m - AMH.jpg",
+                        "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81"
+                      },
+                      "joint": false
+                    }
+                  ]
+                },
+                {
+                  "distance": 0,
+                  "pacp_code": "MWL",
+                  "value_percent": 0.05,
+                  "id": "161bb48f-503d-43c0-be59-f2100457a684",
+                  "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
+                  "OS_GUID": "161bb48f-503d-43c0-be59-f2100457a684",
+                  "OF_002": [
+                    {
+                      "OF_GUID": "cb233750-e67f-4401-aa32-feb6dab60849",
+                      "OS_GUID": "161bb48f-503d-43c0-be59-f2100457a684",
+                      "lastModified": "2023-03-27T12:16:27.5616784-04:00",
+                      "createdOn": "2023-03-27T12:16:21.8938777-04:00",
+                      "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
+                      "Media_GUID": "a4581f2b-b1cd-4cb4-b03f-b11ec020e1dc",
+                      "Media_Parameters": "B031-5AD9-F934-9EC3",
+                      "Snapshot_Media_GUID": "a9916404-5cd3-4ddc-b8a9-cf86a7121cb0",
+                      "media": {
+                        "Media_GUID": "a9916404-5cd3-4ddc-b8a9-cf86a7121cb0",
+                        "Media_URI": "000.00 m - MWL.jpg",
+                        "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81"
+                      },
+                      "joint": false
+                    }
+                  ]
+                },
+                {
+                  "distance": 5430,
+                  "pacp_code": "AOC",
+                  "remarks": "FINISH-CDS",
+                  "id": "9c4ac103-129a-4a5b-a134-83eceb3d1e41",
+                  "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
+                  "OS_GUID": "9c4ac103-129a-4a5b-a134-83eceb3d1e41",
+                  "OF_002": [
+                    {
+                      "OF_GUID": "239e3f77-4b4c-43d0-93ac-c70d62821f3f",
+                      "OS_GUID": "9c4ac103-129a-4a5b-a134-83eceb3d1e41",
+                      "lastModified": "2023-03-27T12:17:52.9615262-04:00",
+                      "createdOn": "2023-03-27T12:17:41.4746211-04:00",
+                      "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
+                      "Media_GUID": "a4581f2b-b1cd-4cb4-b03f-b11ec020e1dc",
+                      "Media_Parameters": "5F87-B1AD-7712-47EB",
+                      "Snapshot_Media_GUID": "3ab221d1-a00c-4a50-b965-5363faf99c0d",
+                      "media": {
+                        "Media_GUID": "3ab221d1-a00c-4a50-b965-5363faf99c0d",
+                        "Media_URI": "005.43 m - AOC.jpg",
+                        "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81"
+                      },
+                      "joint": false
+                    }
+                  ]
+                }
+              ],
+              "Media_002": [
+                {
+                  "Media_GUID": "45159e15-1c2e-4edf-b39d-f84720fd5b8c",
+                  "Media_URI": "https://s3.amazonaws.com/pipetech-uploads-dev/5d66847ecfc312ce3e80d65b/inspections/C27DDA2A-9FCF-4A78-ADB8-82601935DB81/000.00 m - AMH.jpg",
+                  "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
+                  "Embedded_Overlay": null,
+                  "Media_Info": null
+                },
+                {
+                  "Media_GUID": "a9916404-5cd3-4ddc-b8a9-cf86a7121cb0",
+                  "Media_URI": "https://s3.amazonaws.com/pipetech-uploads-dev/5d66847ecfc312ce3e80d65b/inspections/C27DDA2A-9FCF-4A78-ADB8-82601935DB81/000.00 m - MWL.jpg",
+                  "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
+                  "Embedded_Overlay": null,
+                  "Media_Info": null
+                },
+                {
+                  "Media_GUID": "3ab221d1-a00c-4a50-b965-5363faf99c0d",
+                  "Media_URI": "https://s3.amazonaws.com/pipetech-uploads-dev/5d66847ecfc312ce3e80d65b/inspections/C27DDA2A-9FCF-4A78-ADB8-82601935DB81/005.43 m - AOC.jpg",
+                  "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
+                  "Embedded_Overlay": null,
+                  "Media_Info": null
+                },
+                {
+                  "Media_GUID": "a4581f2b-b1cd-4cb4-b03f-b11ec020e1dc",
+                  "Media_URI": "https://s3.amazonaws.com/pipetech-uploads-dev/5d66847ecfc312ce3e80d65b/inspections/C27DDA2A-9FCF-4A78-ADB8-82601935DB81/230327 (CMH5--CDS) 1215.mp4",
+                  "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
+                  "Embedded_Overlay": "31",
+                  "Media_Info": "Created with PTLive"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "awsRegion": "us-east-2",
+  "org": "5d66847ecfc312ce3e80d65b",
+  "id": "649a0cf931633f78dbec1f26",
+  "archived": false
+}

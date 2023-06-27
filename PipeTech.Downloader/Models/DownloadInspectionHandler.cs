@@ -2,12 +2,10 @@
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
-using System.Net.Http.Headers;
-using System.Security.AccessControl;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
@@ -42,7 +40,14 @@ public partial class DownloadInspectionHandler : BindableRecipient, IDisposable
     /// Gets or sets a value indicating whether the item is expanded.
     /// </summary>
     [ObservableProperty]
+    [JsonIgnore]
     private bool expanded = false;
+
+    /// <summary>
+    /// Gets or sets the pack Id.
+    /// </summary>
+    [ObservableProperty]
+    private Guid? packId;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DownloadInspectionHandler"/> class.
@@ -202,6 +207,8 @@ public partial class DownloadInspectionHandler : BindableRecipient, IDisposable
                     }
                 }
             }
+
+            this.PackId = pack?.Metadata?.ID;
 
             if (token.IsCancellationRequested)
             {
