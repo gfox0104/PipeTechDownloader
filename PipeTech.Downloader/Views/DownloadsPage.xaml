@@ -15,7 +15,7 @@
         <helpers:NumberToPercentageStringConverter x:Key="NumberToPercentageStringConverter" />
         <helpers:NumberBytesToStorageStringConverter x:Key="NumberBytesToStorageStringConverter" />
         <helpers:EnumToStringConverter x:Key="EnumToStringConverter" />
-        <helpers:BindingProxy x:Key="Proxy" Data="{x:Bind ViewModel}"/>
+        <!--<helpers:BindingProxy x:Key="Proxy" Data="{x:Bind ViewModel}"/>-->
 
         <DataTemplate x:Key="ButtonComplete">
             <TextBlock  Text="Complete" />
@@ -38,90 +38,96 @@
             Grid.Row="0"
             x:Uid="Downloads_Title"
             Style="{StaticResource PageTitleStyle}" />
-        <controls:DataGrid
-            Grid.Row="1"             
-            x:Name="grid"
-            IsReadOnly="True"
-            AutoGenerateColumns="False"
-            RowDetailsVisibilityMode="{x:Bind ViewModel.VisibilityMode, Mode=TwoWay}"
-            GridLinesVisibility="Horizontal"
-            ItemsSource="{x:Bind ViewModel.SourceView, Mode=OneWay}">
-            <controls:DataGrid.Resources>
-                <Color x:Key="DataGridRowSelectedBackgroundColor">Transparent</Color>
-                <Color x:Key="DataGridRowSelectedHoveredUnfocusedBackgroundColor">Transparent</Color>
-                <Color x:Key="DataGridRowSelectedUnfocusedBackgroundColor">Transparent</Color>
-                <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
-            </controls:DataGrid.Resources>
-            <controls:DataGrid.Columns>
-                <controls:DataGridTemplateColumn Header="" >
-                    <controls:DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate x:DataType="models:Project">
-                            <controls:Expander Header="" IsExpanded="{x:Bind Expanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
-                                <Interactivity:Interaction.Behaviors>
-                                    <behaviors:ExpanderOpenCloseBehavior
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
+            <controls:DataGrid x:Name="grid"
+                               IsReadOnly="True"
+                               AutoGenerateColumns="False"
+                               RowDetailsVisibilityMode="{x:Bind ViewModel.VisibilityMode, Mode=TwoWay}"
+                               GridLinesVisibility="Horizontal"
+                               ItemsSource="{x:Bind ViewModel.SourceView, Mode=OneWay}">
+                <controls:DataGrid.Resources>
+                    <Color x:Key="DataGridRowSelectedBackgroundColor">Transparent</Color>
+                    <Color x:Key="DataGridRowSelectedHoveredUnfocusedBackgroundColor">Transparent</Color>
+                    <Color x:Key="DataGridRowSelectedUnfocusedBackgroundColor">Transparent</Color>
+                    <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
+                </controls:DataGrid.Resources>
+                <controls:DataGrid.Columns>
+                    <controls:DataGridTemplateColumn Header="" >
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:Project">
+                                <controls:Expander Header="" 
+                                                   IsExpanded="{x:Bind Expanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <!--<Interactivity:Interaction.Behaviors>
+                                        <behaviors:ExpanderOpenCloseBehavior
                                         Expanded="{x:Bind Expanded, Mode=OneWay}"
                                         VisibilityMode="{Binding Source={StaticResource Proxy}, Path=Data.VisibilityMode, Mode=TwoWay}"
                                         CollectionView="{Binding Source={StaticResource Proxy}, Path=Data.SourceView}" />
-                                </Interactivity:Interaction.Behaviors>
-                            </controls:Expander>
-                        </DataTemplate>
-                    </controls:DataGridTemplateColumn.CellTemplate>
-                </controls:DataGridTemplateColumn>
-                <controls:DataGridTextColumn Binding="{Binding Name, Mode=OneWay}" Header="Project"/>
-                <controls:DataGridTextColumn Binding="{Binding DownloadPath, Mode=OneWay}" Header="Download Path" />
-                <controls:DataGridTextColumn Binding="{Binding TotalSize, Mode=OneWay, Converter={StaticResource NumberBytesToStorageStringConverter}}" Header="Size" />
-                <controls:DataGridTextColumn Binding="{Binding Progress, Mode=OneWay, Converter={StaticResource NumberToPercentageStringConverter}}" Header="Progress" />
-                <controls:DataGridTemplateColumn Header="Actions">
-                    <controls:DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate x:DataType="models:Project">
-                            <Button>
-                                <Interactivity:Interaction.Behaviors>
-                                    <behaviors:ButtonContentTemplateBehavior 
-                                                        State="{x:Bind State}"
+                                    </Interactivity:Interaction.Behaviors>
+                                </controls:Expander>-->
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
+                    <controls:DataGridTextColumn Binding="{Binding Name, Mode=OneWay}" 
+                                                 Header="Project"/>
+                    <controls:DataGridTextColumn Binding="{Binding DownloadPath, Mode=OneWay}" 
+                                                 Header="Download Path" />
+                    <controls:DataGridTextColumn Binding="{Binding TotalSize, Mode=OneWay, Converter={StaticResource NumberBytesToStorageStringConverter}}" 
+                                                 Header="Size" />
+                    <controls:DataGridTextColumn Binding="{Binding Progress, Mode=OneWay, Converter={StaticResource NumberToPercentageStringConverter}}" 
+                                                 Header="Progress" />
+                    <controls:DataGridTemplateColumn Header="Actions">
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:Project">
+                                <Button>
+                                    <Interactivity:Interaction.Behaviors>
+                                        <behaviors:ButtonContentTemplateBehavior 
+                                                        State="{x:Bind State, Mode=OneWay}"
                                                         PausedTemplate="{StaticResource ButtonPause}"
                                                         CompletedTemplate="{StaticResource ButtonComplete}"/>
-                                </Interactivity:Interaction.Behaviors>
-                            </Button>
-                        </DataTemplate>
-                    </controls:DataGridTemplateColumn.CellTemplate>
-                </controls:DataGridTemplateColumn>
-            </controls:DataGrid.Columns>
-            <controls:DataGrid.RowDetailsTemplate>
-                <DataTemplate x:DataType="models:Project">
-                    <Grid>
-                        <controls:DataGrid ItemsSource="{x:Bind Inspections}"
-                                           IsReadOnly="True"
-                                           RowDetailsVisibilityMode="Collapsed"
-                                           AutoGenerateColumns="False">
-                            <controls:DataGrid.Resources>
-                                <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
-                            </controls:DataGrid.Resources>
-                            <controls:DataGrid.Columns>
-                                <controls:DataGridTextColumn Binding="{Binding Inspection.Name, Mode=OneWay}"
-                                                             Header="Inspection" />
-                                <controls:DataGridTextColumn Binding="{Binding Inspection.TotalSize, Mode=OneWay, Converter={StaticResource NumberBytesToStorageStringConverter}}"
-                                                             Header="Size" />
-                                <controls:DataGridTextColumn Binding="{Binding Inspection.Progress, Mode=OneWay, Converter={StaticResource NumberToPercentageStringConverter}}"
-                                                             Header="Progress" />
-                                <controls:DataGridTemplateColumn Header="Actions">
-                                    <controls:DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate x:DataType="models:DownloadInspectionHandler">
-                                            <Button>
-                                                <Interactivity:Interaction.Behaviors>
-                                                    <behaviors:ButtonContentTemplateBehavior 
-                                                        State="{x:Bind Inspection.State}"
-                                                        PausedTemplate="{StaticResource ButtonPause}"
-                                                        CompletedTemplate="{StaticResource ButtonComplete}"/>
-                                                </Interactivity:Interaction.Behaviors>
-                                            </Button>
-                                        </DataTemplate>
-                                    </controls:DataGridTemplateColumn.CellTemplate>
-                                </controls:DataGridTemplateColumn>
-                            </controls:DataGrid.Columns>
-                        </controls:DataGrid>
-                    </Grid>
-                </DataTemplate>
-            </controls:DataGrid.RowDetailsTemplate>
-        </controls:DataGrid>
+                                    </Interactivity:Interaction.Behaviors>
+                                </Button>
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
+                </controls:DataGrid.Columns>
+                <controls:DataGrid.RowDetailsTemplate>
+                    <DataTemplate x:DataType="models:Project">
+                        <Grid>
+                            <controls:DataGrid ItemsSource="{x:Bind Inspections, Mode=OneWay}"
+                                               IsReadOnly="True"
+                                               RowDetailsVisibilityMode="Collapsed"
+                                               AutoGenerateColumns="False">
+                                <controls:DataGrid.Resources>
+                                    <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" 
+                                                     Color="Transparent" />
+                                </controls:DataGrid.Resources>
+                                <controls:DataGrid.Columns>
+                                    <controls:DataGridTextColumn Binding="{Binding Inspection.Name, Mode=OneWay}"
+                                                                 Header="Inspection" />
+                                    <controls:DataGridTextColumn Binding="{Binding Inspection.TotalSize, Mode=OneWay, Converter={StaticResource NumberBytesToStorageStringConverter}}"
+                                                                 Header="Size" />
+                                    <controls:DataGridTextColumn Binding="{Binding Inspection.Progress, Mode=OneWay, Converter={StaticResource NumberToPercentageStringConverter}}"
+                                                                 Header="Progress" />
+                                    <controls:DataGridTemplateColumn Header="Actions">
+                                        <controls:DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate x:DataType="models:DownloadInspectionHandler">
+                                                <Button>
+                                                    <Interactivity:Interaction.Behaviors>
+                                                        <behaviors:ButtonContentTemplateBehavior 
+                                                            State="{x:Bind Inspection.State, Mode=OneWay}"
+                                                            PausedTemplate="{StaticResource ButtonPause}"
+                                                            CompletedTemplate="{StaticResource ButtonComplete}"/>
+                                                    </Interactivity:Interaction.Behaviors>
+                                                </Button>
+                                            </DataTemplate>
+                                        </controls:DataGridTemplateColumn.CellTemplate>
+                                    </controls:DataGridTemplateColumn>
+                                </controls:DataGrid.Columns>
+                            </controls:DataGrid>
+                        </Grid>
+                    </DataTemplate>
+                </controls:DataGrid.RowDetailsTemplate>
+            </controls:DataGrid>
+        </ScrollViewer>
     </Grid>
 </Page>

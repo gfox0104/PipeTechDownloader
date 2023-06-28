@@ -12,8 +12,6 @@ using Hangfire;
 using Hangfire.Common;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using NASSCO_ExV;
 using Nito.AsyncEx;
 using PipeTech.Downloader.Contracts.Services;
@@ -157,7 +155,13 @@ public class DownloadService : ObservableObject, IDownloadService
                                 {
                                     if (!this.Source.Any(p => p.Id == project.Id))
                                     {
-                                        this.Source.Add(project);
+                                        try
+                                        {
+                                            this.Source.Add(project);
+                                        }
+                                        catch (Exception)
+                                        {
+                                        }
                                     }
                                 });
                         }
@@ -1380,7 +1384,7 @@ public class DownloadService : ObservableObject, IDownloadService
                                     }
                                 };
 
-                                if (report is ILetterheadAware letterheadAware)
+                                if (report is ILetterheadAware letterheadAware && inspectionType is not null)
                                 {
                                     letterheadAware.Letterhead = firstPack?.GetReportLetterheadDefinition(inspectionType);
                                 }

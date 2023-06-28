@@ -1,596 +1,760 @@
 {
-  "individualNASSCOExchangeGenerate": true,
-  "combinedNASSCOExchangeGenerate": false,
-  "individualReportIds": [
-    "74168c6c-b5f3-4a66-ba87-ec30a86c8fed"
-  ],
-  "combinedReportIds": null,
-  "inspections": [
-    {
-      "$packId": "0481129d-431b-496a-8a0b-2a6f7ba1d248",
-      "_schemaId": "Model.Sewer.NASSCOv7",
-      "_schemaVersion": "20.15.168.0",
-      "A_002": [
+    "individualNASSCOExchangeGenerate": true,
+    "combinedNASSCOExchangeGenerate": false,
+    "individualReportIds": [
+        "74168c6c-b5f3-4a66-ba87-ec30a86c8fed"
+    ],
+    "combinedReportIds": null,
+    "inspections": [
         {
-          "owner": "RVSS",
-          "drainage_area": "13",
-          "pipe_segment_reference": "11377",
-          "street": "FOSS RD",
-          "city": "TALENT",
-          "location_code": "B",
-          "height": 203.2,
-          "shape": "C",
-          "material": "PVC",
-          "upstream_ap": "TA187J08801",
-          "downstream_ap": "TA840003",
-          "surveyed_by": "BRIAN",
-          "certificate_number": "U-915-070R0089",
-          "customer": "RVSS",
-          "inspection_timestamp": "2022-12-27T18:48:12.276Z",
-          "pre_cleaning": "Z",
-          "purpose": "F",
-          "direction": "D",
-          "length_surveyed": 148590,
-          "I_002": [
-            {
-              "owner": "RVSS",
-              "drainage_area": "13",
-              "pipe_segment_reference": "11377",
-              "street": "FOSS RD",
-              "city": "TALENT",
-              "location_code": "Parking lot",
-              "height": 203.2,
-              "shape": "C",
-              "material": "PVC",
-              "upstream_ap": "TA187J08801",
-              "downstream_ap": "TA840003",
-              "surveyed_by": "BRIAN",
-              "certificate_number": "U-915-070R0089",
-              "customer": "RVSS",
-              "inspection_timestamp": "May 1, 2022",
-              "pre_cleaning": "Z",
-              "purpose": "F",
-              "direction": "D",
-              "length_surveyed": 148590,
-              "location_details": "123456",
-              "iGuid": "ED40F7A9-1B3B-4316-8978-1542E400239C",
-              "OS_002": [
+            "_schemaId": "Model.Sewer.NASSCOv7",
+            "_schemaVersion": "20.15.168.0",
+            "$packId": "0481129d-431b-496a-8a0b-2a6f7ba1d248",
+            "A_002": [
                 {
-                  "distance": 0,
-                  "pacp_code": "AMH",
-                  "remarks": "Starting MH",
-                  "id": "20f17e43-476b-4b60-bd9f-5632dde2f11c",
-                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                  "OS_GUID": "20f17e43-476b-4b60-bd9f-5632dde2f11c",
-                  "OF_002": [
-                    {
-                      "OF_GUID": "799f90cc-9842-422b-b626-2ba52e5d029d",
-                      "OS_GUID": "20f17e43-476b-4b60-bd9f-5632dde2f11c",
-                      "lastModified": "2022-12-27T10:49:41.9536038-08:00",
-                      "createdOn": "2022-12-27T10:49:35.5629085-08:00",
-                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
-                      "Media_Parameters": "1128-0A66-B95C-9A38",
-                      "Snapshot_Media_GUID": "f44b1c0b-f104-424a-8d8f-a84e9cf02564",
-                      "media": {
-                        "Media_GUID": "f44b1c0b-f104-424a-8d8f-a84e9cf02564",
-                        "Media_URI": "000.0 ft - AMH.jpg",
-                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
-                      },
-                      "joint": false
-                    }
-                  ]
-                },
-                {
-                  "distance": 0,
-                  "pacp_code": "MWL",
-                  "value_percent": 0.05,
-                  "id": "14d09b31-bfd7-4bd3-9d81-690181019444",
-                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                  "OS_GUID": "14d09b31-bfd7-4bd3-9d81-690181019444",
-                  "OF_002": [
-                    {
-                      "OF_GUID": "866d22da-3536-4e2d-b334-59b137b942a4",
-                      "OS_GUID": "14d09b31-bfd7-4bd3-9d81-690181019444",
-                      "lastModified": "2022-12-27T11:14:37.5243318-08:00",
-                      "createdOn": "2022-12-27T10:49:42.5709537-08:00",
-                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
-                      "Media_Parameters": "F8CD-8025-8884-8E69",
-                      "Snapshot_Media_GUID": "553b8300-549c-4627-b377-203bd8884b94",
-                      "media": {
-                        "Media_GUID": "553b8300-549c-4627-b377-203bd8884b94",
-                        "Media_URI": "000.0 ft - MWL.jpg",
-                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
-                      },
-                      "joint": false
-                    }
-                  ]
-                },
-                {
-                  "distance": 16306.8,
-                  "pacp_code": "TFA",
-                  "clock_at_from": 3,
-                  "clock_to": null,
-                  "value_1st_dimension": 101.6,
-                  "remarks": "WYE",
-                  "id": "c54f6010-ce38-4082-a413-1eec49b2c4a7",
-                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                  "OS_GUID": "c54f6010-ce38-4082-a413-1eec49b2c4a7",
-                  "OF_002": [
-                    {
-                      "OF_GUID": "1cbeca46-dfe2-41dd-9c24-825021e2e4ad",
-                      "OS_GUID": "c54f6010-ce38-4082-a413-1eec49b2c4a7",
-                      "lastModified": "2022-12-27T10:54:23.2937875-08:00",
-                      "createdOn": "2022-12-27T10:54:14.2380935-08:00",
-                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
-                      "Media_Parameters": "FF23-71AD-8001-106C",
-                      "Snapshot_Media_GUID": "3cb65194-a2d4-4149-ba6d-a1ebe866ebfe",
-                      "media": {
-                        "Media_GUID": "3cb65194-a2d4-4149-ba6d-a1ebe866ebfe",
-                        "Media_URI": "053.5 ft - TFA.jpg",
-                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
-                      },
-                      "joint": false
-                    }
-                  ]
-                },
-                {
-                  "distance": 34350.96,
-                  "pacp_code": "TFA",
-                  "clock_at_from": 3,
-                  "clock_to": null,
-                  "value_1st_dimension": 101.6,
-                  "remarks": "WYE",
-                  "id": "5c50d042-af42-4b58-8d6d-5d25ee0dc4b0",
-                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                  "OS_GUID": "5c50d042-af42-4b58-8d6d-5d25ee0dc4b0",
-                  "OF_002": [
-                    {
-                      "OF_GUID": "ffe86a91-2c10-4bcd-aaba-23574284cfe9",
-                      "OS_GUID": "5c50d042-af42-4b58-8d6d-5d25ee0dc4b0",
-                      "lastModified": "2022-12-27T10:56:10.1620603-08:00",
-                      "createdOn": "2022-12-27T10:56:07.5666789-08:00",
-                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
-                      "Media_Parameters": "F614-0C56-F1B6-362C",
-                      "Snapshot_Media_GUID": "33ddc962-2096-441c-95b6-ca4af1462e4f",
-                      "media": {
-                        "Media_GUID": "33ddc962-2096-441c-95b6-ca4af1462e4f",
-                        "Media_URI": "112.7 ft - TFA.jpg",
-                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
-                      },
-                      "joint": false
-                    }
-                  ]
-                },
-                {
-                  "distance": 59009.28,
-                  "pacp_code": "TFA",
-                  "clock_at_from": 3,
-                  "clock_to": null,
-                  "value_1st_dimension": 101.6,
-                  "remarks": "WYE",
-                  "id": "415d2e77-8d96-446d-955d-21a69403c2cd",
-                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                  "OS_GUID": "415d2e77-8d96-446d-955d-21a69403c2cd",
-                  "OF_002": [
-                    {
-                      "OF_GUID": "cb080d72-ad4a-4246-adee-30a837bcd339",
-                      "OS_GUID": "415d2e77-8d96-446d-955d-21a69403c2cd",
-                      "lastModified": "2022-12-27T10:58:42.8337687-08:00",
-                      "createdOn": "2022-12-27T10:58:37.5390874-08:00",
-                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
-                      "Media_Parameters": "62FF-7930-0069-E95B",
-                      "Snapshot_Media_GUID": "3f0fd98e-c018-4d7c-be69-2cb5288af5b0",
-                      "media": {
-                        "Media_GUID": "3f0fd98e-c018-4d7c-be69-2cb5288af5b0",
-                        "Media_URI": "193.6 ft - TFA.jpg",
-                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
-                      },
-                      "joint": false
-                    }
-                  ]
-                },
-                {
-                  "distance": 72146.16,
-                  "pacp_code": "TFC",
-                  "clock_at_from": 12,
-                  "clock_to": null,
-                  "value_1st_dimension": 152.4,
-                  "remarks": "WYE",
-                  "id": "b08c5ff9-566f-4d80-8185-0a2da59bce55",
-                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                  "OS_GUID": "b08c5ff9-566f-4d80-8185-0a2da59bce55",
-                  "OF_002": [
-                    {
-                      "OF_GUID": "77eb1e7f-a0ab-4d85-9bff-d17df04ed417",
-                      "OS_GUID": "b08c5ff9-566f-4d80-8185-0a2da59bce55",
-                      "lastModified": "2022-12-27T11:00:40.7437401-08:00",
-                      "createdOn": "2022-12-27T10:59:56.1222035-08:00",
-                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
-                      "Media_Parameters": "F650-ECF3-10F4-1B44",
-                      "Snapshot_Media_GUID": "49570be4-10e3-4bea-ab6d-698e09ac5043",
-                      "media": {
-                        "Media_GUID": "49570be4-10e3-4bea-ab6d-698e09ac5043",
-                        "Media_URI": "236.7 ft - TFC.jpg",
-                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
-                      },
-                      "joint": false
-                    }
-                  ]
-                },
-                {
-                  "distance": 76931.52,
-                  "pacp_code": "TFA",
-                  "clock_at_from": 3,
-                  "clock_to": null,
-                  "value_1st_dimension": 101.6,
-                  "remarks": "WYE",
-                  "id": "71d799d8-8a0d-41ef-aa27-87817a5dabb5",
-                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                  "OS_GUID": "71d799d8-8a0d-41ef-aa27-87817a5dabb5",
-                  "OF_002": [
-                    {
-                      "OF_GUID": "19750ff4-e2d2-4e4b-8095-aada70b98465",
-                      "OS_GUID": "71d799d8-8a0d-41ef-aa27-87817a5dabb5",
-                      "lastModified": "2022-12-27T11:01:24.8132069-08:00",
-                      "createdOn": "2022-12-27T11:01:18.36191-08:00",
-                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
-                      "Media_Parameters": "8FBE-6AA6-8CB3-D05D",
-                      "Snapshot_Media_GUID": "965178da-5f85-4acf-8a0e-b13d1821f08d",
-                      "media": {
-                        "Media_GUID": "965178da-5f85-4acf-8a0e-b13d1821f08d",
-                        "Media_URI": "252.4 ft - TFA.jpg",
-                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
-                      },
-                      "joint": false
-                    }
-                  ]
-                },
-                {
-                  "distance": 94274.64,
-                  "pacp_code": "TFA",
-                  "clock_at_from": 9,
-                  "clock_to": null,
-                  "value_1st_dimension": 101.6,
-                  "remarks": "WYE",
-                  "id": "a76dd77a-ee75-4e66-bf09-41b939bdd65d",
-                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                  "OS_GUID": "a76dd77a-ee75-4e66-bf09-41b939bdd65d",
-                  "OF_002": [
-                    {
-                      "OF_GUID": "e970a313-1e13-4eae-8fa5-21f2faa3f086",
-                      "OS_GUID": "a76dd77a-ee75-4e66-bf09-41b939bdd65d",
-                      "lastModified": "2022-12-27T11:06:40.0271248-08:00",
-                      "createdOn": "2022-12-27T11:06:35.4435062-08:00",
-                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
-                      "Media_Parameters": "3EAD-E403-976D-AA6F",
-                      "Snapshot_Media_GUID": "83bdda74-cb0c-4a3e-8f7d-4119178ab870",
-                      "media": {
-                        "Media_GUID": "83bdda74-cb0c-4a3e-8f7d-4119178ab870",
-                        "Media_URI": "309.3 ft - TFA.jpg",
-                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
-                      },
-                      "joint": false
-                    }
-                  ]
-                },
-                {
-                  "distance": 97322.64,
-                  "pacp_code": "TFA",
-                  "clock_at_from": 3,
-                  "clock_to": null,
-                  "value_1st_dimension": 101.6,
-                  "remarks": "WYE",
-                  "id": "31a17698-0d5f-4323-b404-216e86dfecda",
-                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                  "OS_GUID": "31a17698-0d5f-4323-b404-216e86dfecda",
-                  "OF_002": [
-                    {
-                      "OF_GUID": "8125fe81-72b1-4a35-bf78-478e20aaf23d",
-                      "OS_GUID": "31a17698-0d5f-4323-b404-216e86dfecda",
-                      "lastModified": "2022-12-27T11:07:23.7237749-08:00",
-                      "createdOn": "2022-12-27T11:07:21.6383689-08:00",
-                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
-                      "Media_Parameters": "F56A-0618-00E0-BB63",
-                      "Snapshot_Media_GUID": "736ac20f-c6c2-4964-8720-7e869b793afd",
-                      "media": {
-                        "Media_GUID": "736ac20f-c6c2-4964-8720-7e869b793afd",
-                        "Media_URI": "319.3 ft - TFA.jpg",
-                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
-                      },
-                      "joint": false
-                    }
-                  ]
-                },
-                {
-                  "distance": 135910.32,
-                  "pacp_code": "TFC",
-                  "clock_at_from": 12,
-                  "clock_to": null,
-                  "value_1st_dimension": 152.4,
-                  "remarks": "WYE ",
-                  "id": "7e79637d-8158-482a-b337-ceb11dc8648b",
-                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                  "OS_GUID": "7e79637d-8158-482a-b337-ceb11dc8648b",
-                  "OF_002": [
-                    {
-                      "OF_GUID": "7d2ed9b7-3254-4f73-9116-d43c3ae1fc96",
-                      "OS_GUID": "7e79637d-8158-482a-b337-ceb11dc8648b",
-                      "lastModified": "2022-12-27T11:11:37.9698796-08:00",
-                      "createdOn": "2022-12-27T11:10:58.0958904-08:00",
-                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
-                      "Media_Parameters": "ECA5-0BFD-2B01-697A",
-                      "Snapshot_Media_GUID": "cd3ecb65-df78-403e-893a-562db4549ea9",
-                      "media": {
-                        "Media_GUID": "cd3ecb65-df78-403e-893a-562db4549ea9",
-                        "Media_URI": "445.9 ft - TFC.jpg",
-                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
-                      },
-                      "joint": false
-                    }
-                  ]
-                },
-                {
-                  "distance": 148590,
-                  "pacp_code": "AMH",
-                  "remarks": "Ending MH",
-                  "id": "19ca6f3f-6904-43b1-b16f-78e763449494",
-                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                  "OS_GUID": "19ca6f3f-6904-43b1-b16f-78e763449494",
-                  "OF_002": [
-                    {
-                      "OF_GUID": "e66f2549-d9cc-4359-a3cc-a72c61a71d22",
-                      "OS_GUID": "19ca6f3f-6904-43b1-b16f-78e763449494",
-                      "lastModified": "2022-12-27T11:13:50.2342596-08:00",
-                      "createdOn": "2022-12-27T11:13:05.3416237-08:00",
-                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
-                      "Media_Parameters": "FA31-D78D-819F-529E",
-                      "Snapshot_Media_GUID": "521284b9-ad82-4593-83c9-95a6cee7670d",
-                      "media": {
-                        "Media_GUID": "521284b9-ad82-4593-83c9-95a6cee7670d",
-                        "Media_URI": "487.5 ft - AMH.jpg",
-                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
-                      },
-                      "joint": false
-                    }
-                  ]
-                },
-                {
-                  "distance": 1981.2,
-                  "pacp_code": "MGO",
-                  "remarks": "STARTING POINT",
-                  "id": "676d6357-054a-47f8-b213-a4f300c1d8f6",
-                  "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                  "OS_GUID": "676d6357-054a-47f8-b213-a4f300c1d8f6",
-                  "OF_002": [
-                    {
-                      "OF_GUID": "f1d20838-b170-40d2-a61c-dbed4c0ea628",
-                      "OS_GUID": "676d6357-054a-47f8-b213-a4f300c1d8f6",
-                      "lastModified": "2022-12-27T11:15:11.4261849-08:00",
-                      "createdOn": "2022-12-27T11:14:50.4413296-08:00",
-                      "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c",
-                      "Media_GUID": "85d8c87a-04ef-41c7-8237-523aa1e4bcc0",
-                      "Media_Parameters": "7809-FBF4-F632-33F1",
-                      "Snapshot_Media_GUID": "9065ab00-a889-4e2f-b2b3-afc8fd3f53d6",
-                      "media": {
-                        "Media_GUID": "9065ab00-a889-4e2f-b2b3-afc8fd3f53d6",
-                        "Media_URI": "006.5 ft - MGO.jpg",
-                        "I_002_GUID": "ed40f7a9-1b3b-4316-8978-1542e400239c"
-                      },
-                      "joint": false
-                    }
-                  ]
+                    "Owner": "City of Alexander",
+                    "Street": "Alley",
+                    "City": "Alexander",
+                    "Shape": "C",
+                    "Material": "PVC",
+                    "Total_Length": 108813.6,
+                    "Upstream_AP": "117",
+                    "Downstream_AP": "118",
+                    "I_002": [
+                        {
+                            "iGuid": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                            "WorkOrder": "2022-050",
+                            "Surveyed_By": "Justin Whitmus",
+                            "Customer": "CIty of Alexander",
+                            "PreCleaning": "Heavy",
+                            "Direction": "D",
+                            "Length_Surveyed": 111861.6,
+                            "OS_002": [
+                                {
+                                    "osGuid": "5afd8da9-54b2-414f-a65b-5c24179097ab",
+                                    "code": "MH",
+                                    "OF_002": [
+                                        {
+                                            "code": "MH",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "c219c8d5-90ff-43bb-a652-ff74fb3f1f9d",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "MH",
+                                            "Distance": 0,
+                                            "Comments": "Starting Manhole: 117"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "86851805-8516-43b2-9a36-19700fb92eb6",
+                                    "code": "S",
+                                    "OF_002": [
+                                        {
+                                            "code": "S",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "d8061ea5-30d0-46a6-84e8-944238985558",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "S",
+                                            "Distance": 60.96,
+                                            "Comments": "Begins"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "cd24f90b-74be-4368-a2aa-ba13be333d73",
+                                    "code": "ΔM",
+                                    "OF_002": [
+                                        {
+                                            "code": "ΔM",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "5c69af8d-4084-4bee-a38c-dbd7eaa8e3d6",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "ΔM",
+                                            "Distance": 1097.28,
+                                            "Comments": "Lined pipe\r\n"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "625c328d-617a-4cb5-97fd-16542bea5269",
+                                    "code": "S",
+                                    "OF_002": [
+                                        {
+                                            "code": "S",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "e4850af2-d0fc-44bd-8d4c-78dce6ce0bbe",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "S",
+                                            "Distance": 2773.68,
+                                            "Comments": "Ends\r\n"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "e1353ab6-6c85-463c-bd4f-138126b60f45",
+                                    "code": "S",
+                                    "OF_002": [
+                                        {
+                                            "code": "S",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "82929413-013a-42e4-b4a6-4c5099528a95",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "S",
+                                            "Distance": 5486.4
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "3d530e99-401d-4a14-8a7c-bf17bb6e53a1",
+                                    "code": "S",
+                                    "OF_002": [
+                                        {
+                                            "code": "S",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "cc1a645d-9545-4872-b195-e3e7e9009b95",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "S",
+                                            "Distance": 14996.16,
+                                            "Comments": "Begins"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "f9de24f0-c11a-4c77-bb49-c03bf531053f",
+                                    "code": "LC",
+                                    "OF_002": [
+                                        {
+                                            "code": "LC",
+                                            "clock": {
+                                                "from": 10,
+                                                "to": null
+                                            },
+                                            "ofGuid": "7707ac3f-5890-444c-92b4-7c741dc23918",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "LC",
+                                            "Distance": 19446.24,
+                                            "Clock_At.@from": "10",
+                                            "Clock_At.@to": "null"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "0badfe35-4bef-4e66-abb5-a3c3f004b185",
+                                    "code": "S",
+                                    "OF_002": [
+                                        {
+                                            "code": "S",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "b06b0725-20f9-4f29-8818-b1a213ed2f28",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "S",
+                                            "Distance": 28468.32,
+                                            "Comments": "Ends"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "6e21943a-1f47-4dd6-b215-73ac23a5332e",
+                                    "code": "S",
+                                    "OF_002": [
+                                        {
+                                            "code": "S",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "70844788-a535-42e8-81e6-d8e4e9ede54c",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "S",
+                                            "Distance": 30906.72,
+                                            "Comments": "Begins"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "21d6d761-42a3-4258-a373-8752d89f4227",
+                                    "code": "LC",
+                                    "OF_002": [
+                                        {
+                                            "code": "LC",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "ab37fbb9-c3f4-4701-9973-2348dd0e14a5",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "LC",
+                                            "Distance": 37978.08
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "d5db2cf1-b48f-47a8-bb38-1f8e7f960e94",
+                                    "code": "S",
+                                    "OF_002": [
+                                        {
+                                            "code": "S",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "3116b297-6351-452f-92ad-22415c990a15",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "S",
+                                            "Distance": 41544.24,
+                                            "Comments": "Ends"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "1677c582-d6ed-484d-acfe-b2ec7ef84d5d",
+                                    "code": "S",
+                                    "OF_002": [
+                                        {
+                                            "code": "S",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "2ed349c4-1d4b-4177-869c-1f689bfeb160",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "S",
+                                            "Distance": 47579.28,
+                                            "Comments": "Begins"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "82a505e1-d748-47e3-a41f-33f39a09a2fb",
+                                    "code": "LC",
+                                    "OF_002": [
+                                        {
+                                            "code": "LC",
+                                            "clock": {
+                                                "from": 10,
+                                                "to": null
+                                            },
+                                            "ofGuid": "8ec6bf01-7b4f-4d84-b831-0d73590a53ef",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "LC",
+                                            "Distance": 48493.68,
+                                            "Clock_At.@from": "10",
+                                            "Clock_At.@to": "null"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "79f1f774-caa2-4d01-8f60-d0b6328f5e17",
+                                    "code": "LC",
+                                    "OF_002": [
+                                        {
+                                            "code": "LC",
+                                            "clock": {
+                                                "from": 1,
+                                                "to": null
+                                            },
+                                            "ofGuid": "dddef83b-07e3-4818-96d6-3a186cd86ba3",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "LC",
+                                            "Distance": 57058.56,
+                                            "Clock_At.@from": "1",
+                                            "Clock_At.@to": "null"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "61c20ad0-6ba3-4b78-a3e4-81a700b1a452",
+                                    "code": "S",
+                                    "OF_002": [
+                                        {
+                                            "code": "S",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "d2379637-9a1b-4aba-aeca-c4bc269e73d6",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "S",
+                                            "Distance": 64099.44,
+                                            "Comments": "Ends\r\n"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "039b21fb-6d48-4383-ad60-77972f81a5fa",
+                                    "code": "LC",
+                                    "OF_002": [
+                                        {
+                                            "code": "LC",
+                                            "clock": {
+                                                "from": 10,
+                                                "to": null
+                                            },
+                                            "ofGuid": "ed08868a-65c9-473e-8e13-66a2205d67f0",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "LC",
+                                            "Distance": 69037.2,
+                                            "Clock_At.@from": "10",
+                                            "Clock_At.@to": "null"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "a6da9e09-53d2-4028-a5a8-22ddab136a9e",
+                                    "code": "S",
+                                    "OF_002": [
+                                        {
+                                            "code": "S",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "de4158db-1256-4803-b5d5-2fe9fecf9d3a",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "S",
+                                            "Distance": 70469.76,
+                                            "Comments": "Begins"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "4c6e5638-3266-4981-9b58-52fc08499005",
+                                    "code": "LC",
+                                    "OF_002": [
+                                        {
+                                            "code": "LC",
+                                            "clock": {
+                                                "from": 2,
+                                                "to": null
+                                            },
+                                            "ofGuid": "f64213df-570a-430c-865f-67470395ad1b",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "LC",
+                                            "Distance": 75925.68,
+                                            "Clock_At.@from": "2",
+                                            "Clock_At.@to": "null"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "45ab3379-0017-4a58-bc04-16d4b76ad9d8",
+                                    "code": "LC",
+                                    "OF_002": [
+                                        {
+                                            "code": "LC",
+                                            "clock": {
+                                                "from": 11,
+                                                "to": null
+                                            },
+                                            "ofGuid": "89804d8c-de41-44d5-a96f-d215bc0836b1",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "LC",
+                                            "Distance": 80131.92,
+                                            "Clock_At.@from": "11",
+                                            "Clock_At.@to": "null"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "1ddc79fc-589f-46b6-8487-3624cb390fd4",
+                                    "code": "LC",
+                                    "OF_002": [
+                                        {
+                                            "code": "LC",
+                                            "clock": {
+                                                "from": 10,
+                                                "to": null
+                                            },
+                                            "ofGuid": "28bd4dd6-5170-4187-ab98-434ce009295c",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "LC",
+                                            "Distance": 81777.84,
+                                            "Clock_At.@from": "10",
+                                            "Clock_At.@to": "null"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "eca249d7-41b2-4a76-af33-0f99d53e8079",
+                                    "code": "LC",
+                                    "OF_002": [
+                                        {
+                                            "code": "LC",
+                                            "clock": {
+                                                "from": 11,
+                                                "to": null
+                                            },
+                                            "ofGuid": "0a7e5f42-4084-4de2-aef9-cf8bc9527d88",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "LC",
+                                            "Distance": 88331.04,
+                                            "Clock_At.@from": "11",
+                                            "Clock_At.@to": "null"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "c75bc399-fb72-4850-a9c2-083c49e4c741",
+                                    "code": "LC",
+                                    "OF_002": [
+                                        {
+                                            "code": "LC",
+                                            "clock": {
+                                                "from": 10,
+                                                "to": null
+                                            },
+                                            "ofGuid": "da6b47e2-6cb4-4ffe-849e-221c0ed63b6c",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "LC",
+                                            "Distance": 91348.56,
+                                            "Clock_At.@from": "10",
+                                            "Clock_At.@to": "null"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "31bd3970-84d6-42ca-9223-540176dee1cd",
+                                    "code": "S",
+                                    "OF_002": [
+                                        {
+                                            "code": "S",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "1372e7e0-a7ab-44ac-8380-66175bcbacd8",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "S",
+                                            "Distance": 98694.24,
+                                            "Comments": "Ends\r\n"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "ad11ae3a-8055-4c3f-b10e-7e6bf8dc1b45",
+                                    "code": "S",
+                                    "OF_002": [
+                                        {
+                                            "code": "S",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "166e31a4-2401-4978-9a81-dae9d2f9ae25",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "S",
+                                            "Distance": 103388.16,
+                                            "Comments": "Begins"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "c875523a-4860-4706-a969-fd88d2654d94",
+                                    "code": "ΔM",
+                                    "OF_002": [
+                                        {
+                                            "code": "ΔM",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "ee307af2-df7f-4d00-b378-524d3d8a5d60",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "ΔM",
+                                            "Distance": 109941.36,
+                                            "Comments": "PVC"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "osGuid": "62719913-0c82-45dd-b1c3-a8002084ed00",
+                                    "code": "MH",
+                                    "OF_002": [
+                                        {
+                                            "code": "MH",
+                                            "clock": {
+                                                "from": null,
+                                                "to": null
+                                            },
+                                            "ofGuid": "543fbd7e-0e76-4f53-a1e3-3a989725259e",
+                                            "mediaGuid": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                            "Code": "MH",
+                                            "Distance": 111861.6,
+                                            "Comments": "Ending Manhole: 118"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "Media_002": [
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/000.0 ft - MH.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "6a8d962d-e8d6-4e6e-9fd3-65811e6d1d9d",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/000.2 ft - S.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "4bce6f7d-acce-4518-8ea1-86101d45d148",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/003.6 ft - ╬ФM.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "345cc24b-fd66-41d0-b305-bda899a0a147",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/009.1 ft - S.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "c46288c8-ecc6-4518-a05e-fe03a5068522",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/018.0 ft - S.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "d691a3d5-f734-4f9b-b135-ad9a8c727f2f",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/049.2 ft - S.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "35d10a50-0612-4ebd-a417-29202f6788f3",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/063.8 ft - LC.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "54aa449d-20e9-42a1-8056-6872cfc976af",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/093.4 ft - S.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "d76d344f-15a6-41da-9aaa-0d636973eeb0",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/101.4 ft - S.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "5505bcd5-05e4-442b-bfe6-bd33dfc0161f",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/124.6 ft - LC.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "81dc6ff5-845b-4cde-a0aa-6620bcfe3c16",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/136.3 ft - S.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "550c7e4e-6d70-477b-8131-77166589db61",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/156.1 ft - S.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "feb716f7-90dc-4906-b0c3-13e879eb3c50",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/159.1 ft - LC.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "aa80ac3e-5c56-4b00-843e-a0112aba9b1b",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/187.2 ft - LC.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "0f31c47e-8282-4faf-a166-74bf07d39cdb",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/210.3 ft - S.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "9d565868-9bb0-436b-8ef4-95f84fd957ce",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/220519 (117--118) 0828.mp4",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "fd38c15d-ef1f-4705-95f9-cdf64c27a1b3",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/226.5 ft - LC.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "58714303-3100-443a-8dfc-2eef57e57511",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/231.2 ft - S.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "fb412653-1e4b-4885-a182-da3dd494e426",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/249.1 ft - LC.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "c3054607-3bbb-4453-a6ab-1b9692a10a0c",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/262.9 ft - LC.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "bfd734f0-00cd-4f46-bc7a-cff057371eb8",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/268.3 ft - LC.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "e4e68e10-3cab-4ff0-97b8-5ee200210411",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/289.8 ft - LC.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "2243ab5f-4257-43e7-876e-e8dc6bba388f",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/299.7 ft - LC.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "789d7c3a-d2bd-481c-8df1-f7b6105ee55f",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/323.8 ft - S.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "d8b140f5-10a5-4840-9c76-a85960b849c7",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/339.2 ft - S.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "db1aef24-3f3a-444b-8840-9e073e2d1d66",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/360.7 ft - ╬ФM.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "5303f3d6-719b-4245-980c-9b4bcef4a3b5",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                },
+                                {
+                                    "Media_URI": "https://dev-media.pipetechproject.com/5d66847ecfc312ce3e80d65b/inspections/F182A51F-9305-4380-9D05-766C85C65B5C/367.0 ft - MH.jpg",
+                                    "I_002_GUID": "F182A51F-9305-4380-9D05-766C85C65B5C",
+                                    "Media_GUID": "73f14562-5a8e-4f8f-bd8c-7a135354c5a0",
+                                    "Length": 0,
+                                    "Hash": null,
+                                    "Media_Info": null,
+                                    "Embedded_Overlay": null
+                                }
+                            ]
+                        }
+                    ]
                 }
-              ],
-              "Media_002": []
-            }
-          ]
+            ]
         }
-      ]
-    },
-    {
-      "$packId": "0481129d-431b-496a-8a0b-2a6f7ba1d248",
-      "_schemaId": "Model.Sewer.NASSCOv7",
-      "_schemaVersion": "20.15.168.0",
-      "A_002": [
-        {
-          "owner": "RVSS",
-          "drainage_area": "4",
-          "pipe_segment_reference": null,
-          "street": "ANTELOPE RD",
-          "city": "White City",
-          "location_code": "Main Highway - Urban",
-          "location_details": "4",
-          "height": 457.1999853696005,
-          "width": null,
-          "shape": "C",
-          "material": "CP",
-          "lining_method": null,
-          "pipe_joint_length": null,
-          "total_length": null,
-          "year_renewed": null,
-          "upstream_ap": "WCA5101A",
-          "up_rim_to_invert": null,
-          "up_rim_to_grade": null,
-          "up_grade_to_invert": null,
-          "downstream_ap": "WCA51",
-          "down_rim_to_invert": null,
-          "down_rim_to_grade": null,
-          "down_grade_to_invert": null,
-          "mh_coordinate_system": null,
-          "gps_accuracy": null,
-          "po_number": null,
-          "work_order": null,
-          "project": "42-1",
-          "surveyed_by": "Michael Atchley",
-          "certificate_number": "U-915-070R0089",
-          "customer": null,
-          "inspection_timestamp": "2021-11-10T16:31:00.000Z",
-          "date": "2021-11-10T16:31:00.000Z",
-          "time": "2021-11-10T18:31:00",
-          "weather": "Damp",
-          "pre_cleaning": "X",
-          "date_cleaned": null,
-          "flow_control": null,
-          "purpose": "F",
-          "direction": "D",
-          "length_surveyed": 70439.27774594311,
-          "is_imperial": true,
-          "comments": null,
-          "inspection_id": 1,
-          "I_002": [
-            {
-              "drainage_area": "1",
-              "street": "WESTMORE DRIVE",
-              "city": "TORONTO",
-              "location_code": "Parking lot",
-              "height": 100,
-              "shape": "C",
-              "material": "PVC",
-              "pipe_joint_length": 4000,
-              "upstream_ap": "CMH5",
-              "downstream_ap": "CDS",
-              "project": "136 WESTMORE DRIVE",
-              "surveyed_by": "KEVIN",
-              "certificate_number": "P0037133-042022",
-              "customer": "DASS GROUP",
-              "inspection_timestamp": "May 1, 2022",
-              "weather": "3",
-              "pre_cleaning": "J",
-              "date_cleaned": "2023-03-27T00:00:00-04:00",
-              "purpose": "Z",
-              "direction": "D",
-              "length_surveyed": 5430,
-              "location_details": "123456",
-              "iGuid": "C27DDA2A-9FCF-4A78-ADB8-82601935DB81",
-              "OS_002": [
-                {
-                  "distance": 0,
-                  "pacp_code": "AMH",
-                  "remarks": "START-CMH5",
-                  "id": "02f8e504-4d63-4753-b62e-bde48d8c8d89",
-                  "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
-                  "OS_GUID": "02f8e504-4d63-4753-b62e-bde48d8c8d89",
-                  "OF_002": [
-                    {
-                      "OF_GUID": "7b2b8eb5-5ad5-4031-91b1-66ff5f066c7a",
-                      "OS_GUID": "02f8e504-4d63-4753-b62e-bde48d8c8d89",
-                      "lastModified": "2023-03-27T12:16:21.241652-04:00",
-                      "createdOn": "2023-03-27T12:16:14.6486806-04:00",
-                      "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
-                      "Media_GUID": "a4581f2b-b1cd-4cb4-b03f-b11ec020e1dc",
-                      "Media_Parameters": "79A2-5A18-9D87-3EDC",
-                      "Snapshot_Media_GUID": "45159e15-1c2e-4edf-b39d-f84720fd5b8c",
-                      "media": {
-                        "Media_GUID": "45159e15-1c2e-4edf-b39d-f84720fd5b8c",
-                        "Media_URI": "000.00 m - AMH.jpg",
-                        "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81"
-                      },
-                      "joint": false
-                    }
-                  ]
-                },
-                {
-                  "distance": 0,
-                  "pacp_code": "MWL",
-                  "value_percent": 0.05,
-                  "id": "161bb48f-503d-43c0-be59-f2100457a684",
-                  "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
-                  "OS_GUID": "161bb48f-503d-43c0-be59-f2100457a684",
-                  "OF_002": [
-                    {
-                      "OF_GUID": "cb233750-e67f-4401-aa32-feb6dab60849",
-                      "OS_GUID": "161bb48f-503d-43c0-be59-f2100457a684",
-                      "lastModified": "2023-03-27T12:16:27.5616784-04:00",
-                      "createdOn": "2023-03-27T12:16:21.8938777-04:00",
-                      "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
-                      "Media_GUID": "a4581f2b-b1cd-4cb4-b03f-b11ec020e1dc",
-                      "Media_Parameters": "B031-5AD9-F934-9EC3",
-                      "Snapshot_Media_GUID": "a9916404-5cd3-4ddc-b8a9-cf86a7121cb0",
-                      "media": {
-                        "Media_GUID": "a9916404-5cd3-4ddc-b8a9-cf86a7121cb0",
-                        "Media_URI": "000.00 m - MWL.jpg",
-                        "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81"
-                      },
-                      "joint": false
-                    }
-                  ]
-                },
-                {
-                  "distance": 5430,
-                  "pacp_code": "AOC",
-                  "remarks": "FINISH-CDS",
-                  "id": "9c4ac103-129a-4a5b-a134-83eceb3d1e41",
-                  "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
-                  "OS_GUID": "9c4ac103-129a-4a5b-a134-83eceb3d1e41",
-                  "OF_002": [
-                    {
-                      "OF_GUID": "239e3f77-4b4c-43d0-93ac-c70d62821f3f",
-                      "OS_GUID": "9c4ac103-129a-4a5b-a134-83eceb3d1e41",
-                      "lastModified": "2023-03-27T12:17:52.9615262-04:00",
-                      "createdOn": "2023-03-27T12:17:41.4746211-04:00",
-                      "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
-                      "Media_GUID": "a4581f2b-b1cd-4cb4-b03f-b11ec020e1dc",
-                      "Media_Parameters": "5F87-B1AD-7712-47EB",
-                      "Snapshot_Media_GUID": "3ab221d1-a00c-4a50-b965-5363faf99c0d",
-                      "media": {
-                        "Media_GUID": "3ab221d1-a00c-4a50-b965-5363faf99c0d",
-                        "Media_URI": "005.43 m - AOC.jpg",
-                        "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81"
-                      },
-                      "joint": false
-                    }
-                  ]
-                }
-              ],
-              "Media_002": [
-                {
-                  "Media_GUID": "45159e15-1c2e-4edf-b39d-f84720fd5b8c",
-                  "Media_URI": "https://s3.amazonaws.com/pipetech-uploads-dev/5d66847ecfc312ce3e80d65b/inspections/C27DDA2A-9FCF-4A78-ADB8-82601935DB81/000.00 m - AMH.jpg",
-                  "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
-                  "Embedded_Overlay": null,
-                  "Media_Info": null
-                },
-                {
-                  "Media_GUID": "a9916404-5cd3-4ddc-b8a9-cf86a7121cb0",
-                  "Media_URI": "https://s3.amazonaws.com/pipetech-uploads-dev/5d66847ecfc312ce3e80d65b/inspections/C27DDA2A-9FCF-4A78-ADB8-82601935DB81/000.00 m - MWL.jpg",
-                  "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
-                  "Embedded_Overlay": null,
-                  "Media_Info": null
-                },
-                {
-                  "Media_GUID": "3ab221d1-a00c-4a50-b965-5363faf99c0d",
-                  "Media_URI": "https://s3.amazonaws.com/pipetech-uploads-dev/5d66847ecfc312ce3e80d65b/inspections/C27DDA2A-9FCF-4A78-ADB8-82601935DB81/005.43 m - AOC.jpg",
-                  "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
-                  "Embedded_Overlay": null,
-                  "Media_Info": null
-                },
-                {
-                  "Media_GUID": "a4581f2b-b1cd-4cb4-b03f-b11ec020e1dc",
-                  "Media_URI": "https://s3.amazonaws.com/pipetech-uploads-dev/5d66847ecfc312ce3e80d65b/inspections/C27DDA2A-9FCF-4A78-ADB8-82601935DB81/230327 (CMH5--CDS) 1215.mp4",
-                  "I_002_GUID": "c27dda2a-9fcf-4a78-adb8-82601935db81",
-                  "Embedded_Overlay": "31",
-                  "Media_Info": "Created with PTLive"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ],
-  "awsRegion": "us-east-2",
-  "org": "5d66847ecfc312ce3e80d65b",
-  "id": "649a0cf931633f78dbec1f26",
-  "archived": false
+    ]
 }

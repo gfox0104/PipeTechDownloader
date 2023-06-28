@@ -22,7 +22,7 @@
 	</PropertyGroup>
 	
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-		<DefineConstants>$(DefineConstants) SLOWDOWN</DefineConstants>
+		<!--<DefineConstants>$(DefineConstants) SLOWDOWN</DefineConstants>-->
 	</PropertyGroup>
 
 	<ItemGroup>

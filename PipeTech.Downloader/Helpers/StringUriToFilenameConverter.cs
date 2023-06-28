@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
+﻿// <copyright file="StringUriToFilenameConverter.cs" company="Industrial Technology Group">
+// Copyright (c) Industrial Technology Group. All rights reserved.
+// </copyright>
+
 using Microsoft.UI.Xaml.Data;
 
 namespace PipeTech.Downloader.Helpers;

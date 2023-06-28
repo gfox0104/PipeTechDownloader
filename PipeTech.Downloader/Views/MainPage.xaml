@@ -17,12 +17,12 @@
         <helpers:NumberBytesToStorageStringConverter x:Key="NumberBytesToStorageStringConverter"/>
 
         <DataTemplate x:Key="FolderTemplate" x:DataType="models:DownloadInspectionHandler">
-            <TreeViewItem AutomationProperties.Name="{x:Bind Inspection.Name}"
-            ItemsSource="{x:Bind Inspection.Files}" IsExpanded="True">
+            <TreeViewItem AutomationProperties.Name="{x:Bind Inspection.Name, Mode=OneWay}"
+            ItemsSource="{x:Bind Inspection.Files, Mode=OneWay}" IsExpanded="True">
                 <StackPanel Orientation="Horizontal">
                     <Image Width="10" Source="../Assets/folder.png"/>
                     <TextBlock Margin="0,0,10,0"/>
-                    <TextBlock Text="{x:Bind Inspection.Name, Mode=OneWay}" />
+                    <TextBlock Text="{x:Bind Inspection.Name, Mode=OneWay}" VerticalAlignment="Center" />
 
                     <Button VerticalAlignment="Center"
                             Margin="15,0,0,0"
@@ -41,11 +41,11 @@
         </DataTemplate>
 
         <DataTemplate x:Key="FileTemplate" x:DataType="models:File">
-            <TreeViewItem AutomationProperties.Name="{x:Bind Name}">
+            <TreeViewItem AutomationProperties.Name="{x:Bind Name, Mode=OneWay}">
                 <StackPanel Orientation="Horizontal">
                     <Image Width="10" Source="../Assets/file.png"/>
                     <TextBlock Margin="0,0,10,0"/>
-                    <TextBlock Text="{x:Bind Name, Converter={StaticResource StringUriToFilenameConverter}}"/>
+                    <TextBlock Text="{x:Bind Name, Mode=OneWay, Converter={StaticResource StringUriToFilenameConverter}}"/>
                 </StackPanel>
             </TreeViewItem>
         </DataTemplate>
@@ -99,7 +99,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock
                     VerticalAlignment="Center"
-                    Text="{x:Bind ViewModel.DownloadName}"                    
+                    Text="{x:Bind ViewModel.DownloadName, Mode=OneWay}"                    
                     Style="{StaticResource PageTitleStyle}" />
                     <TextBlock VerticalAlignment="Center"
                                Margin="15,10,0,0"
@@ -128,9 +128,11 @@
                 </StackPanel>
             </Grid>
 
-            <TreeView Grid.Row="1"
-                      ItemsSource="{x:Bind ViewModel.Inspections}"
-                      ItemTemplateSelector="{StaticResource DownloadTemplateSelector}"/>
+            <ScrollViewer Grid.Row="1">
+                <TreeView 
+                    ItemsSource="{x:Bind ViewModel.Inspections, Mode=OneWay}"
+                    ItemTemplateSelector="{StaticResource DownloadTemplateSelector}"/>
+            </ScrollViewer>
 
             <Grid Grid.Row="2"
                   Margin="{StaticResource XSmallTopMargin}">

@@ -11,6 +11,7 @@ using CommunityToolkit.WinUI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using PipeTech.Downloader.Contracts.Services;
 using PipeTech.Downloader.Contracts.ViewModels;
@@ -435,7 +436,10 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 
                 if (!string.IsNullOrEmpty(this.Manifest.DeliverableName))
                 {
-                    this.DownloadName = this.Manifest.DeliverableName;
+                    await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
+                    {
+                        this.DownloadName = this.Manifest.DeliverableName;
+                    });
                 }
 
                 if (this.Manifest.Inspections is not null)
@@ -455,20 +459,27 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                                 };
 
                                 this.Inspections.Add(dlh);
-                            },
-                            DispatcherQueuePriority.Normal);
+                            });
                     }
 
                     if (this.Manifest.Inspections.Any())
                     {
                         if (this.Manifest.CombinedReportIds?.Any() == true)
                         {
-                            this.Inspections.Add($"{(this.Manifest.DeliverableName ?? this.DownloadName)?.SanitizeFilename() ?? "Project report"}.pdf");
+                            await App.MainWindow.DispatcherQueue.EnqueueAsync(
+                                () =>
+                                {
+                                    this.Inspections.Add($"{(this.Manifest.DeliverableName ?? this.DownloadName)?.SanitizeFilename() ?? "Project report"}.pdf");
+                                });
                         }
 
                         if (this.Manifest.CombinedNASSCOExchangeGenerate == true)
                         {
-                            this.Inspections.Add($"{(this.Manifest.DeliverableName ?? this.DownloadName)?.SanitizeFilename() ?? "NASSCO Exchange"}.mdb");
+                            await App.MainWindow.DispatcherQueue.EnqueueAsync(
+                                () =>
+                                {
+                                    this.Inspections.Add($"{(this.Manifest.DeliverableName ?? this.DownloadName)?.SanitizeFilename() ?? "NASSCO Exchange"}.mdb");
+                                });
                         }
                     }
                 }

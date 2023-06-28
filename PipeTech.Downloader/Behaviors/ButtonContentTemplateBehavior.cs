@@ -62,6 +62,11 @@ public class ButtonContentTemplateBehavior : Behavior<Button>, INotifyPropertyCh
 
     private void OnStateChanged()
     {
+        if (this.AssociatedObject is null)
+        {
+            return;
+        }
+
         switch (this.State)
         {
             case DownloadInspection.States.Errored:
