@@ -147,12 +147,45 @@ public partial class Project : BindableRecipient, IManifest
     /// <summary>
     /// Gets the states.
     /// </summary>
-    public DownloadInspection.States State =>
-        this.Inspections?.Any(h => h.Inspection?.State == DownloadInspection.States.Errored) == true ?
-        DownloadInspection.States.Errored :
-        (this.Inspections?.All(h => h.Inspection?.State == DownloadInspection.States.Complete) == true ?
-        DownloadInspection.States.Complete :
-        DownloadInspection.States.Processing);
+    public DownloadInspection.States State
+    {
+        get
+        {
+            if (this.Inspections?.Any(h => h.Inspection?.State == DownloadInspection.States.Errored) == true)
+            {
+                return DownloadInspection.States.Errored;
+            }
+
+            if (this.Inspections?.All(h => h.Inspection?.State == DownloadInspection.States.Complete &&
+            !string.IsNullOrEmpty(h.Inspection.DataCompletePath) &&
+            System.IO.File.Exists(h.Inspection.DataCompletePath)) == true)
+            {
+                if (this.CombinedNASSCOExchangeGenerate == true)
+                {
+                    if (this.GetExchangeDBPath() is not string dbPath ||
+                        string.IsNullOrEmpty(dbPath) ||
+                        !System.IO.File.Exists(dbPath))
+                    {
+                        return DownloadInspection.States.Processing;
+                    }
+                }
+
+                if (this.CombinedReportIds?.Any() == true)
+                {
+                    if (this.GetCombinedReportPath() is not string reportPath ||
+                        string.IsNullOrEmpty(reportPath) ||
+                        !System.IO.File.Exists(reportPath))
+                    {
+                        return DownloadInspection.States.Processing;
+                    }
+                }
+
+                return DownloadInspection.States.Complete;
+            }
+
+            return DownloadInspection.States.Processing;
+        }
+    }
 
     /// <inheritdoc/>
     [JsonExtensionData]
@@ -201,7 +234,8 @@ public partial class Project : BindableRecipient, IManifest
                     p.DeliverableName = dName.ToString();
                 }
 
-                if (ele.Value.TryGetProperty(nameof(Project.AdditionalProperties), out var additionalProps))
+                if (ele.Value.TryGetProperty(nameof(Project.AdditionalProperties), out var additionalProps) &&
+                    additionalProps.ValueKind != JsonValueKind.Null)
                 {
                     p.AdditionalProperties = JsonSerializer.Deserialize<Dictionary<string, object?>?>(additionalProps.ToString());
                 }
@@ -435,6 +469,9 @@ public partial class Project : BindableRecipient, IManifest
         switch (e.PropertyName)
         {
             case nameof(DownloadInspection.Progress):
+            case nameof(DownloadInspection.DataCompletePath):
+            case nameof(DownloadInspection.ExchangeDBCompletePath):
+            case nameof(DownloadInspection.ReportCompletePath):
                 this.RaisePropertyChanged(nameof(this.Progress));
                 break;
             case nameof(DownloadInspection.TotalSize):

@@ -24,13 +24,15 @@ public class NumberBytesToStorageStringConverter : IValueConverter
             return null;
         }
 
-        if (bytes < Math.Pow(2, 20)) // 1024 * 1024
+        if (bytes < Math.Pow(2, 20))
         {
+            // 1024 * 1024
             // Return as kilo bytes
             return (bytes / Math.Pow(2, 10)).ToString("0.0 KB");
         }
-        else if (bytes <= Math.Pow(2, 30) * 10) // 1024 * 1024 * 1024
+        else if (bytes <= Math.Pow(2, 30) * 10)
         {
+            // 1024 * 1024 * 1024
             // Return in MB
             return (bytes / Math.Pow(2, 20)).ToString("0.0 MB");
         }

@@ -106,8 +106,7 @@ public class ActivationService : IActivationService
             {
                 await activationHandler.HandleAsync(activationArgs);
             }
-
-            if (this.defaultHandler.CanHandle(activationArgs))
+            else if (this.defaultHandler.CanHandle(activationArgs))
             {
                 await this.defaultHandler.HandleAsync(activationArgs);
             }

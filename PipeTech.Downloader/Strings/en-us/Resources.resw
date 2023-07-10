@@ -164,7 +164,7 @@
     <value>About this application</value>
   </data>
   <data name="Settings_AboutDescription.Text" xml:space="preserve">
-    <value>TODO: Replace with your app description.</value>
+    <value>Download your projects and inspections to your machine for offline viewing in PipeTech desktop products</value>
   </data>
   <data name="SettingsPage_PrivacyTermsLink.Content" xml:space="preserve">
     <value>Privacy Statement</value>
@@ -199,5 +199,35 @@
   <data name="Downloads_Title.Text" xml:space="preserve">
     <value>Downloads</value>
     <comment>Page title for DownloadsPage</comment>
+  </data>
+  <data name="Settings_Browse.Content" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="Settings_DefaultDownloadPath.Text" xml:space="preserve">
+    <value>Default download path</value>
+  </data>
+  <data name="Settings_SelectDefault.PlaceholderText" xml:space="preserve">
+    <value>Select default download path</value>
+  </data>
+  <data name="Settings_Support.Text" xml:space="preserve">
+    <value>Support Information</value>
+  </data>
+  <data name="Settings_Support_CallLink.Content" xml:space="preserve">
+    <value>Call: 616-676-9811</value>
+  </data>
+  <data name="Settings_Support_CallLink.NavigateUri" xml:space="preserve">
+    <value>tel:616-676-9811</value>
+  </data>
+  <data name="Settings_Support_EmailLink.Content" xml:space="preserve">
+    <value>Email: support@pipetech.com</value>
+  </data>
+  <data name="Settings_Support_EmailLink.NavigateUri" xml:space="preserve">
+    <value>mailto:support@pipetech.com</value>
+  </data>
+  <data name="Settings_Support_RemoteLink.Content" xml:space="preserve">
+    <value>Start Remote Session: helpdesk.pipetech.com</value>
+  </data>
+  <data name="Settings_Support_RemoteLink.NavigateUri" xml:space="preserve">
+    <value>http://helpdesk.pipetech.com</value>
   </data>
 </root>

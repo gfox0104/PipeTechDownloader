@@ -1,0 +1,102 @@
+{
+  "individualNASSCOExchangeGenerate": true,
+  "combinedNASSCOExchangeGenerate": false,
+  "individualReportIds": ["ef112cd8-51dd-4f34-8b9b-bd5bb69a382d"],
+  "combinedReportIds": null,
+  "inspections": [
+    {
+      "_schemaId": "Model.Sewer.Pacev094",
+      "_schemaVersion": "20.15.168.0",
+      "$packId": "64336fb0-0e0b-46d8-ba02-33b59e557027",
+      "A_002": [
+        {
+          "Upstream_AP": "154",
+          "Downstream_AP": "155",
+          "Owner": "City of Larimore",
+          "Street": "Field",
+          "City": "Larimore",
+          "State": "ND",
+          "Sewer_Use": "Stormwater",
+          "Shape": "Circular",
+          "Size": 609.6,
+          "Material": "PVC",
+          "Total_Length": 13959.84,
+          "Direction": "D",
+          "I_002": [
+            {
+              "iGuid": "1DB70AFE-A6C5-4BB8-AB87-F53E954393CE",
+              "i002Guid": "1DB70AFE-A6C5-4BB8-AB87-F53E954393CE",
+              "Customer": "JR Civil",
+              "Project": "Clean & TV",
+              "WorkOrder": "2022-087",
+              "Purpose": "Pre-Acceptance",
+              "Surveyed_By": "Curtis Fowler",
+              "PreCleaning": "Light",
+              "Inspection_Timestamp": "2023-06-23T20:10:56.839Z",
+              "Length_Surveyed": 13959.84,
+              "OS_002": [
+                {
+                  "osGuid": "4acddf23-1eb8-469b-9a33-b24bdf0e2d16",
+                  "code": "MH",
+                  "OF_002": [
+                    {
+                      "code": "undefined",
+                      "clock": { "from": null, "to": null },
+                      "ofGuid": "37245153-a07f-4c4b-b312-67eb2e9ea573",
+                      "mediaGuid": "7a597770-737f-4a51-9df3-c99980542d17",
+                      "Code": "MH",
+                      "Distance": 0
+                    }
+                  ]
+                },
+                {
+                  "osGuid": "3edf3272-fcaf-4ab8-9dd3-d77929e74b22",
+                  "code": "MH",
+                  "OF_002": [
+                    {
+                      "code": "undefined",
+                      "clock": { "from": null, "to": null },
+                      "ofGuid": "0ca0f7a7-1617-4ee1-beba-bc89c2ce3cf5",
+                      "mediaGuid": "7a597770-737f-4a51-9df3-c99980542d17",
+                      "Code": "MH",
+                      "Distance": 13959.84
+                    }
+                  ]
+                }
+              ],
+              "Media_002": [
+                {
+                  "Media_URI": "https://dev-media.pipetechproject.com/62976ced3e852e58c2728f3e/inspections/1DB70AFE-A6C5-4BB8-AB87-F53E954393CE/000.0 ft - MH.jpg",
+                  "I_002_GUID": "1DB70AFE-A6C5-4BB8-AB87-F53E954393CE",
+                  "Media_GUID": "bbccb0b5-11ca-4a47-b4fb-df3c2da51a2a",
+                  "Length": 0,
+                  "Hash": null,
+                  "Media_Info": null,
+                  "Embedded_Overlay": null
+                },
+                {
+                  "Media_URI": "https://dev-media.pipetechproject.com/62976ced3e852e58c2728f3e/inspections/1DB70AFE-A6C5-4BB8-AB87-F53E954393CE/045.8 ft - MH.jpg",
+                  "I_002_GUID": "1DB70AFE-A6C5-4BB8-AB87-F53E954393CE",
+                  "Media_GUID": "8bc937a1-fc92-4be6-b1c3-92fe65aa24f9",
+                  "Length": 0,
+                  "Hash": null,
+                  "Media_Info": null,
+                  "Embedded_Overlay": null
+                },
+                {
+                  "Media_URI": "https://dev-media.pipetechproject.com/62976ced3e852e58c2728f3e/inspections/1DB70AFE-A6C5-4BB8-AB87-F53E954393CE/230623 (154--155) 1410.mp4",
+                  "I_002_GUID": "1DB70AFE-A6C5-4BB8-AB87-F53E954393CE",
+                  "Media_GUID": "7a597770-737f-4a51-9df3-c99980542d17",
+                  "Length": 0,
+                  "Hash": null,
+                  "Media_Info": null,
+                  "Embedded_Overlay": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

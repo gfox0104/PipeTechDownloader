@@ -90,7 +90,7 @@ public class DownloadService : ObservableObject, IDownloadService
         this.Source = new();
         this.Source.CollectionChanged += this.Source_CollectionChanged;
 
-        _ = this.LoadDownloads(new CancellationTokenSource(TimeSpan.FromSeconds(30)).Token);
+        _ = this.LoadDownloads(new CancellationTokenSource(TimeSpan.FromMinutes(10)).Token);
 
 #if DEBUG
         try
@@ -155,12 +155,17 @@ public class DownloadService : ObservableObject, IDownloadService
                                 {
                                     if (!this.Source.Any(p => p.Id == project.Id))
                                     {
-                                        try
+                                        while (true)
                                         {
-                                            this.Source.Add(project);
-                                        }
-                                        catch (Exception)
-                                        {
+                                            try
+                                            {
+                                                this.Source.Add(project);
+                                                break;
+                                            }
+                                            catch (Exception)
+                                            {
+                                                this.Source.Remove(project);
+                                            }
                                         }
                                     }
                                 });
@@ -192,6 +197,109 @@ public class DownloadService : ObservableObject, IDownloadService
     }
 
     /// <inheritdoc/>
+    public IEnumerable<KeyValuePair<string, Job>> FindJobForProject(Project project)
+    {
+        var dict = new Dictionary<string, Job>();
+        var monitor = this.jobClient.Storage.GetMonitoringApi();
+        try
+        {
+            // ASSUMPTION: We are going to assume that the number of
+            // jobs will NEVER exceed an integer. (2,147,483,647)
+            var jobs = monitor.EnqueuedJobs(
+                "default",
+                0,
+                (int)Math.Min(int.MaxValue, monitor.EnqueuedCount("default")))
+                .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
+                j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
+                j.Value.Job.Args.Count >= 1 &&
+                j.Value.Job.Args[0] is string path &&
+                path.ToUpperInvariant() == project.FilePath?.ToUpperInvariant());
+            foreach (var j in jobs)
+            {
+                dict.Add(j.Key, j.Value.Job);
+            }
+
+            var processing = monitor.ProcessingJobs(
+                0,
+                (int)Math.Min(int.MaxValue, monitor.ProcessingCount()))
+                .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
+                j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
+                j.Value.Job.Args.Count >= 1 &&
+                j.Value.Job.Args[0] is string path &&
+                path.ToUpperInvariant() == project.FilePath?.ToUpperInvariant());
+            foreach (var j in processing)
+            {
+                dict.Add(j.Key, j.Value.Job);
+            }
+
+            var scheduled = monitor.ScheduledJobs(
+                0,
+                (int)Math.Min(int.MaxValue, monitor.ScheduledCount()))
+                .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
+                j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
+                j.Value.Job.Args.Count >= 1 &&
+                j.Value.Job.Args[0] is string path &&
+                path.ToUpperInvariant() == project.FilePath?.ToUpperInvariant());
+            foreach (var j in scheduled)
+            {
+                dict.Add(j.Key, j.Value.Job);
+            }
+        }
+        catch (Exception ex)
+        {
+            this.logger?.LogError(ex, $"Error finding jobs for project [{project.ToJson()}]");
+        }
+        finally
+        {
+            if (monitor is IDisposable d)
+            {
+                d.Dispose();
+            }
+        }
+
+        return dict;
+    }
+
+    /// <inheritdoc/>
+    public async Task CreateJobForProject(Project project)
+    {
+        if (project.Inspections is not null)
+        {
+            foreach (var inspection in project.Inspections)
+            {
+                var path = inspection.Inspection?.DownloadPath;
+                if (string.IsNullOrEmpty(path))
+                {
+                    this.logger?.LogWarning($"An inspection in project [{project.FilePath}] is empty.");
+                    if (inspection.Inspection is not null)
+                    {
+                        await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
+                        {
+                            inspection.Inspection.State = Models.DownloadInspection.States.Errored;
+                        });
+                    }
+
+                    continue;
+                }
+
+                if (inspection.Inspection is not null)
+                {
+                    await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
+                    {
+                        inspection.Inspection.State = Models.DownloadInspection.States.Queued;
+                    });
+                }
+            }
+        }
+
+        await this.WriteProject(project);
+        this.jobClient.Enqueue<IDownloadService>(
+            s => s.DownloadProject(
+                project.FilePath!,
+                CancellationToken.None));
+    }
+
+    /// <inheritdoc/>
     public async Task DownloadProject(
         string projectFilePath,
         CancellationToken token)
@@ -200,7 +308,7 @@ public class DownloadService : ObservableObject, IDownloadService
 
         var project = default(Project);
         var compositeExchangeDBPath = default(string);
-        var reportPath = default(string);
+        var compositeReportPath = default(string);
         try
         {
             if (token.IsCancellationRequested)
@@ -219,16 +327,7 @@ public class DownloadService : ObservableObject, IDownloadService
             var firstPack = default(IPack);
             var inspectionType = default(InspectionTable);
             compositeExchangeDBPath = project.GetExchangeDBPath();
-            reportPath = project.GetCombinedReportPath();
-
-            if (project.CombinedNASSCOExchangeGenerate == true && System.IO.File.Exists(compositeExchangeDBPath))
-            {
-                System.IO.File.Delete(compositeExchangeDBPath);
-                await dq.EnqueueAsync(() =>
-                {
-                    project?.RaiseProgressChanged();
-                });
-            }
+            compositeReportPath = project.GetCombinedReportPath();
 
             if (project.Inspections?.Any() == true)
             {
@@ -321,6 +420,24 @@ public class DownloadService : ObservableObject, IDownloadService
                             if (inspectionPath is not null && !Directory.Exists(inspectionPath))
                             {
                                 Directory.CreateDirectory(inspectionPath);
+                            }
+
+                            if (project.CombinedNASSCOExchangeGenerate == true && System.IO.File.Exists(compositeExchangeDBPath))
+                            {
+                                System.IO.File.Delete(compositeExchangeDBPath);
+                                await dq.EnqueueAsync(() =>
+                                {
+                                    project?.RaiseProgressChanged();
+                                });
+                            }
+
+                            if (project.CombinedReportIds?.Any() == true && System.IO.File.Exists(compositeReportPath))
+                            {
+                                System.IO.File.Delete(compositeReportPath);
+                                await dq.EnqueueAsync(() =>
+                                {
+                                    project?.RaiseProgressChanged();
+                                });
                             }
 
                             // Let's do each file
@@ -630,6 +747,23 @@ public class DownloadService : ObservableObject, IDownloadService
                                 inspectionObject.FileName = Path.Combine(
                                     inspectionPath!,
                                     inspectionObject.ResolveInspectionFileNameWithoutExtension() + ".ptdx");
+
+                                var currentOk = inspectionObject.InspectionObservationFocusCollection.View.MoveCurrentToFirst();
+                                while (currentOk)
+                                {
+                                    var of = inspectionObject.CurrentInspectionObservationFocusRowView;
+                                    var mp = inspectionObject.GetFieldRawValue(of, of.Row.Table.TableName, "Media_Parameters");
+                                    if (mp is string mpString && mpString.EndsWith("t") &&
+                                    double.TryParse(mpString.TrimEnd('t'), out var time))
+                                    {
+                                        var ts = TimeSpan.FromMilliseconds(time);
+                                        of.SetColumnValue(
+                                            "Media_Parameters",
+                                            ts.TotalMilliseconds.ToString().Encrypt(inspectionObject.GetInspectionGuid().ToString()));
+                                    }
+
+                                    currentOk = inspectionObject.InspectionObservationFocusCollection.View.MoveCurrentToNext();
+                                }
 
                                 // Change the media paths to local-relative
                                 foreach (var mediaReference in inspectionObject.MediaReferences.ToArray())
@@ -1269,46 +1403,82 @@ public class DownloadService : ObservableObject, IDownloadService
                             return null;
                         }
 
-                        var ds = this.jsonDeserializer.Deserialize(inspection.Json?.ToString() ?? string.Empty);
-
-                        if (!ds.TryGetInspectionRow(out var inspectionRow) || inspectionRow is null)
-                        {
-                            return null;
-                        }
-
                         var inspectionObject = default(Inspection);
-                        await dq.EnqueueAsync(() =>
+                        try
                         {
-                            inspectionObject = this.inspectionFactory.InitializeInspection(
-                            firstPack,
-                            ds,
-                            inspectionRow.Table.TableName) as Inspection;
-                        });
+                            await dq.EnqueueAsync(async () =>
+                            {
+                                inspectionObject = (await this.inspectionFactory.OpenInspectionAsync(
+                                inspection.DataCompletePath,
+                                Guid.Empty)) as Inspection;
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            this.logger?.LogWarning(
+                                ex,
+                                $"Error loading inspection for composite reports [{inspection.DataCompletePath}]");
+                        }
 
                         if (inspectionObject is null)
                         {
-                            return null;
-                        }
+                            var ds = this.jsonDeserializer.Deserialize(inspection.Json?.ToString() ?? string.Empty);
 
-                        await dq.EnqueueAsync(() =>
-                        {
-                            inspectionObject.AssetCollection.View.MoveCurrentToFirst();
-                            inspectionObject.InspectionCollection.View.MoveCurrentToFirst();
-                            inspectionObject.FileName = Path.Combine(
-                                inspection.DownloadPath ?? ".\\",
-                                inspectionObject.ResolveInspectionFileNameWithoutExtension() + ".ptdx");
-
-                            // Change the media paths to local-relative
-                            foreach (var mediaReference in inspectionObject.MediaReferences.ToArray())
+                            if (!ds.TryGetInspectionRow(out var inspectionRow) || inspectionRow is null)
                             {
-                                inspectionObject.MediaReferences.Replace(
-                                    mediaReference,
-                                    mediaReference.UpdatePath(
-                                        new Uri(
-                                            Uri.UnescapeDataString(Path.GetFileName(mediaReference.URI.OriginalString)),
-                                            UriKind.Relative)));
+                                return null;
                             }
-                        });
+
+                            await dq.EnqueueAsync(() =>
+                            {
+                                inspectionObject = this.inspectionFactory.InitializeInspection(
+                                firstPack,
+                                ds,
+                                inspectionRow.Table.TableName) as Inspection;
+                            });
+
+                            if (inspectionObject is null)
+                            {
+                                return null;
+                            }
+
+                            await dq.EnqueueAsync(() =>
+                            {
+                                inspectionObject.AssetCollection.View.MoveCurrentToFirst();
+                                inspectionObject.InspectionCollection.View.MoveCurrentToFirst();
+                                inspectionObject.FileName = Path.Combine(
+                                    inspection.DownloadPath ?? ".\\",
+                                    inspectionObject.ResolveInspectionFileNameWithoutExtension() + ".ptdx");
+
+                                var currentOk = inspectionObject.InspectionObservationFocusCollection.View.MoveCurrentToFirst();
+                                while (currentOk)
+                                {
+                                    var of = inspectionObject.CurrentInspectionObservationFocusRowView;
+                                    var mp = inspectionObject.GetFieldRawValue(of, of.Row.Table.TableName, "Media_Parameters");
+                                    if (mp is string mpString && mpString.EndsWith("t") &&
+                                    double.TryParse(mpString.TrimEnd('t'), out var time))
+                                    {
+                                        var ts = TimeSpan.FromMilliseconds(time);
+                                        of.SetColumnValue(
+                                            "Media_Parameters",
+                                            ts.TotalMilliseconds.ToString().Encrypt(inspectionObject.GetInspectionGuid().ToString()));
+                                    }
+
+                                    currentOk = inspectionObject.InspectionObservationFocusCollection.View.MoveCurrentToNext();
+                                }
+
+                                // Change the media paths to local-relative
+                                foreach (var mediaReference in inspectionObject.MediaReferences.ToArray())
+                                {
+                                    inspectionObject.MediaReferences.Replace(
+                                        mediaReference,
+                                        mediaReference.UpdatePath(
+                                            new Uri(
+                                                Uri.UnescapeDataString(Path.GetFileName(mediaReference.URI.OriginalString)),
+                                                UriKind.Relative)));
+                                }
+                            });
+                        }
 
                         return inspectionObject;
                     }
@@ -1415,7 +1585,7 @@ public class DownloadService : ObservableObject, IDownloadService
 
                     await dq.EnqueueAsync(async () =>
                     {
-                        using (var fs = new FileStream(reportPath, FileMode.Create))
+                        using (var fs = new FileStream(compositeReportPath, FileMode.Create))
                         {
                             await document.GeneratePackage(fs);
                         }
@@ -1467,10 +1637,10 @@ public class DownloadService : ObservableObject, IDownloadService
             {
                 try
                 {
-                    if (!string.IsNullOrEmpty(reportPath) &&
-                        System.IO.File.Exists(reportPath))
+                    if (!string.IsNullOrEmpty(compositeReportPath) &&
+                        System.IO.File.Exists(compositeReportPath))
                     {
-                        System.IO.File.Delete(reportPath);
+                        System.IO.File.Delete(compositeReportPath);
                     }
                 }
                 catch (Exception)
@@ -1523,10 +1693,10 @@ public class DownloadService : ObservableObject, IDownloadService
             {
                 try
                 {
-                    if (!string.IsNullOrEmpty(reportPath) &&
-                        System.IO.File.Exists(reportPath))
+                    if (!string.IsNullOrEmpty(compositeReportPath) &&
+                        System.IO.File.Exists(compositeReportPath))
                     {
-                        System.IO.File.Delete(reportPath);
+                        System.IO.File.Delete(compositeReportPath);
                     }
                 }
                 catch (Exception)
@@ -1603,94 +1773,59 @@ public class DownloadService : ObservableObject, IDownloadService
                     continue;
                 }
 
-                var monitor = this.jobClient.Storage.GetMonitoringApi();
-                try
+                foreach (var j in this.FindJobForProject(p))
                 {
-                    // ASSUMPTION: We are going to assume that the number of
-                    // jobs will NEVER exceed an integer. (2,147,483,647)
-                    var jobs = monitor.EnqueuedJobs(
-                        "default",
-                        0,
-                        (int)Math.Min(int.MaxValue, monitor.EnqueuedCount("default")))
-                        .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-                        j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
-                        j.Value.Job.Args.Count >= 1 &&
-                        j.Value.Job.Args[0] is string path &&
-                        path.ToUpperInvariant() == p.FilePath.ToUpperInvariant());
-                    foreach (var j in jobs)
-                    {
-                        this.jobClient.Delete(j.Key);
-                    }
-
-                    ////var jobs = monitor.EnqueuedJobs(
-                    ////    "default",
-                    ////    0,
-                    ////    (int)Math.Min(int.MaxValue, monitor.EnqueuedCount("default")))
-                    ////    .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-                    ////    j.Value.Job.Method.Name == nameof(this.DownloadInspection) &&
-                    ////    j.Value.Job.Args.Count >= 2 &&
-                    ////    j.Value.Job.Args[0] is string path &&
-                    ////    path.ToUpperInvariant() == p.FilePath.ToUpperInvariant());
-                    ////foreach (var j in jobs)
-                    ////{
-                    ////    this.jobClient.Delete(j.Key);
-                    ////}
-
-                    var processing = monitor.ProcessingJobs(
-                        0,
-                        (int)Math.Min(int.MaxValue, monitor.ProcessingCount()))
-                        .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-                        j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
-                        j.Value.Job.Args.Count >= 1 &&
-                        j.Value.Job.Args[0] is string path &&
-                        path.ToUpperInvariant() == p.FilePath.ToUpperInvariant());
-                    foreach (var j in jobs)
-                    {
-                        this.jobClient.Delete(j.Key);
-                    }
-
-                    ////var processing = monitor.ProcessingJobs(
-                    ////    0,
-                    ////    (int)Math.Min(int.MaxValue, monitor.ProcessingCount()))
-                    ////    .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-                    ////    j.Value.Job.Method.Name == nameof(this.DownloadInspection) &&
-                    ////    j.Value.Job.Args.Count >= 2 &&
-                    ////    j.Value.Job.Args[0] is string path &&
-                    ////    path.ToUpperInvariant() == p.FilePath.ToUpperInvariant());
-                    ////foreach (var j in jobs)
-                    ////{
-                    ////    this.jobClient.Delete(j.Key);
-                    ////}
-
-                    var scheduled = monitor.ScheduledJobs(
-                        0,
-                        (int)Math.Min(int.MaxValue, monitor.ScheduledCount()))
-                        .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-                        j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
-                        j.Value.Job.Args.Count >= 1 &&
-                        j.Value.Job.Args[0] is string path &&
-                        path.ToUpperInvariant() == p.FilePath.ToUpperInvariant());
-                    foreach (var j in jobs)
-                    {
-                        this.jobClient.Delete(j.Key);
-                    }
-
-                    ////var scheduled = monitor.ScheduledJobs(
-                    ////    0,
-                    ////    (int)Math.Min(int.MaxValue, monitor.ScheduledCount()))
-                    ////    .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-                    ////    j.Value.Job.Method.Name == nameof(this.DownloadInspection) &&
-                    ////    j.Value.Job.Args.Count >= 2 &&
-                    ////    j.Value.Job.Args[0] is string path &&
-                    ////    path.ToUpperInvariant() == p.FilePath.ToUpperInvariant());
-                    ////foreach (var j in jobs)
-                    ////{
-                    ////    this.jobClient.Delete(j.Key);
-                    ////}
+                    this.jobClient.Delete(j.Key);
                 }
-                catch (Exception)
-                {
-                }
+
+                ////var monitor = this.jobClient.Storage.GetMonitoringApi();
+                ////try
+                ////{
+                ////    // ASSUMPTION: We are going to assume that the number of
+                ////    // jobs will NEVER exceed an integer. (2,147,483,647)
+                ////    var jobs = monitor.EnqueuedJobs(
+                ////        "default",
+                ////        0,
+                ////        (int)Math.Min(int.MaxValue, monitor.EnqueuedCount("default")))
+                ////        .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
+                ////        j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
+                ////        j.Value.Job.Args.Count >= 1 &&
+                ////        j.Value.Job.Args[0] is string path &&
+                ////        path.ToUpperInvariant() == p.FilePath.ToUpperInvariant());
+                ////    foreach (var j in jobs)
+                ////    {
+                ////        this.jobClient.Delete(j.Key);
+                ////    }
+
+                ////    var processing = monitor.ProcessingJobs(
+                ////        0,
+                ////        (int)Math.Min(int.MaxValue, monitor.ProcessingCount()))
+                ////        .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
+                ////        j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
+                ////        j.Value.Job.Args.Count >= 1 &&
+                ////        j.Value.Job.Args[0] is string path &&
+                ////        path.ToUpperInvariant() == p.FilePath.ToUpperInvariant());
+                ////    foreach (var j in processing)
+                ////    {
+                ////        this.jobClient.Delete(j.Key);
+                ////    }
+
+                ////    var scheduled = monitor.ScheduledJobs(
+                ////        0,
+                ////        (int)Math.Min(int.MaxValue, monitor.ScheduledCount()))
+                ////        .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
+                ////        j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
+                ////        j.Value.Job.Args.Count >= 1 &&
+                ////        j.Value.Job.Args[0] is string path &&
+                ////        path.ToUpperInvariant() == p.FilePath.ToUpperInvariant());
+                ////    foreach (var j in scheduled)
+                ////    {
+                ////        this.jobClient.Delete(j.Key);
+                ////    }
+                ////}
+                ////catch (Exception)
+                ////{
+                ////}
             }
         }
 
@@ -1708,69 +1843,97 @@ public class DownloadService : ObservableObject, IDownloadService
 
                     if (project.Inspections?.Count > 0)
                     {
-                        var monitor = this.jobClient.Storage.GetMonitoringApi();
-                        var job = default(Job);
-                        try
-                        {
-                            // ASSUMPTION: We are going to assume that the number of
-                            // jobs will NEVER exceed an integer. (2,147,483,647)
-                            var jobs = monitor.EnqueuedJobs(
-                                "default",
-                                0,
-                                (int)Math.Min(int.MaxValue, monitor.EnqueuedCount("default")))
-                                .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-                                j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
-                                j.Value.Job.Args.Count >= 1 &&
-                                j.Value.Job.Args[0] is string projectPath &&
-                                projectPath.ToUpperInvariant() == project.FilePath!.ToUpperInvariant());
-                            if (jobs.Any())
-                            {
-                                job = jobs.FirstOrDefault().Value.Job;
-                            }
+                        ////var job = this.FindJobForProject(project).FirstOrDefault().Value as Job;
 
-                            if (job == default)
-                            {
-                                var processing = monitor.ProcessingJobs(
-                                    0,
-                                    (int)Math.Min(int.MaxValue, monitor.ProcessingCount()))
-                                    .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-                                    j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
-                                    j.Value.Job.Args.Count >= 1 &&
-                                    j.Value.Job.Args[0] is string projectPath &&
-                                    projectPath.ToUpperInvariant() == project.FilePath!.ToUpperInvariant());
-                                if (processing.Any())
-                                {
-                                    job = processing.FirstOrDefault().Value.Job;
-                                }
-                            }
+                        ////var job = default(Job);
+                        ////var monitor = this.jobClient.Storage.GetMonitoringApi();
+                        ////try
+                        ////{
+                        ////    // ASSUMPTION: We are going to assume that the number of
+                        ////    // jobs will NEVER exceed an integer. (2,147,483,647)
+                        ////    var jobs = monitor.EnqueuedJobs(
+                        ////        "default",
+                        ////        0,
+                        ////        (int)Math.Min(int.MaxValue, monitor.EnqueuedCount("default")))
+                        ////        .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
+                        ////        j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
+                        ////        j.Value.Job.Args.Count >= 1 &&
+                        ////        j.Value.Job.Args[0] is string projectPath &&
+                        ////        projectPath.ToUpperInvariant() == project.FilePath!.ToUpperInvariant());
+                        ////    if (jobs.Any())
+                        ////    {
+                        ////        job = jobs.FirstOrDefault().Value.Job;
+                        ////    }
 
-                            if (job == default)
-                            {
-                                var scheduled = monitor.ScheduledJobs(
-                                    0,
-                                    (int)Math.Min(int.MaxValue, monitor.ScheduledCount()))
-                                    .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-                                    j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
-                                    j.Value.Job.Args.Count >= 1 &&
-                                    j.Value.Job.Args[0] is string projectPath &&
-                                    projectPath.ToUpperInvariant() == project.FilePath!.ToUpperInvariant());
-                                if (scheduled.Any())
-                                {
-                                    job = scheduled.FirstOrDefault().Value.Job;
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            this.logger?.LogError(ex, $"Error attempting to find existing jobs for project [{project.FilePath}]. Download will NOT be queued.");
-                        }
+                        ////    if (job == default)
+                        ////    {
+                        ////        var processing = monitor.ProcessingJobs(
+                        ////            0,
+                        ////            (int)Math.Min(int.MaxValue, monitor.ProcessingCount()))
+                        ////            .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
+                        ////            j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
+                        ////            j.Value.Job.Args.Count >= 1 &&
+                        ////            j.Value.Job.Args[0] is string projectPath &&
+                        ////            projectPath.ToUpperInvariant() == project.FilePath!.ToUpperInvariant());
+                        ////        if (processing.Any())
+                        ////        {
+                        ////            job = processing.FirstOrDefault().Value.Job;
+                        ////        }
+                        ////    }
 
-                        if (job is null)
+                        ////    if (job == default)
+                        ////    {
+                        ////        var scheduled = monitor.ScheduledJobs(
+                        ////            0,
+                        ////            (int)Math.Min(int.MaxValue, monitor.ScheduledCount()))
+                        ////            .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
+                        ////            j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
+                        ////            j.Value.Job.Args.Count >= 1 &&
+                        ////            j.Value.Job.Args[0] is string projectPath &&
+                        ////            projectPath.ToUpperInvariant() == project.FilePath!.ToUpperInvariant());
+                        ////        if (scheduled.Any())
+                        ////        {
+                        ////            job = scheduled.FirstOrDefault().Value.Job;
+                        ////        }
+                        ////    }
+                        ////}
+                        ////catch (Exception ex)
+                        ////{
+                        ////    this.logger?.LogError(ex, $"Error attempting to find existing jobs for project [{project.FilePath}]. Download will NOT be queued.");
+                        ////}
+
+                        if (this.FindJobForProject(project).FirstOrDefault().Value is not Job job)
                         {
                             var createJob = false;
+                            var userCreateJob = false;
 
                             // There is no pre-existing job, so check if we need one.
-                            if (project.CombinedNASSCOExchangeGenerate == true &&
+                            //
+                            // If any of the inspections in the project are not complete
+                            // or if any of the inspections in the project don't have a .ptdx that exists?
+                            if (!createJob && project.Inspections is not null &&
+                            project.Inspections
+                            .Any(i => i.Inspection?.State != DownloadInspection.States.Complete ||
+                                string.IsNullOrEmpty(i.Inspection?.DataCompletePath) ||
+                                !System.IO.File.Exists(i.Inspection.DataCompletePath)))
+                            {
+                                // If all the inspections are errored or paused, we are not going to
+                                // automatically create this job. We'll let the user do it by hand.
+                                if (project.Inspections
+                                .Any(i => i.Inspection?.State != DownloadInspection.States.Errored &&
+                                i.Inspection?.State != DownloadInspection.States.Paused))
+                                {
+                                    createJob = true;
+                                }
+                                else
+                                {
+                                    userCreateJob = true;
+                                }
+                            }
+
+                            // If the combined nassco exchange is required, is it there?
+                            if (!createJob && !userCreateJob &&
+                            project.CombinedNASSCOExchangeGenerate == true &&
                             project.GetExchangeDBPath() is string dbPath &&
                             !string.IsNullOrEmpty(dbPath) &&
                             !System.IO.File.Exists(dbPath))
@@ -1779,7 +1942,9 @@ public class DownloadService : ObservableObject, IDownloadService
                                 createJob = true;
                             }
 
-                            if (!createJob && project.CombinedReportIds?.Any() == true &&
+                            // If the combined reports are required, is it there?
+                            if (!createJob && !userCreateJob &&
+                            project.CombinedReportIds?.Any() == true &&
                             project.GetCombinedReportPath() is string reportPath &&
                             !string.IsNullOrEmpty(reportPath) &&
                             !System.IO.File.Exists(reportPath))
@@ -1788,16 +1953,9 @@ public class DownloadService : ObservableObject, IDownloadService
                                 createJob = true;
                             }
 
-                            if (!createJob && project.Inspections is not null &&
-                            project.Inspections
-                            .Any(i => i.Inspection?.State != DownloadInspection.States.Complete ||
-                                string.IsNullOrEmpty(i.Inspection?.DataCompletePath) ||
-                                !System.IO.File.Exists(i.Inspection.DataCompletePath)))
-                            {
-                                createJob = true;
-                            }
-
-                            if (!createJob && project.Inspections is not null &&
+                            // If any of the inspections require a report, is it there?
+                            if (!createJob && !userCreateJob &&
+                            project.Inspections is not null &&
                             project.IndividualReportIds?.Any() == true &&
                             project.Inspections
                             .Any(i => string.IsNullOrEmpty(i.Inspection?.ReportCompletePath) ||
@@ -1806,7 +1964,9 @@ public class DownloadService : ObservableObject, IDownloadService
                                 createJob = true;
                             }
 
-                            if (!createJob && project.Inspections is not null &&
+                            // If any of the inspection require a NASSCO exchange database, is it there?
+                            if (!createJob && !userCreateJob &&
+                            project.Inspections is not null &&
                             project.IndividualNASSCOExchangeGenerate == true &&
                             project.Inspections
                             .Any(i => string.IsNullOrEmpty(i.Inspection?.ExchangeDBCompletePath) ||
@@ -1815,42 +1975,9 @@ public class DownloadService : ObservableObject, IDownloadService
                                 createJob = true;
                             }
 
-                            if (createJob)
+                            if (createJob && !userCreateJob)
                             {
-                                if (project.Inspections is not null)
-                                {
-                                    foreach (var inspection in project.Inspections)
-                                    {
-                                        var path = inspection.Inspection?.DownloadPath;
-                                        if (string.IsNullOrEmpty(path))
-                                        {
-                                            this.logger?.LogWarning($"An inspection in project [{project.FilePath}] is empty.");
-                                            if (inspection.Inspection is not null)
-                                            {
-                                                await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
-                                                {
-                                                    inspection.Inspection.State = Models.DownloadInspection.States.Errored;
-                                                });
-                                            }
-
-                                            continue;
-                                        }
-
-                                        if (inspection.Inspection is not null)
-                                        {
-                                            await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
-                                            {
-                                                inspection.Inspection.State = Models.DownloadInspection.States.Queued;
-                                            });
-                                        }
-                                    }
-                                }
-
-                                await this.WriteProject(project);
-                                this.jobClient.Enqueue<IDownloadService>(
-                                    s => s.DownloadProject(
-                                        project.FilePath!,
-                                        CancellationToken.None));
+                                await this.CreateJobForProject(project);                                
                             }
                         }
                     }

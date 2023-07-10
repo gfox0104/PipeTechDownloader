@@ -2,6 +2,7 @@
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
+using System.CodeDom;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
@@ -11,7 +12,6 @@ using CommunityToolkit.WinUI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using PipeTech.Downloader.Contracts.Services;
 using PipeTech.Downloader.Contracts.ViewModels;
@@ -27,8 +27,6 @@ namespace PipeTech.Downloader.ViewModels;
 /// </summary>
 public partial class MainViewModel : BindableRecipient, INavigationAware, IDisposable
 {
-    private static readonly string LASTDATAFOLDERSETTING = "LastDataFolder";
-
     private readonly INavigationService navigationService;
     private readonly IHubService hubService;
     private readonly ILogger<MainViewModel>? logger;
@@ -43,13 +41,13 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
     private int? totalCount;
 
     [ObservableProperty]
-    private bool manifestLoading = true;
-
-    [ObservableProperty]
     private string? dataFolder;
 
     [ObservableProperty]
     private bool useDefault = false;
+
+    [ObservableProperty]
+    private ManifestStates state = ManifestStates.None;
 
     private Uri? manifestUri;
 
@@ -86,13 +84,69 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
             this.navigationService.GoBack();
         });
 
+        this.ManifestLoadCommand = new RelayCommand(() =>
+        {
+            this.tokenSource?.Cancel();
+            this.tokenSource?.Dispose();
+
+            if (this.Inspections is not null)
+            {
+                while (this.Inspections.Count > 0)
+                {
+                    this.Inspections.RemoveAt(0);
+                }
+            }
+
+            this.tokenSource = new();
+            _ = this.LoadManifest(this.tokenSource.Token);
+        });
+
         this.DownloadCommand = new AsyncRelayCommand(this.ExecuteDownload, this.CanExecuteDownload);
         this.BrowseFolderCommand = new RelayCommand(this.ExecuteBrowseDataFolder);
 
         _ = Task.Run(async () =>
         {
-            this.DataFolder = await this.localSettingsService.ReadSettingAsync<string?>(LASTDATAFOLDERSETTING);
+            this.DataFolder = await this.localSettingsService.ReadSettingAsync<string?>(ILocalSettingsService.LastDataFolderKey);
         });
+    }
+
+    /// <summary>
+    /// Manifest loading states.
+    /// </summary>
+    public enum ManifestStates
+    {
+        /// <summary>
+        /// None.
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// Loading.
+        /// </summary>
+        Loading,
+
+        /// <summary>
+        /// Cancelled.
+        /// </summary>
+        Cancelled,
+
+        /// <summary>
+        /// Errored.
+        /// </summary>
+        Errored,
+
+        /// <summary>
+        /// Completed.
+        /// </summary>
+        Completed,
+    }
+
+    /// <summary>
+    /// Gets the manifest load command.
+    /// </summary>
+    public IRelayCommand ManifestLoadCommand
+    {
+        get;
     }
 
     /// <summary>
@@ -182,35 +236,12 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
         }
     }
 
-    /////// <summary>
-    /////// Gets the total size string in MB.
-    /////// </summary>
-    ////public string? TotalSizeinMB
-    ////{
-    ////    get
-    ////    {
-    ////        var sizeInBytes = 0L;
-    ////        try
-    ////        {
-    ////            foreach (var i in this.Inspections
-    ////                .Select(item => item as DownloadInspectionHandler)
-    ////                .Where(item => item is not null))
-    ////            {
-    ////                sizeInBytes += i!.Inspection?.TotalSize ?? 0;
-    ////            }
-    ////        }
-    ////        catch (Exception)
-    ////        {
-    ////        }
-
-    ////        return (sizeInBytes / 1024 / 1024).ToString("0.0 MB");
-    ////    }
-    ////}
-
     /// <inheritdoc/>
     public void Dispose()
     {
+        this.logger?.LogDebug("Disposing");
         this.tokenSource?.Cancel();
+        this.tokenSource?.Dispose();
 
         if (this.hubService is IDisposable d)
         {
@@ -236,6 +267,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
     /// <inheritdoc/>
     public void OnNavigatedFrom()
     {
+        this.logger?.LogDebug("OnNavigatedFrom");
         this.Dispose();
     }
 
@@ -243,6 +275,8 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
     public void OnNavigatedTo(object parameter)
     {
         this.logger?.LogDebug($"New download requested: {parameter}");
+
+        this.State = ManifestStates.None;
 
         if (parameter is not Uri uri)
         {
@@ -263,7 +297,9 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 
         this.manifestUri = uri;
 
+        this.logger?.LogDebug($"this.tokenSource is null = {this.tokenSource is null}");
         this.tokenSource?.Cancel();
+        this.tokenSource?.Dispose();
         this.tokenSource = new();
         _ = this.LoadManifest(this.tokenSource.Token);
     }
@@ -280,7 +316,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                 this.RaisePropertyChanged(nameof(this.TotalSize));
                 break;
             case nameof(this.DataFolder):
-            case nameof(this.ManifestLoading):
+            case nameof(this.State):
                 if (this.DownloadCommand is IRelayCommand rc)
                 {
                     rc.NotifyCanExecuteChanged();
@@ -296,35 +332,51 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
     {
         try
         {
-            this.ManifestLoading = true;
+            this.State = ManifestStates.Loading;
 
             if (this.manifestUri is null)
             {
                 this.logger?.LogError($"No uri. {this.manifestUri}");
+                this.State = ManifestStates.Errored;
                 return;
             }
 
             var query = System.Web.HttpUtility.ParseQueryString(this.manifestUri.Query);
-            var g = Guid.Empty;
+            var id = default(Guid);
+            var g = default(string?);
 
             if (query is null)
             {
                 this.logger?.LogError($"No parameters in uri. {this.manifestUri}");
+                this.State = ManifestStates.Errored;
                 return;
             }
 
-            Guid.TryParse(query.Get("id"), out g);
-            this.DownloadName = query.Get("name");
+            Guid.TryParse(query.Get("id"), out id);
+            if (id == default)
+            {
+                g = query.Get("id") ?? Guid.NewGuid().ToString();
+            }
+            else
+            {
+                g = id.ToString();
+            }
+
+            this.DownloadName = query.Get("name") ?? $"{DateTime.Now:u} Download".SanitizeFilename();
             if (int.TryParse(query.Get("count"), out var count))
             {
                 this.TotalCount = count;
             }
 
-            bool.TryParse(query.Get("secure"), out var secure);
+            var secure = default(bool?);
+            if (bool.TryParse(query.Get("secure"), out var http))
+            {
+                secure = http;
+            }
 
             if (token.IsCancellationRequested)
             {
-                return;
+                throw new TaskCanceledException("First");
             }
 
             // Make the call
@@ -334,13 +386,25 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 #endif
             if (!string.IsNullOrEmpty(this.manifestUri.Authority))
             {
-                if (!secure)
+                switch (this.manifestUri.Authority.ToUpperInvariant())
                 {
-                    host = "http://" + this.manifestUri.Authority;
-                }
-                else
-                {
-                    host = "https://" + this.manifestUri.Authority;
+                    case "HTTPS":
+                        host = "https://" + this.manifestUri.AbsolutePath.TrimStart('/');
+                        break;
+                    case "HTTP":
+                        host = "http://" + this.manifestUri.AbsolutePath.TrimStart('/');
+                        break;
+                    default:
+                        if (secure is not bool b || !b)
+                        {
+                            host = "http://" + this.manifestUri.Authority;
+                        }
+                        else
+                        {
+                            host = "https://" + this.manifestUri.Authority;
+                        }
+
+                        break;
                 }
             }
 
@@ -352,7 +416,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 
             if (token.IsCancellationRequested)
             {
-                return;
+                throw new TaskCanceledException($"Second");
             }
 
             var manifestUri = default(Uri?);
@@ -360,7 +424,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
             {
                 manifestUri = await this.hubService.GetManifestLink(
                     g,
-                    new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token);
+                    new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
             }
             catch (TaskCanceledException)
             {
@@ -377,7 +441,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 
             if (token.IsCancellationRequested)
             {
-                return;
+                throw new TaskCanceledException($"Third");
             }
 
             if (manifestUri is not null)
@@ -400,7 +464,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 
             if (token.IsCancellationRequested)
             {
-                return;
+                throw new TaskCanceledException($"Fourth");
             }
 
             try
@@ -424,12 +488,12 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 
             if (token.IsCancellationRequested)
             {
-                return;
+                throw new TaskCanceledException($"Fifth");
             }
 
             if (this.Manifest is not null)
             {
-                if (this.Manifest.Id == Guid.Empty)
+                if (string.IsNullOrEmpty(this.Manifest.Id))
                 {
                     this.Manifest.Id = g;
                 }
@@ -483,19 +547,27 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                         }
                     }
                 }
+
+                this.State = ManifestStates.Completed;
             }
             else
             {
                 this.logger?.LogWarning("No manifest received");
+                this.State = ManifestStates.Errored;
             }
+        }
+        catch (TaskCanceledException ex)
+        {
+            this.State = ManifestStates.Cancelled;
+            this.logger?.LogWarning(ex, $"Cancelled opening download link {this.manifestUri}");
         }
         catch (Exception ex)
         {
+            this.State = ManifestStates.Errored;
             this.logger?.LogError(ex, $"Error opening download link {this.manifestUri}");
         }
         finally
         {
-            this.ManifestLoading = false;
             await App.MainWindow.DispatcherQueue.EnqueueAsync(() => { }, DispatcherQueuePriority.Normal);
         }
     }
@@ -658,7 +730,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 
     private bool CanExecuteDownload()
     {
-        return !this.ManifestLoading &&
+        return this.State == ManifestStates.Completed &&
             this.Inspections is not null &&
             this.Inspections.Any() == true &&
             !this.Inspections
@@ -677,7 +749,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
         {
             if (this.UseDefault)
             {
-                await this.localSettingsService.SaveSettingAsync(LASTDATAFOLDERSETTING, this.DataFolder);
+                await this.localSettingsService.SaveSettingAsync(ILocalSettingsService.LastDataFolderKey, this.DataFolder);
             }
 
             foreach (var item in this.Inspections.Select(i => i as DownloadInspectionHandler).Where(i => i is not null))

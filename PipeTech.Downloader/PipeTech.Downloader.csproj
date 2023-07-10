@@ -17,10 +17,17 @@
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<!--<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>-->
 		<DefineConstants>$(DefineConstants) DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-		<COMPOSITE_VERSION>5.3.12-pre.1841</COMPOSITE_VERSION>
-		<REPORTING_VERSION>2.13.5-pre.217</REPORTING_VERSION>
+		<COMPOSITE_VERSION>5.3.12-pre.1842</COMPOSITE_VERSION>
+		<REPORTING_VERSION>2.13.5-pre.218</REPORTING_VERSION>
+		<GenerateAppInstallerFile>True</GenerateAppInstallerFile>
+		<AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+		<AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
+		<GenerateTestArtifacts>True</GenerateTestArtifacts>
+		<AppxBundle>Auto</AppxBundle>
+		<AppxBundlePlatforms>x86</AppxBundlePlatforms>
+		<AppInstallerUri>\\phatodev\G\Various Programs\PipeTech.Downloader\installerlocation</AppInstallerUri>
 	</PropertyGroup>
-	
+
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
 		<!--<DefineConstants>$(DefineConstants) SLOWDOWN</DefineConstants>-->
 	</PropertyGroup>
@@ -28,11 +35,22 @@
 	<ItemGroup>
 		<Content Remove="Assets\file.png" />
 		<Content Remove="Assets\folder.png" />
+		<Content Remove="Assets\LightLogo.svg" />
+		<Content Remove="Assets\Logo.svg" />
 	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)' == 'Debug'">
+		<Content Include="appsettings.Development.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
 	<ItemGroup>
-		<None Remove="Properties\PublishProfiles\win10-arm64.pubxml" />
-		<None Remove="stylecop.json" />
+		<Content Include="appsettings.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
+
 	<ItemGroup>
 		<AdditionalFiles Include="stylecop.json" />
 	</ItemGroup>
@@ -57,11 +75,13 @@
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
 		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
 		<PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
-		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.2" />
-		<PackageReference Include="Hangfire.Core" Version="1.8.2" />
+		<PackageReference Include="H.NotifyIcon.WinUI" Version="2.0.108" />
+		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.3" />
+		<PackageReference Include="Hangfire.Core" Version="1.8.3" />
 		<PackageReference Include="Hangfire.Storage.SQLite" Version="0.3.4" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230502000" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230602002" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
 		<PackageReference Include="NASSCO_ExV" Version="3.0.0.25" />
@@ -101,14 +121,17 @@
 		<ProjectReference Include="..\PipeTech.Downloader.Core\PipeTech.Downloader.Core.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<None Update="appsettings.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
 		<None Update="Assets\file.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="Assets\folder.png">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\LightLogo.svg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Assets\Logo.svg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 
@@ -118,6 +141,22 @@
 
 	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
 		<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+	  <DebugType>embedded</DebugType>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+	  <DebugType>embedded</DebugType>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+	  <DebugType>embedded</DebugType>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+	  <DebugType>embedded</DebugType>
 	</PropertyGroup>
 
 	<ProjectExtensions>

@@ -145,7 +145,29 @@ public partial class DownloadInspection : BindableRecipient, IDisposable
         {
             try
             {
-                return (this.Files?.Sum(f => f?.DownloadedSize ?? 0) ?? 0) / (this.Files?.Sum(f => f?.Size ?? 0) ?? 0);
+                var count = 0;
+                var total = 0;
+                var data = this.Files?.FirstOrDefault(f => Path.GetExtension(f.DownloadPath).ToUpperInvariant() == ".PTDX");
+                if (data is not null)
+                {
+                    total += 1;
+                    if (!string.IsNullOrEmpty(this.DataCompletePath) &&
+                        System.IO.File.Exists(this.DataCompletePath))
+                    {
+                        count += 1;
+                    }
+                }
+
+                var notDataFiles = this.Files?.Where(f => Path.GetExtension(f.DownloadPath).ToUpperInvariant() != ".PTDX");
+                if (notDataFiles?.Any() == true)
+                {
+                    var totalSize = notDataFiles.Sum(f => 1);
+                    var currentSize = notDataFiles.Sum(f => (f?.DownloadedSize ?? 0) == (f?.Size ?? 1) ? 1 : 0);
+                    total += totalSize;
+                    count += currentSize;
+                }
+
+                return (decimal)count / (total == 0 ? 1m : (decimal)total);
             }
             catch (Exception)
             {

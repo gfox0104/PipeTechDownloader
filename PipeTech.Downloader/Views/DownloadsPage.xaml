@@ -15,7 +15,8 @@
         <helpers:NumberToPercentageStringConverter x:Key="NumberToPercentageStringConverter" />
         <helpers:NumberBytesToStorageStringConverter x:Key="NumberBytesToStorageStringConverter" />
         <helpers:EnumToStringConverter x:Key="EnumToStringConverter" />
-        <!--<helpers:BindingProxy x:Key="Proxy" Data="{x:Bind ViewModel}"/>-->
+
+        <helpers:BindingProxy x:Key="Proxy" Data="{x:Bind ViewModel, Mode=OneWay}"/>
 
         <DataTemplate x:Key="ButtonComplete">
             <TextBlock  Text="Complete" />
@@ -23,10 +24,10 @@
         <DataTemplate x:Key="ButtonPause">
             <TextBlock  Text="Pause" />
         </DataTemplate>
+        <DataTemplate x:Key="ButtonError">
+            <TextBlock  Text="Error" />
+        </DataTemplate>
 
-        <models:ActionButtonSelector x:Key="ActionButtonSelector" 
-                                     Completed="{StaticResource ButtonComplete}"
-                                     Paused="{StaticResource ButtonPause}"/>
     </Page.Resources>
     <Grid x:Name="ContentArea">
         <Grid.RowDefinitions>
@@ -57,13 +58,6 @@
                             <DataTemplate x:DataType="models:Project">
                                 <controls:Expander Header="" 
                                                    IsExpanded="{x:Bind Expanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <!--<Interactivity:Interaction.Behaviors>
-                                        <behaviors:ExpanderOpenCloseBehavior
-                                        Expanded="{x:Bind Expanded, Mode=OneWay}"
-                                        VisibilityMode="{Binding Source={StaticResource Proxy}, Path=Data.VisibilityMode, Mode=TwoWay}"
-                                        CollectionView="{Binding Source={StaticResource Proxy}, Path=Data.SourceView}" />
-                                    </Interactivity:Interaction.Behaviors>
-                                </controls:Expander>-->
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
@@ -78,12 +72,14 @@
                     <controls:DataGridTemplateColumn Header="Actions">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:Project">
-                                <Button>
+                                <Button Command="{Binding Source={StaticResource Proxy}, Path=Data.RestartProjectDownloadCommand}"
+                                        CommandParameter="{x:Bind}">
                                     <Interactivity:Interaction.Behaviors>
                                         <behaviors:ButtonContentTemplateBehavior 
-                                                        State="{x:Bind State, Mode=OneWay}"
-                                                        PausedTemplate="{StaticResource ButtonPause}"
-                                                        CompletedTemplate="{StaticResource ButtonComplete}"/>
+                                            State="{x:Bind State, Mode=OneWay}"
+                                            PausedTemplate="{StaticResource ButtonPause}"
+                                            CompletedTemplate="{StaticResource ButtonComplete}"
+                                            ErroredTemplate="{StaticResource ButtonError}"/>
                                     </Interactivity:Interaction.Behaviors>
                                 </Button>
                             </DataTemplate>
@@ -93,6 +89,9 @@
                 <controls:DataGrid.RowDetailsTemplate>
                     <DataTemplate x:DataType="models:Project">
                         <Grid>
+                            <Grid.Resources>
+                                <helpers:BindingProxy x:Key="ProjectProxy" Data="{x:Bind}"/>
+                            </Grid.Resources>
                             <controls:DataGrid ItemsSource="{x:Bind Inspections, Mode=OneWay}"
                                                IsReadOnly="True"
                                                RowDetailsVisibilityMode="Collapsed"
@@ -111,11 +110,14 @@
                                     <controls:DataGridTemplateColumn Header="Actions">
                                         <controls:DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate x:DataType="models:DownloadInspectionHandler">
-                                                <Button>
+                                                <Button
+                                                    Command="{Binding Source={StaticResource Proxy}, Path=Data.RestartProjectDownloadCommand}"
+                                                    CommandParameter="{Binding Source={StaticResource ProjectProxy}, Path=Data}">
                                                     <Interactivity:Interaction.Behaviors>
                                                         <behaviors:ButtonContentTemplateBehavior 
                                                             State="{x:Bind Inspection.State, Mode=OneWay}"
                                                             PausedTemplate="{StaticResource ButtonPause}"
+                                                            ErroredTemplate="{StaticResource ButtonError}"
                                                             CompletedTemplate="{StaticResource ButtonComplete}"/>
                                                     </Interactivity:Interaction.Behaviors>
                                                 </Button>

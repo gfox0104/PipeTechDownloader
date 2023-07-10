@@ -23,7 +23,7 @@ public interface IHubService
     /// <param name="id">ID for the manifest.</param>
     /// <param name="token">Cancellation token.</param>
     /// <returns>Manifest.</returns>
-    Task<Manifest?> GetManifest(Guid id, CancellationToken token = default);
+    Task<Manifest?> GetManifest(string id, CancellationToken token = default);
 
     /// <summary>
     /// Get manifest uri link.
@@ -31,7 +31,7 @@ public interface IHubService
     /// <param name="id">ID for the manifest.</param>
     /// <param name="token">Cancellation token.</param>
     /// <returns>Uri.</returns>
-    Task<Uri?> GetManifestLink(Guid id, CancellationToken token = default);
+    Task<Uri?> GetManifestLink(string id, CancellationToken token = default);
 
     /// <summary>
     /// Get manifest information.

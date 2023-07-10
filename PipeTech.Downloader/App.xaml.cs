@@ -5,10 +5,12 @@
 using System.Net;
 using System.Reflection;
 using Hangfire;
+using Hangfire.Storage;
 using Hangfire.Storage.SQLite;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.UI.Xaml;
@@ -81,6 +83,9 @@ public partial class App : Application
 
         this.Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()
+#if DEBUG
+            .UseEnvironment("Development")
+#endif
             .ConfigureWebHost(b =>
             {
                 b.UseKestrel((c, o) =>
@@ -95,7 +100,12 @@ public partial class App : Application
                         .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
                         .UseSimpleAssemblyNameTypeSerializer()
                         .UseRecommendedSerializerSettings()
-                        .UseSQLiteStorage("pipetech_downloader_jobs.db")
+                        .UseSQLiteStorage(
+                            "pipetech_downloader_jobs.db",
+                            new SQLiteStorageOptions()
+                            {
+                                InvisibilityTimeout = TimeSpan.FromHours(2),
+                            })
                         .UseActivator(new ServiceProviderActivator(sp));
                     })
                     .AddHangfireServer();
@@ -304,6 +314,15 @@ public partial class App : Application
         App.GetService<IAppNotificationService>().Initialize();
         _ = Task.Run(() =>
         {
+            try
+            {
+                using var db = new SQLite.SQLiteConnection("pipetech_downloader_jobs.db");
+                _ = db.Execute("VACUUM;");
+            }
+            catch
+            {
+            }
+
             App.GetService<ITemplateRegistry>();
 
             var rr = App.GetService<IReportRegistry>();

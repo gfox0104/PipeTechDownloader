@@ -10,6 +10,16 @@ namespace PipeTech.Downloader.Contracts.Services;
 public interface ILocalSettingsService
 {
     /// <summary>
+    /// Key for the app background theme.
+    /// </summary>
+    internal const string AppBackgroundRequestedThemeKey = "AppBackgroundRequestedTheme";
+
+    /// <summary>
+    /// Key for the default data folder.
+    /// </summary>
+    internal const string LastDataFolderKey = "LastDataFolder";
+
+    /// <summary>
     /// Read the setting.
     /// </summary>
     /// <typeparam name="T">Type to read.</typeparam>

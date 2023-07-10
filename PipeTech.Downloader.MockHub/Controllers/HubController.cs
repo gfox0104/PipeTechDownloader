@@ -19,8 +19,8 @@ public class HubController : Controller
     /// </summary>
     /// <param name="id">ID of the manifest to retrieve.</param>
     /// <returns>JSON of manifest information.</returns>
-    [HttpGet("manifesturi/{id}")]
-    public IActionResult GetManifestUri(Guid id)
+    [HttpGet("api/downloadManifest")]
+    public IActionResult GetManifestUri([FromQuery]string id)
     {
         return this.Ok(new Uri($"http://localhost:5242/manifestfile").ToString());
         ////
@@ -42,12 +42,14 @@ public class HubController : Controller
         //{
         //    if (this.Request.Method.Equals("HEAD"))
         //    {
-        //        this.Response.ContentLength = new FileInfo("cool.json").Length;
+        //        ////this.Response.ContentLength = new FileInfo("cool.json").Length;
+        //        this.Response.ContentLength = new FileInfo("123.json").Length;
         //        return this.Ok();
         //    }
         //    else
         //    {
-        //        return this.PhysicalFile(Path.GetFullPath("cool.json"), "application/json");
+        //        ////return this.PhysicalFile(Path.GetFullPath("cool.json"), "application/json");
+        //        return this.PhysicalFile(Path.GetFullPath("123.json"), "application/json");
         //    }
         //}
         //catch (Exception)
@@ -66,7 +68,7 @@ public class HubController : Controller
     /// <param name="id">ID of the manifest to retrieve.</param>
     /// <returns>JSON of manifest information.</returns>
     [HttpGet("manifest/{id}")]
-    public ActionResult<Manifest> GetManifest(Guid id)
+    public ActionResult<Manifest> GetManifest(string id)
     {
         var inspectionJSON = @"
 {
@@ -169,7 +171,7 @@ public class HubController : Controller
                   ""createdOn"": ""2013-02-12T08:23:01.6000000"",
                   ""i002Guid"": ""968f3aa0-bfeb-4ae0-b555-1321ee27fa25"",
                   ""mediaGuid"": ""15ca6375-bf61-479e-ba92-9c79cf319392"",
-                  ""mediaParameters"": ""EBB1-53A1-0268-71A5"",
+                  ""mediaParameters"": ""1230.5t"",
                   ""snapshotMediaGuid"": ""46fe2d6c-4f43-4450-8d59-f701e76e2403""
                 }
               ]

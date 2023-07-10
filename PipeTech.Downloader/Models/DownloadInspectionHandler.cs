@@ -137,8 +137,12 @@ public partial class DownloadInspectionHandler : BindableRecipient, IDisposable
                 throw new Exception($"Unable to retrieve pack Id of inspection.");
             }
 
-            var tm = this.serviceProvider.GetService(typeof(ITemplateRegistry)) as ITemplateRegistry;
-            var pack = tm?.InstalledTemplates?
+            if (this.serviceProvider.GetService(typeof(ITemplateRegistry)) is not ITemplateRegistry tm)
+            {
+                throw new NullReferenceException("Unable to retrieve the template registry.");
+            }
+
+            var pack = tm.InstalledTemplates?
                 .Where(p => p.Metadata.ID == packId)
                 .OrderByDescending(p => p.Metadata.Version)
                 .FirstOrDefault();
@@ -190,9 +194,29 @@ public partial class DownloadInspectionHandler : BindableRecipient, IDisposable
                         info.Content.CopyTo(fs);
                     }
 
-                    var pf = this.serviceProvider.GetService(typeof(IPackFactory)) as IPackFactory;
-                    pack = pf?.OpenPackFile(tempFile);
-                    tm?.Register(pack, TemplateRegistryKnownLocationType.Machine);
+                    if (this.serviceProvider?.GetService(typeof(IPackFactory)) is not IPackFactory pf)
+                    {
+                        throw new NullReferenceException("Unable to retrieve pack factory service.");
+                    }
+
+                    var tempPack = pf.OpenPackFile(tempFile);
+                    if (pf is IDisposable d)
+                    {
+                        d.Dispose();
+                    }
+
+                    var tempFileInfo = new FileInfo(tempFile);
+                    tempFileInfo.MoveTo(
+                        Path.Combine(
+                            tempFileInfo.DirectoryName!,
+                            $"{tempPack.Metadata.Name}_v{tempPack.Metadata.Version}.pttemplate"));
+
+                    await tm.ImportTemplateAsync(tempFileInfo.FullName, TemplateRegistryKnownLocationType.Machine);
+
+                    pack = tm.InstalledTemplates?
+                        .Where(p => p.Metadata.ID == packId)
+                        .OrderByDescending(p => p.Metadata.Version)
+                        .FirstOrDefault();
                 }
                 finally
                 {

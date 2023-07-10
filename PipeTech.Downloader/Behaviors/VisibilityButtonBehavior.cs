@@ -2,7 +2,6 @@
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
-using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Xaml.Interactivity;
 
@@ -23,17 +22,20 @@ public class VisibilityButtonBehavior : Behavior<Button>
         get => this.state;
         set
         {
-            this.state = value;
-
-            if (this.AssociatedObject is not null)
+            if (this.state != value)
             {
-                if (this.state == Models.DownloadInspection.States.Staged)
+                this.state = value;
+
+                if (this.AssociatedObject is not null)
                 {
-                    this.AssociatedObject.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                }
-                else
-                {
-                    this.AssociatedObject.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+                    if (this.state == Models.DownloadInspection.States.Staged)
+                    {
+                        this.AssociatedObject.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        this.AssociatedObject.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+                    }
                 }
             }
         }

@@ -17,8 +17,7 @@ public class Manifest : IManifest
     /// <summary>
     /// Gets or sets the Id of the manifest.
     /// </summary>
-    [JsonConverter(typeof(GuidJsonConverter))]
-    public Guid Id
+    public string? Id
     {
         get; set;
     }

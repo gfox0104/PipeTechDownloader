@@ -1,10 +1,16 @@
 ﻿{
     "profiles": {
       "PipeTech.Downloader (Package)": {
-        "commandName": "MsixPackage"
+        "commandName": "MsixPackage",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development"
+        }
       },
       "PipeTech.Downloader (Unpackaged)": {
-        "commandName": "Project"
+        "commandName": "Project",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Development"
+        }
       }
     }
 }

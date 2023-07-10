@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Collections.ObjectModel;
+using Hangfire.Common;
 using PipeTech.Downloader.Models;
 
 namespace PipeTech.Downloader.Contracts.Services;
@@ -35,14 +36,19 @@ public interface IDownloadService
     /// <returns>Asynchronous task.</returns>
     public Task DownloadProject(string projectFilePath, CancellationToken token);
 
-    /////// <summary>
-    /////// Download an inspection.
-    /////// </summary>
-    /////// <param name="projectFilePath">Project file path.</param>
-    /////// <param name="inspectionPath">Inspection path.</param>
-    /////// <param name="token">Cancellation token.</param>
-    /////// <returns>Asynchronous task.</returns>
-    ////public Task DownloadInspection(string projectFilePath, string inspectionPath, CancellationToken token);
+    /// <summary>
+    /// Find Hangfire jobs for the project.
+    /// </summary>
+    /// <param name="project">Project.</param>
+    /// <returns>Dictionary of the job ids and Job themselves.</returns>
+    public IEnumerable<KeyValuePair<string, Job>> FindJobForProject(Project project);
+
+    /// <summary>
+    /// Create job for a project.
+    /// </summary>
+    /// <param name="project">Project.</param>
+    /// <returns>Asynchronous task.</returns>
+    public Task CreateJobForProject(Project project);
 
 #if DEBUG
     /// <summary>

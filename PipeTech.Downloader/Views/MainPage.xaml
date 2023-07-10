@@ -16,6 +16,22 @@
         <helpers:EnumToStringConverter x:Key="EnumToStringConverter" />
         <helpers:NumberBytesToStorageStringConverter x:Key="NumberBytesToStorageStringConverter"/>
 
+        <DataTemplate x:Key="ButtonComplete">
+            <TextBlock  Text="Complete" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="ButtonCancelled">
+            <TextBlock  Text="Paused" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="ButtonErrored">
+            <TextBlock  Text="Error" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="ButtonLoading">
+            <TextBlock  Text="Loading" />
+        </DataTemplate>
+
         <DataTemplate x:Key="FolderTemplate" x:DataType="models:DownloadInspectionHandler">
             <TreeViewItem AutomationProperties.Name="{x:Bind Inspection.Name, Mode=OneWay}"
             ItemsSource="{x:Bind Inspection.Files, Mode=OneWay}" IsExpanded="True">
@@ -101,18 +117,16 @@
                     VerticalAlignment="Center"
                     Text="{x:Bind ViewModel.DownloadName, Mode=OneWay}"                    
                     Style="{StaticResource PageTitleStyle}" />
-                    <TextBlock VerticalAlignment="Center"
-                               Margin="15,10,0,0"
-                               Text="Loading..."
-                               FontSize="{StaticResource SmallFontSize}">
+                    <Button Margin="15,0,0,0" Command="{x:Bind ViewModel.ManifestLoadCommand}">
                         <Interactivity:Interaction.Behaviors>
-                            <Core:DataTriggerBehavior Binding="{x:Bind ViewModel.ManifestLoading, Mode=OneWay}"
-                                                      ComparisonCondition="Equal"
-                                                      Value="False">
-                                <Core:ChangePropertyAction PropertyName="Visibility" Value="Collapsed" />
-                            </Core:DataTriggerBehavior>
+                            <behaviors:ButtonContentTemplateManifestBehavior
+                                CancelledTemplate="{StaticResource ButtonCancelled}"
+                                LoadingTemplate="{StaticResource ButtonLoading}"
+                                ErroredTemplate="{StaticResource ButtonErrored}"
+                                CompletedTemplate="{StaticResource ButtonComplete}"
+                                State="{x:Bind ViewModel.State, Mode=OneWay}" />
                         </Interactivity:Interaction.Behaviors>
-                    </TextBlock>
+                    </Button>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Margin="{StaticResource LargeLeftRightMargin}">
                     <TextBlock Text="Inspections" />

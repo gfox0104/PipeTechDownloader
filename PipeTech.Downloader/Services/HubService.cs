@@ -46,14 +46,14 @@ public class HubService : IHubService, IDisposable
     }
 
     /// <inheritdoc/>
-    public async Task<Manifest?> GetManifest(Guid id, CancellationToken token = default)
+    public async Task<Manifest?> GetManifest(string id, CancellationToken token = default)
     {
         if (this.hubRefit is null)
         {
             throw new Exception($"{nameof(this.SetBaseAddress)} needs to be called first.");
         }
 
-        if (id == Guid.Empty)
+        if (string.IsNullOrEmpty(id))
         {
             throw new ArgumentException("Id cannot be empty", nameof(id));
         }
@@ -84,7 +84,15 @@ public class HubService : IHubService, IDisposable
         {
             using var client = this.httpClientFactory.CreateClient();
 
-            var (size, acceptsRange, etag) = await HttpHelper.GetUriInfo(link, client);
+            var (size, acceptsRange, etag) = default((long?, bool, string?));
+            try
+            {
+                (size, acceptsRange, etag) = await HttpHelper.GetUriInfo(link, client);
+            }
+            catch (Exception ex)
+            {
+                this.logger?.LogInformation(ex, $"Manifest uri does not support retrieving headers [{link.OriginalString}]");
+            }
 
             using var ms = new MemoryStream();
 
@@ -152,14 +160,14 @@ public class HubService : IHubService, IDisposable
     }
 
     /// <inheritdoc/>
-    public async Task<Uri?> GetManifestLink(Guid id, CancellationToken token = default)
+    public async Task<Uri?> GetManifestLink(string id, CancellationToken token = default)
     {
         if (this.hubRefit is null)
         {
             throw new Exception($"{nameof(this.SetBaseAddress)} needs to be called first.");
         }
 
-        if (id == Guid.Empty)
+        if (string.IsNullOrEmpty(id))
         {
             throw new ArgumentException("Id cannot be empty", nameof(id));
         }
@@ -177,7 +185,14 @@ public class HubService : IHubService, IDisposable
                 throw response.Error;
             }
 
-            if (!Uri.TryCreate(response.Content, UriKind.RelativeOrAbsolute, out var uri))
+            if (string.IsNullOrEmpty(response.Content))
+            {
+                throw new NullReferenceException("Empty content.");
+            }
+
+            var element = System.Text.Json.JsonSerializer.Deserialize<JsonElement>(response.Content);
+            if (!element.TryGetProperty("manifestURI", out var manifestUri) ||
+                !Uri.TryCreate(manifestUri.GetString() ?? string.Empty, UriKind.RelativeOrAbsolute, out var uri))
             {
                 return null;
             }

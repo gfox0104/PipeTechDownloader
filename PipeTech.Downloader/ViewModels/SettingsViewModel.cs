@@ -9,7 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 using Microsoft.UI.Xaml;
-
+using Microsoft.WindowsAPICodePack.Dialogs;
 using PipeTech.Downloader.Contracts.Services;
 using PipeTech.Downloader.Helpers;
 
@@ -23,7 +23,7 @@ namespace PipeTech.Downloader.ViewModels;
 public partial class SettingsViewModel : ObservableRecipient
 {
     private readonly IThemeSelectorService themeSelectorService;
-
+    private readonly ILocalSettingsService localSettingsService;
     private readonly INavigationService navigationService;
 
     [ObservableProperty]
@@ -32,17 +32,23 @@ public partial class SettingsViewModel : ObservableRecipient
     [ObservableProperty]
     private string versionDescription;
 
+    [ObservableProperty]
+    private string? dataFolder;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="SettingsViewModel"/> class.
     /// </summary>
     /// <param name="themeSelectorService">Theme selector service.</param>
+    /// <param name="localSettingsService">Local settings service.</param>
     /// <param name="navigationService">Navigation service.</param>
     public SettingsViewModel(
         IThemeSelectorService themeSelectorService,
+        ILocalSettingsService localSettingsService,
         INavigationService navigationService)
     {
         this.themeSelectorService = themeSelectorService;
         this.navigationService = navigationService;
+        this.localSettingsService = localSettingsService;
         this.elementTheme = this.themeSelectorService.Theme;
         this.versionDescription = GetVersionDescription();
 
@@ -67,6 +73,36 @@ public partial class SettingsViewModel : ObservableRecipient
                 this.navigationService.NavigateTo(typeof(DownloadsViewModel).FullName!, clearNavigation: true);
             }
         });
+
+        this.BrowseFolderCommand = new RelayCommand(() =>
+        {
+            var d = new CommonOpenFileDialog()
+            {
+                IsFolderPicker = true,
+                Title = "Select Download Folder",
+            };
+
+            if (d.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                this.DataFolder = d.FileName;
+                _ = this.localSettingsService.SaveSettingAsync<string?>(
+                    ILocalSettingsService.LastDataFolderKey,
+                    this.DataFolder);
+            }
+        });
+
+        _ = Task.Run(async () =>
+        {
+            this.DataFolder = await this.localSettingsService.ReadSettingAsync<string?>(ILocalSettingsService.LastDataFolderKey);
+        });
+    }
+
+    /// <summary>
+    /// Gets the command to browse for a folder.
+    /// </summary>
+    public IRelayCommand BrowseFolderCommand
+    {
+        get;
     }
 
     /// <summary>

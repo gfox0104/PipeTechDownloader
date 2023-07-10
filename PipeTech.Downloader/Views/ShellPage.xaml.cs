@@ -37,7 +37,7 @@ public sealed partial class ShellPage : Page
         App.MainWindow.ExtendsContentIntoTitleBar = true;
         App.MainWindow.SetTitleBar(this.AppTitleBar);
         App.MainWindow.Activated += this.MainWindow_Activated;
-        this.AppTitleBarText.Text = "AppDisplayName".GetLocalized();
+        ////this.AppTitleBarText.Text = "AppDisplayName".GetLocalized();
     }
 
     /// <summary>
@@ -92,8 +92,8 @@ public sealed partial class ShellPage : Page
     {
         var resource = args.WindowActivationState == WindowActivationState.Deactivated ? "WindowCaptionForegroundDisabled" : "WindowCaptionForeground";
 
-        this.AppTitleBarText.Foreground = (SolidColorBrush)App.Current.Resources[resource];
-        App.AppTitlebar = this.AppTitleBarText as UIElement;
+        ////this.AppTitleBarText.Foreground = (SolidColorBrush)App.Current.Resources[resource];
+        ////App.AppTitlebar = this.AppTitleBarText as UIElement;
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)

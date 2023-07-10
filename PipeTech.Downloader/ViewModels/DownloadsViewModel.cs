@@ -2,17 +2,17 @@
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.UI.Controls;
+using Hangfire;
 using Microsoft.Extensions.Logging;
-using NPOI.SS.Formula.Functions;
 using PipeTech.Downloader.Contracts.Services;
 using PipeTech.Downloader.Contracts.ViewModels;
 using PipeTech.Downloader.Models;
+using Windows.Security.Authentication.Web.Core;
 
 namespace PipeTech.Downloader.ViewModels;
 
@@ -24,6 +24,7 @@ public partial class DownloadsViewModel : ObservableRecipient, INavigationAware
     private readonly IServiceProvider serviceProvider;
     private readonly IDownloadService downloadService;
     private readonly ILogger<DownloadsViewModel>? logger;
+    private readonly IBackgroundJobClientV2 jobClient;
 
     private bool expanding = false;
 
@@ -39,15 +40,20 @@ public partial class DownloadsViewModel : ObservableRecipient, INavigationAware
     /// <param name="serviceProvider">Service Provider.</param>
     /// <param name="options">Settings directories.</param>
     /// <param name="downloadService">Download service.</param>
+    /// <param name="jobClient">Job client service.</param>
     /// <param name="logger">Logger service.</param>
     public DownloadsViewModel(
         IServiceProvider serviceProvider,
         IDownloadService downloadService,
+        IBackgroundJobClientV2 jobClient,
         ILogger<DownloadsViewModel>? logger = null)
     {
         this.serviceProvider = serviceProvider;
         this.downloadService = downloadService;
+        this.jobClient = jobClient;
         this.logger = logger;
+
+        this.RestartProjectDownloadCommand = new AsyncRelayCommand<object?>(this.ExecuteRestartProjectDownload);
 
         this.SourceView = CollectionViewSource.GetDefaultView(this.downloadService.Source);
     }
@@ -61,6 +67,14 @@ public partial class DownloadsViewModel : ObservableRecipient, INavigationAware
     /// Gets the source view.
     /// </summary>
     public ICollectionView SourceView
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the command to restart a project download.
+    /// </summary>
+    public IAsyncRelayCommand<object?> RestartProjectDownloadCommand
     {
         get;
     }
@@ -85,7 +99,7 @@ public partial class DownloadsViewModel : ObservableRecipient, INavigationAware
             expandedProject.Expanded = !expandedProject.Expanded;
         }
 
-        _ = this.downloadService.LoadDownloads(new CancellationTokenSource(TimeSpan.FromSeconds(30)).Token);
+        _ = this.downloadService.LoadDownloads(new CancellationTokenSource(TimeSpan.FromMinutes(10)).Token);
     }
 
     /// <inheritdoc/>
@@ -105,6 +119,40 @@ public partial class DownloadsViewModel : ObservableRecipient, INavigationAware
                 p.Expanded = false;
             }
         }
+    }
+
+    private async Task ExecuteRestartProjectDownload(object? param)
+    {
+        if (param is not Project p || p.Inspections is null)
+        {
+            return;
+        }
+
+        // Find jobs for the project and cancel them.
+        var jobs = this.downloadService.FindJobForProject(p);
+        while (jobs is not null && jobs.Any())
+        {
+            foreach (var j in jobs)
+            {
+                this.jobClient.Delete(j.Key);
+            }
+
+            await Task.Delay(500);
+            jobs = this.downloadService.FindJobForProject(p);
+        }
+
+        // Set the inspection state of each non-completed inspection to staged
+        foreach (var i in p.Inspections)
+        {
+            if (i.Inspection is not null &&
+            i.Inspection.State != DownloadInspection.States.Complete)
+            {
+                i.Inspection.State = DownloadInspection.States.Staged;
+            }
+        }
+
+        // Create a job
+        await this.downloadService.CreateJobForProject(p);
     }
 
     private void Source_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

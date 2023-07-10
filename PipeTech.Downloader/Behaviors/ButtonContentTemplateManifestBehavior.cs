@@ -1,4 +1,4 @@
-﻿// <copyright file="ButtonContentTemplateBehavior.cs" company="Industrial Technology Group">
+﻿// <copyright file="ButtonContentTemplateManifestBehavior.cs" company="Industrial Technology Group">
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
@@ -7,31 +7,32 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Xaml.Interactivity;
 using PipeTech.Downloader.Models;
+using PipeTech.Downloader.ViewModels;
 
 namespace PipeTech.Downloader.Behaviors;
 
 /// <summary>
 /// Button content template behavior class.
 /// </summary>
-public class ButtonContentTemplateBehavior : Behavior<Button>, INotifyPropertyChanged
+public class ButtonContentTemplateManifestBehavior : Behavior<Button>, INotifyPropertyChanged
 {
-    private DownloadInspection.States state;
+    private MainViewModel.ManifestStates state;
 
     /// <inheritdoc/>
     public event PropertyChangedEventHandler? PropertyChanged;
 
     /// <summary>
-    /// Gets or sets the paused template.
+    /// Gets or sets the cancelled template.
     /// </summary>
-    public DataTemplate? PausedTemplate
+    public DataTemplate? CancelledTemplate
     {
         get; set;
     }
 
     /// <summary>
-    /// Gets or sets the complete template.
+    /// Gets or sets the loading template.
     /// </summary>
-    public DataTemplate? CompletedTemplate
+    public DataTemplate? LoadingTemplate
     {
         get; set;
     }
@@ -45,9 +46,17 @@ public class ButtonContentTemplateBehavior : Behavior<Button>, INotifyPropertyCh
     }
 
     /// <summary>
+    /// Gets or sets the complete template.
+    /// </summary>
+    public DataTemplate? CompletedTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
     /// Gets or sets the state.
     /// </summary>
-    public DownloadInspection.States State
+    public MainViewModel.ManifestStates State
     {
         get => this.state;
         set
@@ -77,20 +86,23 @@ public class ButtonContentTemplateBehavior : Behavior<Button>, INotifyPropertyCh
 
         switch (this.State)
         {
-            case DownloadInspection.States.Errored:
-                this.AssociatedObject.ContentTemplate = this.ErroredTemplate;
+            case MainViewModel.ManifestStates.Cancelled:
+                this.AssociatedObject.ContentTemplate = this.CancelledTemplate;
                 this.AssociatedObject.Visibility = Visibility.Visible;
                 break;
-            case DownloadInspection.States.Complete:
+            case MainViewModel.ManifestStates.Loading:
+                this.AssociatedObject.ContentTemplate = this.LoadingTemplate;
+                this.AssociatedObject.Visibility = Visibility.Visible;
+                break;
+            case MainViewModel.ManifestStates.None:
+                this.AssociatedObject.Visibility = Visibility.Collapsed;
+                break;
+            case MainViewModel.ManifestStates.Completed:
                 this.AssociatedObject.ContentTemplate = this.CompletedTemplate;
-                this.AssociatedObject.Visibility = Visibility.Visible;
+                this.AssociatedObject.Visibility = Visibility.Collapsed;
                 break;
-            case DownloadInspection.States.Loading:
-            case DownloadInspection.States.Queued:
-            case DownloadInspection.States.Processing:
-            case DownloadInspection.States.Staged:
-            case DownloadInspection.States.Paused:
-                this.AssociatedObject.ContentTemplate = this.PausedTemplate;
+            case MainViewModel.ManifestStates.Errored:
+                this.AssociatedObject.ContentTemplate = this.ErroredTemplate;
                 this.AssociatedObject.Visibility = Visibility.Visible;
                 break;
             default:

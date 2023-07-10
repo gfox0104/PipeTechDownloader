@@ -3,7 +3,7 @@
 // </copyright>
 
 using System.Diagnostics.CodeAnalysis;
-
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 
@@ -22,6 +22,8 @@ namespace PipeTech.Downloader.Services;
 public class NavigationService : INavigationService
 {
     private readonly IPageService pageService;
+    private readonly ILogger<NavigationService>? logger;
+
     private object? lastParameterUsed;
     private Frame? frame;
 
@@ -29,9 +31,13 @@ public class NavigationService : INavigationService
     /// Initializes a new instance of the <see cref="NavigationService"/> class.
     /// </summary>
     /// <param name="pageService">Page service.</param>
-    public NavigationService(IPageService pageService)
+    /// <param name="logger">Logger service.</param>
+    public NavigationService(
+        IPageService pageService,
+        ILogger<NavigationService>? logger = null)
     {
         this.pageService = pageService;
+        this.logger = logger;
     }
 
     /// <inheritdoc/>
@@ -72,6 +78,7 @@ public class NavigationService : INavigationService
             this.frame.GoBack();
             if (vmBeforeNavigation is INavigationAware navigationAware)
             {
+                this.logger?.LogDebug("OnNavigatedFrom per GoBack");
                 navigationAware.OnNavigatedFrom();
             }
 
@@ -96,6 +103,7 @@ public class NavigationService : INavigationService
                 this.lastParameterUsed = parameter;
                 if (vmBeforeNavigation is INavigationAware navigationAware)
                 {
+                    this.logger?.LogDebug($"OnNavigatedFrom per NavigateTo {pageType}:{parameter}");
                     navigationAware.OnNavigatedFrom();
                 }
             }

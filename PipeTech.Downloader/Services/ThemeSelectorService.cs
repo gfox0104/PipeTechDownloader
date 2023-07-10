@@ -14,7 +14,7 @@ namespace PipeTech.Downloader.Services;
 /// </summary>
 public class ThemeSelectorService : IThemeSelectorService
 {
-    private const string SettingsKey = "AppBackgroundRequestedTheme";
+    private const string SettingsKey = ILocalSettingsService.AppBackgroundRequestedThemeKey;
 
     private readonly ILocalSettingsService localSettingsService;
 
