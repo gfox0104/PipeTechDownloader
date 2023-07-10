@@ -19,13 +19,14 @@
 		<DefineConstants>$(DefineConstants) DISABLE_XAML_GENERATED_MAIN</DefineConstants>
 		<COMPOSITE_VERSION>5.3.12-pre.1842</COMPOSITE_VERSION>
 		<REPORTING_VERSION>2.13.5-pre.218</REPORTING_VERSION>
-		<GenerateAppInstallerFile>True</GenerateAppInstallerFile>
-		<AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+		<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
 		<AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
 		<GenerateTestArtifacts>True</GenerateTestArtifacts>
 		<AppxBundle>Auto</AppxBundle>
 		<AppxBundlePlatforms>x86</AppxBundlePlatforms>
-		<AppInstallerUri>\\phatodev\G\Various Programs\PipeTech.Downloader\installerlocation</AppInstallerUri>
+		<PackageCertificateThumbprint>8CA48F8D9A53B3CD9565E0296375DD8C373D4E87</PackageCertificateThumbprint>
+		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">

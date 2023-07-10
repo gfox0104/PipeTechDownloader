@@ -12,14 +12,14 @@
 
   <Identity
     Name="0bdd5d09-453b-40c6-afab-a4f061bdccaf"
-    Publisher="CN=marko"
+    Publisher="OID.1.3.6.1.4.1.311.60.2.1.3=US, OID.1.3.6.1.4.1.311.60.2.1.2=Colorado, OID.2.5.4.15=Private Organization, CN=&quot;Industrial Technology Group, LLC&quot;, SERIALNUMBER=20101544852, O=&quot;Industrial Technology Group, LLC&quot;, L=Grand Rapids, S=Michigan, C=US"
     Version="1.0.0.0" />
     
   <mp:PhoneIdentity PhoneProductId="0bdd5d09-453b-40c6-afab-a4f061bdccaf" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
     
   <Properties>
     <DisplayName>PipeTech.Downloader</DisplayName>
-    <PublisherDisplayName>marko</PublisherDisplayName>
+    <PublisherDisplayName>Industrial Technology Group, LLC</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
