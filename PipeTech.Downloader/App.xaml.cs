@@ -4,6 +4,7 @@
 
 using System.Net;
 using System.Reflection;
+using CommunityToolkit.Mvvm.Messaging;
 using Hangfire;
 using Hangfire.Storage;
 using Hangfire.Storage.SQLite;
@@ -136,6 +137,7 @@ public partial class App : Application
                 services.AddTransient<DownloadInspectionHandler>();
                 services.AddTransient<Project>();
                 services.AddSingleton<IDocumentFactory, SyncfusionDocumentFactory>();
+                services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
 
                 // Core Services
                 services.AddSingleton<IDownloadService, DownloadService>();

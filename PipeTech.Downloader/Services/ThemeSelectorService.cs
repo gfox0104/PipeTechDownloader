@@ -2,10 +2,12 @@
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml;
 
 using PipeTech.Downloader.Contracts.Services;
 using PipeTech.Downloader.Helpers;
+using PipeTech.Downloader.Models;
 
 namespace PipeTech.Downloader.Services;
 
@@ -17,14 +19,19 @@ public class ThemeSelectorService : IThemeSelectorService
     private const string SettingsKey = ILocalSettingsService.AppBackgroundRequestedThemeKey;
 
     private readonly ILocalSettingsService localSettingsService;
+    private readonly IMessenger? messenger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ThemeSelectorService"/> class.
     /// </summary>
     /// <param name="localSettingsService">Local settings service.</param>
-    public ThemeSelectorService(ILocalSettingsService localSettingsService)
+    /// <param name="messenger">Messenger service.</param>
+    public ThemeSelectorService(
+        ILocalSettingsService localSettingsService,
+        IMessenger? messenger = null)
     {
         this.localSettingsService = localSettingsService;
+        this.messenger = messenger;
     }
 
     /// <inheritdoc/>
@@ -56,6 +63,7 @@ public class ThemeSelectorService : IThemeSelectorService
             TitleBarHelper.UpdateTitleBar(this.Theme);
         }
 
+        this.messenger?.Send(new ThemeChangedMessage(this.Theme));
         await Task.CompletedTask;
     }
 

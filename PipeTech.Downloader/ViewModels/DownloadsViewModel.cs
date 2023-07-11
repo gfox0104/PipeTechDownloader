@@ -6,27 +6,31 @@ using System.ComponentModel;
 using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using CommunityToolkit.WinUI.UI.Controls;
 using Hangfire;
 using Microsoft.Extensions.Logging;
+using Microsoft.UI.Xaml;
 using PipeTech.Downloader.Contracts.Services;
 using PipeTech.Downloader.Contracts.ViewModels;
 using PipeTech.Downloader.Models;
-using Windows.Security.Authentication.Web.Core;
 
 namespace PipeTech.Downloader.ViewModels;
 
 /// <summary>
 /// Downloads view model.
 /// </summary>
-public partial class DownloadsViewModel : ObservableRecipient, INavigationAware
+public partial class DownloadsViewModel : BindableRecipient, INavigationAware
 {
     private readonly IServiceProvider serviceProvider;
     private readonly IDownloadService downloadService;
     private readonly ILogger<DownloadsViewModel>? logger;
     private readonly IBackgroundJobClientV2 jobClient;
+    private readonly IThemeSelectorService themeSelectorService;
 
     private bool expanding = false;
+    private ElementTheme requestedTheme = ElementTheme.Default;
 
     /// <summary>
     /// Gets or sets the row visibility.
@@ -41,16 +45,19 @@ public partial class DownloadsViewModel : ObservableRecipient, INavigationAware
     /// <param name="options">Settings directories.</param>
     /// <param name="downloadService">Download service.</param>
     /// <param name="jobClient">Job client service.</param>
+    /// <param name="themeSelectorService">Theme selector service.</param>
     /// <param name="logger">Logger service.</param>
     public DownloadsViewModel(
         IServiceProvider serviceProvider,
         IDownloadService downloadService,
         IBackgroundJobClientV2 jobClient,
+        IThemeSelectorService themeSelectorService,
         ILogger<DownloadsViewModel>? logger = null)
     {
         this.serviceProvider = serviceProvider;
         this.downloadService = downloadService;
         this.jobClient = jobClient;
+        this.themeSelectorService = themeSelectorService;
         this.logger = logger;
 
         this.RestartProjectDownloadCommand = new AsyncRelayCommand<object?>(this.ExecuteRestartProjectDownload);
@@ -79,9 +86,25 @@ public partial class DownloadsViewModel : ObservableRecipient, INavigationAware
         get;
     }
 
+    /// <summary>
+    /// Gets or sets the requested theme.
+    /// </summary>
+    public ElementTheme RequestedTheme
+    {
+        get => this.requestedTheme;
+        protected set => this.SetProperty(ref this.requestedTheme, value);
+    }
+
     /// <inheritdoc/>
     public void OnNavigatedTo(object parameter)
     {
+        this.RequestedTheme = this.themeSelectorService.Theme;
+        var messenger = this.serviceProvider.GetService(typeof(IMessenger)) as IMessenger;
+        messenger?.Register<ThemeChangedMessage>(this, (r, m) =>
+        {
+            this.RequestedTheme = m.Value;
+        });
+
         this.downloadService.Source.CollectionChanged += this.Source_CollectionChanged;
         foreach (var p in this.downloadService.Source)
         {
@@ -105,6 +128,9 @@ public partial class DownloadsViewModel : ObservableRecipient, INavigationAware
     /// <inheritdoc/>
     public void OnNavigatedFrom()
     {
+        var messenger = this.serviceProvider.GetService(typeof(IMessenger)) as IMessenger;
+        messenger?.Unregister<ThemeChangedMessage>(this);
+
         if (this.downloadService?.Source is not null)
         {
             this.downloadService.Source.CollectionChanged -= this.Source_CollectionChanged;
@@ -211,6 +237,7 @@ public partial class DownloadsViewModel : ObservableRecipient, INavigationAware
 
                             this.VisibilityMode = DataGridRowDetailsVisibilityMode.VisibleWhenSelected;
                             this.SourceView.MoveCurrentTo(p);
+                            this.RaisePropertyChanged(nameof(this.RequestedTheme));
                         }
                         catch (Exception ex)
                         {
@@ -225,6 +252,7 @@ public partial class DownloadsViewModel : ObservableRecipient, INavigationAware
                     {
                         this.VisibilityMode = DataGridRowDetailsVisibilityMode.Collapsed;
                         this.SourceView.MoveCurrentTo(null);
+                        this.RaisePropertyChanged(nameof(this.RequestedTheme));
                     }
                 }
 

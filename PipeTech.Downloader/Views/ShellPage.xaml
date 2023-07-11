@@ -8,8 +8,8 @@
     xmlns:tb="using:H.NotifyIcon"
     Loaded="OnLoaded"
     Unloaded="OnUnloaded"
-    RequestedTheme="{x:Bind ViewModel.CurrentTheme, Mode=TwoWay}"
     mc:Ignorable="d">
+    <!--RequestedTheme="{x:Bind ViewModel.CurrentTheme, Mode=OneWay}"-->
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="32" />

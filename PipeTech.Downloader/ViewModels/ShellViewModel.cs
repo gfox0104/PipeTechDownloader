@@ -63,7 +63,7 @@ public partial class ShellViewModel : BindableRecipient
         {
         }
 
-        App.MainWindow.AppWindow.Closing += this.AppWindow_Closing;
+        App.MainWindow.AppWindow.Closing += this.AppWindow_Closing;        
     }
 
     /// <summary>

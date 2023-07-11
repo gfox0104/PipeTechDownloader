@@ -37,6 +37,18 @@ public sealed partial class ShellPage : Page
         App.MainWindow.ExtendsContentIntoTitleBar = true;
         App.MainWindow.SetTitleBar(this.AppTitleBar);
         App.MainWindow.Activated += this.MainWindow_Activated;
+
+        this.ViewModel.CurrentTheme = this.RequestedTheme;
+        this.RegisterPropertyChangedCallback(
+            FrameworkElement.RequestedThemeProperty,
+            (s, d) =>
+            {
+                if (s is ShellPage sp && d == FrameworkElement.RequestedThemeProperty)
+                {
+                    sp.ViewModel.CurrentTheme = sp.RequestedTheme;
+                }
+            });
+
         ////this.AppTitleBarText.Text = "AppDisplayName".GetLocalized();
     }
 

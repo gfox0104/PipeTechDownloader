@@ -54,21 +54,27 @@ public class LocalSettingsService : ILocalSettingsService
     /// <inheritdoc/>
     public async Task<T?> ReadSettingAsync<T>(string key)
     {
-        if (RuntimeHelper.IsMSIX)
+        try
         {
-            if (ApplicationData.Current.LocalSettings.Values.TryGetValue(key, out var obj))
+            if (RuntimeHelper.IsMSIX)
             {
-                return await Json.ToObjectAsync<T>((string)obj);
+                if (ApplicationData.Current.LocalSettings.Values.TryGetValue(key, out var obj))
+                {
+                    return await Json.ToObjectAsync<T>((string)obj);
+                }
+            }
+            else
+            {
+                await this.InitializeAsync();
+
+                if (this.settings != null && this.settings.TryGetValue(key, out var obj))
+                {
+                    return await Json.ToObjectAsync<T>(obj.ToString() ?? string.Empty);
+                }
             }
         }
-        else
+        catch (Exception)
         {
-            await this.InitializeAsync();
-
-            if (this.settings != null && this.settings.TryGetValue(key, out var obj))
-            {
-                return await Json.ToObjectAsync<T>((string)obj);
-            }
         }
 
         return default;
@@ -80,6 +86,7 @@ public class LocalSettingsService : ILocalSettingsService
         if (RuntimeHelper.IsMSIX)
         {
             ApplicationData.Current.LocalSettings.Values[key] = await Json.StringifyAsync(value);
+            ////await ApplicationData.Current.LocalSettings.SaveAsync(key, value);
         }
         else
         {
