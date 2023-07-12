@@ -7,11 +7,12 @@ using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.Mvvm.Messaging.Messages;
+using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.UI.Controls;
 using Hangfire;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using PipeTech.Downloader.Contracts.Services;
 using PipeTech.Downloader.Contracts.ViewModels;
 using PipeTech.Downloader.Models;
@@ -61,7 +62,7 @@ public partial class DownloadsViewModel : BindableRecipient, INavigationAware
         this.logger = logger;
 
         this.RestartProjectDownloadCommand = new AsyncRelayCommand<object?>(this.ExecuteRestartProjectDownload);
-
+        this.ShowDetailsCommand = new AsyncRelayCommand<object?>(this.ExecuteShowDetails);
         this.SourceView = CollectionViewSource.GetDefaultView(this.downloadService.Source);
     }
 
@@ -82,6 +83,14 @@ public partial class DownloadsViewModel : BindableRecipient, INavigationAware
     /// Gets the command to restart a project download.
     /// </summary>
     public IAsyncRelayCommand<object?> RestartProjectDownloadCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the show details command.
+    /// </summary>
+    public IAsyncRelayCommand<object?> ShowDetailsCommand
     {
         get;
     }
@@ -144,6 +153,32 @@ public partial class DownloadsViewModel : BindableRecipient, INavigationAware
                 p.PropertyChanged -= this.Project_PropertyChanged;
                 p.Expanded = false;
             }
+        }
+    }
+
+    private async Task ExecuteShowDetails(object? param)
+    {
+        if (param is not DownloadInspection dl ||
+            string.IsNullOrEmpty(dl.LastError))
+        {
+            await Task.CompletedTask;
+            return;
+        }
+
+        try
+        {
+            var dlg = new ContentDialog()
+            {
+                XamlRoot = App.MainWindow.Content.XamlRoot,
+                Title = string.Empty,
+                Content = dl.LastError,
+                CloseButtonText = "Close",
+            };
+
+            await dlg.ShowAsync();
+        }
+        catch (Exception)
+        {
         }
     }
 

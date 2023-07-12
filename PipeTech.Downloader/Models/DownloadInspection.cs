@@ -60,6 +60,9 @@ public partial class DownloadInspection : BindableRecipient, IDisposable
     [ObservableProperty]
     private JsonElement? json;
 
+    [ObservableProperty]
+    private string? lastError;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DownloadInspection"/> class.
     /// </summary>

@@ -350,23 +350,27 @@ public partial class DownloadInspectionHandler : BindableRecipient, IDisposable
         }
         catch (TaskCanceledException)
         {
-            this.logger?.LogWarning($"Loading download inspection paused.");
+            var message = $"Loading download inspection paused.";
+            this.logger?.LogWarning(message);
             if (this.Inspection is not null)
             {
                 await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
                 {
                     this.Inspection.State = States.Paused;
+                    this.Inspection.LastError = $"{message}";
                 });
             }
         }
         catch (Exception ex)
         {
-            this.logger?.LogError(ex, "Error loading download inspection.");
+            var message = "Error loading download inspection.";
+            this.logger?.LogError(ex, message);
             if (this.Inspection is not null)
             {
                 await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
                 {
                     this.Inspection.State = States.Errored;
+                    this.Inspection.LastError = $"{message}\r\n{ex}";
                 });
             }
         }

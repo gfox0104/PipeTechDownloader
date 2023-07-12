@@ -29,8 +29,8 @@ public partial class ShellViewModel : BindableRecipient
 
     private bool isClosing = false;
 
-    [ObservableProperty]
-    private bool isBackEnabled;
+    ////[ObservableProperty]
+    ////private bool isBackEnabled;
 
     [ObservableProperty]
     private bool canSettings;
@@ -173,7 +173,7 @@ public partial class ShellViewModel : BindableRecipient
 
     private void OnNavigated(object sender, NavigationEventArgs e)
     {
-        this.IsBackEnabled = this.NavigationService.CanGoBack;
+        ////this.IsBackEnabled = this.NavigationService.CanGoBack;
         this.CanSettings = e.Content is not MainPage;
         if (this.MenuSettingsCommand is IRelayCommand rc)
         {

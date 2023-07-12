@@ -16,7 +16,8 @@
             <RowDefinition Height="50" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <tb:TaskbarIcon IconSource="/Assets/WindowIcon.ico" 
+        <tb:TaskbarIcon x:Name="taskbarIcon"
+                        IconSource="/Assets/WindowIcon.ico" 
                         DoubleClickCommand="{x:Bind ViewModel.ShowCommand}"
                         MenuActivation="RightClick">
             <tb:TaskbarIcon.ContextFlyout>

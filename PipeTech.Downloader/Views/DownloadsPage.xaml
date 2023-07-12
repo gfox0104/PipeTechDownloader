@@ -52,7 +52,51 @@
                         <controls:DataGridTemplateColumn Header="Actions">
                             <controls:DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate x:DataType="models:DownloadInspectionHandler">
-                                    <Button
+                                    <ContentPresenter>
+                                        <Interactivity:Interaction.Behaviors>
+                                            <behaviors:ContentPresenterTemplateBehavior
+                                                State="{x:Bind Inspection.State, Mode=OneWay}">
+                                                <behaviors:ContentPresenterTemplateBehavior.PausedTemplate>
+                                                    <DataTemplate x:DataType="models:DownloadInspectionHandler">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Button
+                                                                Content="Pause"
+                                                                Command="{Binding Source={StaticResource Proxy}, Path=Data.RestartProjectDownloadCommand}"
+                                                                CommandParameter="{Binding Source={StaticResource ProjectProxy}, Path=Data}" />
+                                                            <!--<HyperlinkButton Content="View Details..." />-->
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </behaviors:ContentPresenterTemplateBehavior.PausedTemplate>
+                                                <behaviors:ContentPresenterTemplateBehavior.ErroredTemplate>
+                                                    <DataTemplate x:DataType="models:DownloadInspectionHandler">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Button
+                                                                Content="Error"
+                                                                Command="{Binding Source={StaticResource Proxy}, Path=Data.RestartProjectDownloadCommand}"
+                                                                CommandParameter="{Binding Source={StaticResource ProjectProxy}, Path=Data}" />
+                                                            <HyperlinkButton Content="View Details..." 
+                                                                             Command="{Binding Source={StaticResource Proxy}, Path=Data.ShowDetailsCommand}"
+                                                                             CommandParameter="{x:Bind Inspection}">
+                                                                <HyperlinkButton.Resources>
+                                                                    <StaticResource x:Key="HyperlinkButtonBackgroundPointerOver"
+                                                                                    ResourceKey="SubtleFillColorTransparentBrush" />
+                                                                </HyperlinkButton.Resources>
+                                                            </HyperlinkButton>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </behaviors:ContentPresenterTemplateBehavior.ErroredTemplate>
+                                                <behaviors:ContentPresenterTemplateBehavior.CompletedTemplate>
+                                                    <DataTemplate x:DataType="models:DownloadInspectionHandler">
+                                                        <Button
+                                                            Content="Complete"
+                                                            Command="{Binding Source={StaticResource Proxy}, Path=Data.RestartProjectDownloadCommand}"
+                                                            CommandParameter="{Binding Source={StaticResource ProjectProxy}, Path=Data}" />
+                                                    </DataTemplate>
+                                                </behaviors:ContentPresenterTemplateBehavior.CompletedTemplate>
+                                            </behaviors:ContentPresenterTemplateBehavior>
+                                        </Interactivity:Interaction.Behaviors>
+                                    </ContentPresenter>
+                                    <!--<Button
                                         Command="{Binding Source={StaticResource Proxy}, Path=Data.RestartProjectDownloadCommand}"
                                         CommandParameter="{Binding Source={StaticResource ProjectProxy}, Path=Data}">
                                         <Interactivity:Interaction.Behaviors>
@@ -62,7 +106,7 @@
                                                 ErroredTemplate="{StaticResource ButtonError}"
                                                 CompletedTemplate="{StaticResource ButtonComplete}"/>
                                         </Interactivity:Interaction.Behaviors>
-                                    </Button>
+                                    </Button>-->
                                 </DataTemplate>
                             </controls:DataGridTemplateColumn.CellTemplate>
                         </controls:DataGridTemplateColumn>

@@ -81,7 +81,14 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
         this.Inspections.CollectionChanged += this.Inspections_CollectionChanged;
         this.CloseCommand = new RelayCommand(() =>
         {
-            this.navigationService.GoBack();
+            if (this.navigationService.CanGoBack)
+            {
+                this.navigationService.GoBack();
+            }
+            else
+            {
+                this.navigationService.NavigateTo(typeof(DownloadsViewModel).FullName!);
+            }
         });
 
         this.ManifestLoadCommand = new RelayCommand(() =>

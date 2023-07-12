@@ -102,7 +102,7 @@ public sealed partial class ShellPage : Page
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
-        var resource = args.WindowActivationState == WindowActivationState.Deactivated ? "WindowCaptionForegroundDisabled" : "WindowCaptionForeground";
+        ////var resource = args.WindowActivationState == WindowActivationState.Deactivated ? "WindowCaptionForegroundDisabled" : "WindowCaptionForeground";
 
         ////this.AppTitleBarText.Foreground = (SolidColorBrush)App.Current.Resources[resource];
         ////App.AppTitlebar = this.AppTitleBarText as UIElement;
@@ -121,6 +121,8 @@ public sealed partial class ShellPage : Page
         {
             m.ViewModel?.Dispose();
         }
+
+        this.taskbarIcon?.Dispose();
     }
 
     private void ShellMenuBarSettingsButton_PointerEntered(object sender, PointerRoutedEventArgs e)
