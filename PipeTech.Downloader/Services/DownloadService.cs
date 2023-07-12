@@ -1977,7 +1977,7 @@ public class DownloadService : ObservableObject, IDownloadService
 
                             if (createJob && !userCreateJob)
                             {
-                                await this.CreateJobForProject(project);                                
+                                await this.CreateJobForProject(project);
                             }
                         }
                     }

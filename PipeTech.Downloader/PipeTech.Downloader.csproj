@@ -25,8 +25,7 @@
 		<GenerateTestArtifacts>True</GenerateTestArtifacts>
 		<AppxBundle>Auto</AppxBundle>
 		<AppxBundlePlatforms>x86</AppxBundlePlatforms>
-		<PackageCertificateThumbprint>8CA48F8D9A53B3CD9565E0296375DD8C373D4E87</PackageCertificateThumbprint>
-		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+		<GenerateTemporaryStoreCertificate>False</GenerateTemporaryStoreCertificate>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">

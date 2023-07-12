@@ -11,15 +11,14 @@
   IgnorableNamespaces="uap rescap genTemplate">
 
   <Identity
-    Name="0bdd5d09-453b-40c6-afab-a4f061bdccaf"
-    Publisher="OID.1.3.6.1.4.1.311.60.2.1.3=US, OID.1.3.6.1.4.1.311.60.2.1.2=Colorado, OID.2.5.4.15=Private Organization, CN=&quot;Industrial Technology Group, LLC&quot;, SERIALNUMBER=20101544852, O=&quot;Industrial Technology Group, LLC&quot;, L=Grand Rapids, S=Michigan, C=US"
-    Version="1.0.0.0" />
+    Name="PipeTechSoftware.2321091DEF58C"
+    Version="1.0.0.0"  Publisher="CN=34B18DFD-98E9-4162-9FE6-90AE9A34697B"/>
     
-  <mp:PhoneIdentity PhoneProductId="0bdd5d09-453b-40c6-afab-a4f061bdccaf" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="57b41a39-1ed8-43bd-ad96-2ebadcd41de0" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
     
   <Properties>
-    <DisplayName>PipeTech.Downloader</DisplayName>
-    <PublisherDisplayName>Industrial Technology Group, LLC</PublisherDisplayName>
+    <DisplayName>PipeTech Downloader</DisplayName>
+    <PublisherDisplayName>PipeTech Software</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
