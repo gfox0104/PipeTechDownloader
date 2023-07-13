@@ -668,7 +668,7 @@ public class DownloadService : ObservableObject, IDownloadService
                                 await dq.EnqueueAsync(() =>
                                 {
                                     inspection.State = DownloadInspection.States.Errored;
-                                    inspection.LastError = $"Inspection errored\r\n{string.Join("\r\n", errors.Where(e => e is not null))}";
+                                    inspection.LastError = $"Inspection errored\r\n\r\nError details:\r\n{string.Join("\r\n", errors.Where(e => e is not null))}";
                                 });
                                 throw new AggregateException(errors.ToArray());
                             }
@@ -722,7 +722,7 @@ public class DownloadService : ObservableObject, IDownloadService
                                 var message = $"No inspection data in [{inspectionPath}] in project [{projectFilePath}]. Unable to process.";
                                 await dq.EnqueueAsync(() =>
                                 {
-                                    inspection.State = Models.DownloadInspection.States.Errored;
+                                    inspection.State = DownloadInspection.States.Errored;
                                     inspection.LastError = message;
                                 });
                                 throw new DataException(message);
@@ -736,7 +736,7 @@ public class DownloadService : ObservableObject, IDownloadService
                                 var message = $"No asset data in [{inspectionPath}] in project [{projectFilePath}]. Unable to process.";
                                 await dq.EnqueueAsync(() =>
                                 {
-                                    inspection.State = Models.DownloadInspection.States.Errored;
+                                    inspection.State = DownloadInspection.States.Errored;
                                     inspection.LastError = message;
                                 });
                                 throw new DataException(message);
@@ -754,7 +754,7 @@ public class DownloadService : ObservableObject, IDownloadService
                             {
                                 await dq.EnqueueAsync(() =>
                                 {
-                                    inspection.State = Models.DownloadInspection.States.Errored;
+                                    inspection.State = DownloadInspection.States.Errored;
                                     inspection.LastError = "Unable to create inspection for saving";
                                 });
                                 throw new TypeInitializationException(typeof(Inspection).FullName, null);
@@ -1058,7 +1058,7 @@ public class DownloadService : ObservableObject, IDownloadService
                                     if (problems.Any(p => p.ProblemClass.IsError()))
                                     {
                                         throw new InvalidDataException(
-                                            $"Inspection Data [{inspectionPath}] in project [{projectFilePath}] is not valid.\r\n{string.Join("\r\n", problems.Select(p => $"{p.ProblemClass.ToString()}:{p.Description}"))}");
+                                            $"Inspection Data [{inspectionPath}] in project [{projectFilePath}] is not valid.\r\n{string.Join("\r\n", problems.Select(p => $"{p.ProblemClass}:{p.Description}"))}");
                                     }
 
                                     // Exchange
@@ -1336,7 +1336,7 @@ public class DownloadService : ObservableObject, IDownloadService
                                 await dq.EnqueueAsync(() =>
                                 {
                                     inspection.State = DownloadInspection.States.Errored;
-                                    inspection.LastError = ex.ToString();
+                                    inspection.LastError = $"Error during inspection process\r\n\r\nError details:\r\n{ex}";
                                 });
                             }
 
@@ -1694,7 +1694,7 @@ public class DownloadService : ObservableObject, IDownloadService
 
                             await dq.EnqueueAsync(() =>
                             {
-                                inspection.Inspection.State = Models.DownloadInspection.States.Paused;
+                                inspection.Inspection.State = DownloadInspection.States.Paused;
                                 inspection.Inspection.LastError = "Inspection paused";
                             });
                         }

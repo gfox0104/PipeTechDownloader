@@ -370,7 +370,7 @@ public partial class DownloadInspectionHandler : BindableRecipient, IDisposable
                 await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
                 {
                     this.Inspection.State = States.Errored;
-                    this.Inspection.LastError = $"{message}\r\n{ex}";
+                    this.Inspection.LastError = $"{message}\r\n\r\nError details:\r\n{ex}";
                 });
             }
         }

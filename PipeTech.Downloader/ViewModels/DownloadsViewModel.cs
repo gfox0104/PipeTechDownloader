@@ -16,6 +16,7 @@ using Microsoft.UI.Xaml.Controls;
 using PipeTech.Downloader.Contracts.Services;
 using PipeTech.Downloader.Contracts.ViewModels;
 using PipeTech.Downloader.Models;
+using Windows.System;
 
 namespace PipeTech.Downloader.ViewModels;
 
@@ -61,6 +62,8 @@ public partial class DownloadsViewModel : BindableRecipient, INavigationAware
         this.themeSelectorService = themeSelectorService;
         this.logger = logger;
 
+        this.OpenFolderCommand = new AsyncRelayCommand<object?>(this.ExecuteOpenFolder);
+        this.RemoveProjectCommand = new AsyncRelayCommand<object?>(this.RemoveProject);
         this.RestartProjectDownloadCommand = new AsyncRelayCommand<object?>(this.ExecuteRestartProjectDownload);
         this.ShowDetailsCommand = new AsyncRelayCommand<object?>(this.ExecuteShowDetails);
         this.SourceView = CollectionViewSource.GetDefaultView(this.downloadService.Source);
@@ -75,6 +78,22 @@ public partial class DownloadsViewModel : BindableRecipient, INavigationAware
     /// Gets the source view.
     /// </summary>
     public ICollectionView SourceView
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the command to open the project download folder.
+    /// </summary>
+    public IAsyncRelayCommand<object?> OpenFolderCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the command to remove project.
+    /// </summary>
+    public IAsyncRelayCommand<object?> RemoveProjectCommand
     {
         get;
     }
@@ -179,6 +198,66 @@ public partial class DownloadsViewModel : BindableRecipient, INavigationAware
         }
         catch (Exception)
         {
+        }
+    }
+
+    private async Task ExecuteOpenFolder(object? param)
+    {
+        if (param is not Project p ||
+            string.IsNullOrEmpty(p.DownloadPath) ||
+            !Directory.Exists(p.DownloadPath))
+        {
+            await Task.CompletedTask;
+            return;
+        }
+
+        try
+        {
+            await Launcher.LaunchFolderPathAsync(p.DownloadPath);
+        }
+        catch (Exception ex)
+        {
+            this.logger?.LogError(ex, $"Unable to open folder [{p.DownloadPath}]");
+        }
+    }
+
+    private async Task RemoveProject(object? param)
+    {
+        if (param is not Project p ||
+            string.IsNullOrEmpty(p.FilePath) ||
+            string.IsNullOrEmpty(Path.GetDirectoryName(p.FilePath)))
+        {
+            await Task.CompletedTask;
+            return;
+        }
+
+        try
+        {
+            var dlg = new ContentDialog()
+            {
+                XamlRoot = App.MainWindow.Content.XamlRoot,
+                Content = "Are you sure you want to remove the project download?\r\n\r\nNOTE: This operation will not remove the actual download",
+                CloseButtonText = "No",
+                PrimaryButtonText = "Yes",
+                DefaultButton = ContentDialogButton.Close,
+            };
+            var result = await dlg.ShowAsync();
+            if (result != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            this.downloadService.Source.Remove(p);
+
+            var dir = new DirectoryInfo(Path.GetDirectoryName(p.FilePath) ?? string.Empty);
+            if (dir.Exists)
+            {
+                dir.Delete(true);
+            }
+        }
+        catch (Exception ex)
+        {
+            this.logger?.LogError(ex, $"Unable to remove project [{p.FilePath}]");
         }
     }
 
