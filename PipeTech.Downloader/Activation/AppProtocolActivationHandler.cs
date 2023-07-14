@@ -53,6 +53,21 @@ public class AppProtocolActivationHandler : ActivationHandler<ProtocolActivatedE
         App.MainWindow.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
         {
             this.navigationService.NavigateTo(typeof(MainViewModel).FullName!, parameter: uri);
+            try
+            {
+                App.MainWindow.IsAlwaysOnTop = true;
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                App.MainWindow.IsAlwaysOnTop = false;
+            }
+            catch (Exception)
+            {
+            }
         });
 
         await Task.CompletedTask;
