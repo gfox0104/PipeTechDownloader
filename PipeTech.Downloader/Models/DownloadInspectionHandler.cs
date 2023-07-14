@@ -181,7 +181,13 @@ public partial class DownloadInspectionHandler : BindableRecipient, IDisposable
                     var info = await externalServices.GetPack(packId, descending: true, token: token);
                     if (info.Content is null)
                     {
-                        throw new Exception("Unable to download pack");
+                        var message = $"Unable to download pack [{packId}]. Code: [{info.StatusCode}]";
+                        if (info.Error is not null)
+                        {
+                            message += $"\r\n{info.Error}";
+                        }
+
+                        throw new Exception(message);
                     }
 
                     if (token.IsCancellationRequested)

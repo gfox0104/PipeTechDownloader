@@ -715,6 +715,15 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                     rc.NotifyCanExecuteChanged();
                 }
 
+                if (sender is DownloadInspection di)
+                {
+                    if (di.State == DownloadInspection.States.Errored ||
+                        di.State == DownloadInspection.States.Paused)
+                    {
+                        this.logger?.LogDebug($"Inspection [{di.Name}] state change to [{di.State}]:\r\n{this.manifestUri?.OriginalString ?? string.Empty}");
+                    }
+                }
+
                 break;
             default:
                 break;
