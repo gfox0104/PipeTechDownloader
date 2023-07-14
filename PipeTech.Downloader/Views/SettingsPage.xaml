@@ -87,9 +87,13 @@
                 <TextBlock x:Uid="Settings_Support" Style="{ThemeResource SubtitleTextBlockStyle}" />
 
                 <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                    <HyperlinkButton x:Uid="Settings_Support_CallLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
-                    <HyperlinkButton x:Uid="Settings_Support_EmailLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
-                    <HyperlinkButton x:Uid="Settings_Support_RemoteLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+                    <HyperlinkButton x:Uid="Settings_Support_CallLink" 
+                                     Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+                    <HyperlinkButton x:Uid="Settings_Support_EmailLink" 
+                                     Command="{x:Bind ViewModel.EmailCommand}"
+                                     Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+                    <HyperlinkButton x:Uid="Settings_Support_RemoteLink" 
+                                     Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
 
                 </StackPanel>
 

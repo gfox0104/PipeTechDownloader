@@ -14,6 +14,7 @@ using PipeTech.Downloader.Contracts.Services;
 using PipeTech.Downloader.Helpers;
 
 using Windows.ApplicationModel;
+using Windows.System;
 
 namespace PipeTech.Downloader.ViewModels;
 
@@ -51,6 +52,12 @@ public partial class SettingsViewModel : ObservableRecipient
         this.localSettingsService = localSettingsService;
         this.elementTheme = this.themeSelectorService.Theme;
         this.versionDescription = GetVersionDescription();
+
+        this.EmailCommand = new AsyncRelayCommand(() =>
+        {
+            _ = Launcher.LaunchUriAsync(new Uri("mailto:support.pipetech.com"));
+            return Task.CompletedTask;
+        });
 
         this.SwitchThemeCommand = new RelayCommand<ElementTheme>(
             async (param) =>
@@ -95,6 +102,14 @@ public partial class SettingsViewModel : ObservableRecipient
         {
             this.DataFolder = await this.localSettingsService.ReadSettingAsync<string?>(ILocalSettingsService.LastDataFolderKey);
         });
+    }
+
+    /// <summary>
+    /// Gets the email command.
+    /// </summary>
+    public IAsyncRelayCommand EmailCommand
+    {
+        get;
     }
 
     /// <summary>
