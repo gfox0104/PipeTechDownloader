@@ -9,6 +9,7 @@
     xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:helpers="using:PipeTech.Downloader.Helpers"
     xmlns:behaviors="using:PipeTech.Downloader.Behaviors"
+    xmlns:vm="using:PipeTech.Downloader.ViewModels"
     mc:Ignorable="d">
     <Page.Resources>
 
@@ -16,7 +17,9 @@
         <helpers:EnumToStringConverter x:Key="EnumToStringConverter" />
         <helpers:NumberBytesToStorageStringConverter x:Key="NumberBytesToStorageStringConverter"/>
 
-        <DataTemplate x:Key="ButtonComplete">
+        <helpers:BindingProxy x:Key="Proxy" Data="{x:Bind ViewModel, Mode=OneWay}"/>
+
+        <!--<DataTemplate x:Key="ButtonComplete">
             <TextBlock  Text="Complete" />
         </DataTemplate>
 
@@ -30,7 +33,7 @@
 
         <DataTemplate x:Key="ButtonLoading">
             <TextBlock  Text="Loading" />
-        </DataTemplate>
+        </DataTemplate>-->
 
         <DataTemplate x:Key="FolderTemplate" x:DataType="models:DownloadInspectionHandler">
             <TreeViewItem AutomationProperties.Name="{x:Bind Inspection.Name, Mode=OneWay}"
@@ -93,6 +96,8 @@
             Style="{StaticResource BodyTextStyle}" />
 
         <Button Content="x"
+                IsTabStop="False"
+                ToolTipService.ToolTip="Cancel download"
                 Grid.Row="0"
                 HorizontalAlignment="Right"
                 Command="{x:Bind ViewModel.CloseCommand}"
@@ -117,7 +122,57 @@
                     VerticalAlignment="Center"
                     Text="{x:Bind ViewModel.DownloadName, Mode=OneWay}"                    
                     Style="{StaticResource PageTitleStyle}" />
-                    <Button Margin="15,0,0,0" Command="{x:Bind ViewModel.ManifestLoadCommand}">
+                    <ContentPresenter>
+                        <Interactivity:Interaction.Behaviors>
+                            <behaviors:ContentPresenterTemplateManifestBehavior 
+                                State="{x:Bind ViewModel.State, Mode=OneWay}">
+
+                                <behaviors:ContentPresenterTemplateManifestBehavior.CancelledTemplate>
+                                    <DataTemplate>
+                                        <Button Margin="15,0,0,0" 
+                                                Content="Paused"
+                                                Command="{Binding Source={StaticResource Proxy}, Path=Data.ManifestLoadCommand}" />
+                                    </DataTemplate>
+                                </behaviors:ContentPresenterTemplateManifestBehavior.CancelledTemplate>
+
+                                <behaviors:ContentPresenterTemplateManifestBehavior.LoadingTemplate>
+                                    <DataTemplate>
+                                        <Button Margin="15,0,0,0" 
+                                                Content="Loading"
+                                                Command="{Binding Source={StaticResource Proxy}, Path=Data.ManifestLoadCommand}" />
+                                    </DataTemplate>
+                                </behaviors:ContentPresenterTemplateManifestBehavior.LoadingTemplate>
+
+                                <behaviors:ContentPresenterTemplateManifestBehavior.CompletedTemplate>
+                                    <DataTemplate>
+                                        <Button Margin="15,0,0,0" 
+                                                Content="Complete"
+                                                Command="{Binding Source={StaticResource Proxy}, Path=Data.ManifestLoadCommand}" />
+                                    </DataTemplate>
+                                </behaviors:ContentPresenterTemplateManifestBehavior.CompletedTemplate>
+
+                                <behaviors:ContentPresenterTemplateManifestBehavior.ErroredTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">                                            
+                                            <Button Margin="15,0,0,0" 
+                                                    Content="Error"
+                                                Command="{Binding Source={StaticResource Proxy}, Path=Data.ManifestLoadCommand}" />
+                                            <HyperlinkButton Content="View Details..." 
+                                                             Command="{Binding Source={StaticResource Proxy}, Path=Data.ShowDetailsCommand}">
+                                                <HyperlinkButton.Resources>
+                                                    <StaticResource x:Key="HyperlinkButtonBackgroundPointerOver"
+                                                                    ResourceKey="SubtleFillColorTransparentBrush" />
+                                                </HyperlinkButton.Resources>
+                                            </HyperlinkButton>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </behaviors:ContentPresenterTemplateManifestBehavior.ErroredTemplate>
+
+                            </behaviors:ContentPresenterTemplateManifestBehavior>
+                        </Interactivity:Interaction.Behaviors>
+                    </ContentPresenter>
+
+                    <!--<Button Margin="15,0,0,0" Command="{x:Bind ViewModel.ManifestLoadCommand}">
                         <Interactivity:Interaction.Behaviors>
                             <behaviors:ButtonContentTemplateManifestBehavior
                                 CancelledTemplate="{StaticResource ButtonCancelled}"
@@ -126,7 +181,7 @@
                                 CompletedTemplate="{StaticResource ButtonComplete}"
                                 State="{x:Bind ViewModel.State, Mode=OneWay}" />
                         </Interactivity:Interaction.Behaviors>
-                    </Button>
+                    </Button>-->
                 </StackPanel>
                 <StackPanel Grid.Column="1" Margin="{StaticResource LargeLeftRightMargin}">
                     <TextBlock Text="Inspections" />

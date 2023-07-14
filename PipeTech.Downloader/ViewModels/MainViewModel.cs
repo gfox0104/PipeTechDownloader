@@ -12,6 +12,7 @@ using CommunityToolkit.WinUI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using PipeTech.Downloader.Contracts.Services;
 using PipeTech.Downloader.Contracts.ViewModels;
@@ -45,6 +46,9 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 
     [ObservableProperty]
     private bool useDefault = false;
+
+    [ObservableProperty]
+    private string? lastError;
 
     [ObservableProperty]
     private ManifestStates state = ManifestStates.None;
@@ -110,6 +114,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 
         this.DownloadCommand = new AsyncRelayCommand(this.ExecuteDownload, this.CanExecuteDownload);
         this.BrowseFolderCommand = new RelayCommand(this.ExecuteBrowseDataFolder);
+        this.ShowDetailsCommand = new AsyncRelayCommand(this.ExecuteShowDetails);
 
         _ = Task.Run(async () =>
         {
@@ -146,6 +151,14 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
         /// Completed.
         /// </summary>
         Completed,
+    }
+
+    /// <summary>
+    /// Gets the show details command.
+    /// </summary>
+    public IAsyncRelayCommand ShowDetailsCommand
+    {
+        get;
     }
 
     /// <summary>
@@ -335,15 +348,42 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
         }
     }
 
+    private async Task ExecuteShowDetails()
+    {
+        if (string.IsNullOrEmpty(this.LastError))
+        {
+            return;
+        }
+
+        try
+        {
+            var dlg = new ContentDialog()
+            {
+                XamlRoot = App.MainWindow.Content.XamlRoot,
+                Title = string.Empty,
+                Content = this.LastError,
+                CloseButtonText = "Close",
+            };
+
+            await dlg.ShowAsync();
+        }
+        catch (Exception)
+        {
+        }
+    }
+
     private async Task LoadManifest(CancellationToken token = default)
     {
         try
         {
             this.State = ManifestStates.Loading;
+            this.LastError = null;
 
             if (this.manifestUri is null)
             {
-                this.logger?.LogError($"No uri. {this.manifestUri}");
+                var message = $"No uri. {this.manifestUri}";
+                this.logger?.LogError(message);
+                this.LastError = message;
                 this.State = ManifestStates.Errored;
                 return;
             }
@@ -354,7 +394,9 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 
             if (query is null)
             {
-                this.logger?.LogError($"No parameters in uri. {this.manifestUri}");
+                var message = $"No parameters in uri. {this.manifestUri}";
+                this.logger?.LogError(message);
+                this.LastError = message;
                 this.State = ManifestStates.Errored;
                 return;
             }
@@ -439,7 +481,10 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
             }
             catch (Exception ex)
             {
-                this.logger?.LogError(ex, $"Error getting the manifest link [{host}][{g}]");
+                var message = $"Error getting the manifest link [{host}][{g}]";
+                this.logger?.LogError(ex, message);
+                message += $"\r\n{ex}";
+                this.LastError = message;
             }
 
 #if SLOWDOWN
@@ -461,11 +506,15 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                 }
                 catch (TaskCanceledException)
                 {
+                    this.LastError = $"Manifest loading cancelled.";
                     this.logger?.LogWarning($"Cancelled getting the manifest via link [{manifestUri}]");
                 }
                 catch (Exception ex)
                 {
-                    this.logger?.LogError(ex, $"Error getting the manifest via link [{manifestUri}]");
+                    var message = $"Error getting the manifest via link [{manifestUri}]";
+                    this.logger?.LogError(ex, message);
+                    message += $"\r\n{ex}";
+                    this.LastError = message;
                 }
             }
 
@@ -486,7 +535,10 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
             }
             catch (Exception ex)
             {
-                this.logger?.LogError(ex, $"Error getting the manifest via id [{host}][{g}]");
+                var message = $"Error getting the manifest via id [{host}][{g}]";
+                this.logger?.LogError(ex, message);
+                message += $"\r\n{ex}";
+                this.LastError = message;
             }
 
 #if SLOWDOWN
@@ -565,13 +617,17 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
         }
         catch (TaskCanceledException ex)
         {
+            this.LastError = $"Manifest loading cancelled. {this.manifestUri}";
             this.State = ManifestStates.Cancelled;
             this.logger?.LogWarning(ex, $"Cancelled opening download link {this.manifestUri}");
         }
         catch (Exception ex)
         {
             this.State = ManifestStates.Errored;
-            this.logger?.LogError(ex, $"Error opening download link {this.manifestUri}");
+            var message = $"Error opening download link {this.manifestUri}";
+            this.logger?.LogError(ex, message);
+            message += $"\r\n{ex}";
+            this.LastError = message;
         }
         finally
         {
