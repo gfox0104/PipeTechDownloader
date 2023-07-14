@@ -100,8 +100,16 @@
                 ToolTipService.ToolTip="Cancel download"
                 Grid.Row="0"
                 HorizontalAlignment="Right"
-                Command="{x:Bind ViewModel.CloseCommand}"
-                Style="{StaticResource AlternateCloseButtonStyle}" />
+                Command="{x:Bind ViewModel.CloseCommand}" >
+            <Button.Resources>
+                <StaticResource x:Key="ButtonBorderBrush" ResourceKey="ControlFillColorTransparentBrush" />
+                <StaticResource x:Key="ButtonBorderBrushPointerOver" ResourceKey="ControlFillColorTransparentBrush" />
+                <StaticResource x:Key="ButtonBorderBrushPressed" ResourceKey="ControlFillColorTransparentBrush" />
+                <StaticResource x:Key="ButtonBorderBrushDisabled" ResourceKey="ControlFillColorTransparentBrush" />
+                <StaticResource x:Key="ButtonBackground" ResourceKey="ControlFillColorTransparentBrush" />
+                <StaticResource x:Key="ButtonBackgroundPointerOver" ResourceKey="ControlFillColorTransparentBrush" />
+            </Button.Resources>
+        </Button>
 
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
