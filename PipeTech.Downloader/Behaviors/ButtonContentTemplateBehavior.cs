@@ -21,9 +21,17 @@ public class ButtonContentTemplateBehavior : Behavior<Button>, INotifyPropertyCh
     public event PropertyChangedEventHandler? PropertyChanged;
 
     /// <summary>
-    /// Gets or sets the paused template.
+    /// Gets or sets the pause template.
     /// </summary>
-    public DataTemplate? PausedTemplate
+    public DataTemplate? PauseTemplate
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the restart template.
+    /// </summary>
+    public DataTemplate? RestartTemplate
     {
         get; set;
     }
@@ -89,8 +97,11 @@ public class ButtonContentTemplateBehavior : Behavior<Button>, INotifyPropertyCh
             case DownloadInspection.States.Queued:
             case DownloadInspection.States.Processing:
             case DownloadInspection.States.Staged:
+                this.AssociatedObject.ContentTemplate = this.PauseTemplate;
+                this.AssociatedObject.Visibility = Visibility.Visible;
+                break;
             case DownloadInspection.States.Paused:
-                this.AssociatedObject.ContentTemplate = this.PausedTemplate;
+                this.AssociatedObject.ContentTemplate = this.RestartTemplate;
                 this.AssociatedObject.Visibility = Visibility.Visible;
                 break;
             default:

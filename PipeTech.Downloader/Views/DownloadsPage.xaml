@@ -23,7 +23,10 @@
             <TextBlock  Text="Complete" />
         </DataTemplate>
         <DataTemplate x:Key="ButtonPause">
-            <TextBlock  Text="Pause" />
+            <TextBlock  Text="Processing" />
+        </DataTemplate>
+        <DataTemplate x:Key="ButtonRestart">
+            <TextBlock  Text="Restart" />
         </DataTemplate>
         <DataTemplate x:Key="ButtonError">
             <TextBlock  Text="Error" />
@@ -54,18 +57,29 @@
                                         <Interactivity:Interaction.Behaviors>
                                             <behaviors:ContentPresenterTemplateBehavior
                                                 State="{x:Bind Inspection.State, Mode=OneWay}">
-                                                <behaviors:ContentPresenterTemplateBehavior.PausedTemplate>
+                                                <behaviors:ContentPresenterTemplateBehavior.PauseTemplate>
                                                     <DataTemplate x:DataType="models:DownloadInspectionHandler">
                                                         <StackPanel Orientation="Horizontal">
                                                             <Button
-                                                                Content="Pause"
-                                                                Command="{Binding Source={StaticResource Proxy}, Path=Data.RestartProjectDownloadCommand}" />
+                                                                Content="Processing"
+                                                                helpers:AncestorSource.AncestorType="models:Project"
+                                                                Command="{Binding Source={StaticResource Proxy}, Path=Data.PauseProjectDownloadCommand}"
+                                                                CommandParameter="{Binding}" />
                                                         </StackPanel>
                                                     </DataTemplate>
-                                                </behaviors:ContentPresenterTemplateBehavior.PausedTemplate>
+                                                </behaviors:ContentPresenterTemplateBehavior.PauseTemplate>
+                                                <behaviors:ContentPresenterTemplateBehavior.RestartTemplate>
+                                                    <DataTemplate x:DataType="models:DownloadInspectionHandler">
+                                                        <Button
+                                                            helpers:AncestorSource.AncestorType="models:Project"
+                                                            Content="Restart"
+                                                            Command="{Binding Source={StaticResource Proxy}, Path=Data.RestartProjectDownloadCommand}"
+                                                            CommandParameter="{Binding}" />
+                                                    </DataTemplate>
+                                                </behaviors:ContentPresenterTemplateBehavior.RestartTemplate>
                                                 <behaviors:ContentPresenterTemplateBehavior.ErroredTemplate>
                                                     <DataTemplate x:DataType="models:DownloadInspectionHandler">
-                                                        <StackPanel Orientation="Horizontal">                                                            
+                                                        <StackPanel Orientation="Horizontal">
                                                             <Button 
                                                                 helpers:AncestorSource.AncestorType="models:Project"
                                                                 Content="Error"
@@ -86,7 +100,9 @@
                                                     <DataTemplate x:DataType="models:DownloadInspectionHandler">
                                                         <Button
                                                             Content="Complete"
-                                                            Command="{Binding Source={StaticResource Proxy}, Path=Data.RestartProjectDownloadCommand}" />
+                                                                helpers:AncestorSource.AncestorType="models:Project"
+                                                            Command="{Binding Source={StaticResource Proxy}, Path=Data.RestartProjectDownloadCommand}"
+                                                            CommandParameter="{Binding}" />
                                                     </DataTemplate>
                                                 </behaviors:ContentPresenterTemplateBehavior.CompletedTemplate>
                                             </behaviors:ContentPresenterTemplateBehavior>
@@ -420,17 +436,57 @@
                                         CommandParameter="{x:Bind}">
                                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE74D;"/>
                                 </Button>
-                                <Button Margin="{StaticResource XXSmallLeftRightMargin}"
+                                <ContentPresenter Margin="{StaticResource XXSmallLeftRightMargin}">
+                                    <Interactivity:Interaction.Behaviors>
+                                        <behaviors:ContentPresenterTemplateBehavior
+                                                State="{x:Bind State, Mode=OneWay}">
+                                            <behaviors:ContentPresenterTemplateBehavior.PauseTemplate>
+                                                <DataTemplate x:DataType="models:Project">
+                                                    <Button 
+                                                        Content="Processing"
+                                                        Command="{Binding Source={StaticResource Proxy}, Path=Data.PauseProjectDownloadCommand}"
+                                                        CommandParameter="{x:Bind}"/>
+                                                </DataTemplate>
+                                            </behaviors:ContentPresenterTemplateBehavior.PauseTemplate>
+                                            <behaviors:ContentPresenterTemplateBehavior.RestartTemplate>
+                                                <DataTemplate x:DataType="models:Project">
+                                                    <Button 
+                                                        Content="Restart"
+                                                        Command="{Binding Source={StaticResource Proxy}, Path=Data.RestartProjectDownloadCommand}"
+                                                        CommandParameter="{x:Bind}"/>
+                                                </DataTemplate>
+                                            </behaviors:ContentPresenterTemplateBehavior.RestartTemplate>
+                                            <behaviors:ContentPresenterTemplateBehavior.ErroredTemplate>
+                                                <DataTemplate x:DataType="models:Project">
+                                                    <Button 
+                                                        Content="Error"
+                                                        Command="{Binding Source={StaticResource Proxy}, Path=Data.RestartProjectDownloadCommand}"
+                                                        CommandParameter="{x:Bind}"/>
+                                                </DataTemplate>
+                                            </behaviors:ContentPresenterTemplateBehavior.ErroredTemplate>
+                                            <behaviors:ContentPresenterTemplateBehavior.CompletedTemplate>
+                                                <DataTemplate x:DataType="models:Project">
+                                                    <Button 
+                                                        Content="Complete"
+                                                        Command="{Binding Source={StaticResource Proxy}, Path=Data.RestartProjectDownloadCommand}"
+                                                        CommandParameter="{x:Bind}"/>
+                                                </DataTemplate>
+                                            </behaviors:ContentPresenterTemplateBehavior.CompletedTemplate>
+                                        </behaviors:ContentPresenterTemplateBehavior>
+                                    </Interactivity:Interaction.Behaviors>
+                                </ContentPresenter>
+                                <!--<Button Margin="{StaticResource XXSmallLeftRightMargin}"
                                         Command="{Binding Source={StaticResource Proxy}, Path=Data.RestartProjectDownloadCommand}"
                                         CommandParameter="{x:Bind}">
                                     <Interactivity:Interaction.Behaviors>
                                         <behaviors:ButtonContentTemplateBehavior 
                                                 State="{x:Bind State, Mode=OneWay}"
-                                                PausedTemplate="{StaticResource ButtonPause}"
+                                                PauseTemplate="{StaticResource ButtonPause}"
+                                                RestartTemplate="{StaticResource ButtonRestart}"
                                                 CompletedTemplate="{StaticResource ButtonComplete}"
                                                 ErroredTemplate="{StaticResource ButtonError}"/>
                                     </Interactivity:Interaction.Behaviors>
-                                </Button>
+                                </Button>-->
                             </StackPanel>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>

@@ -65,6 +65,7 @@ public partial class DownloadsViewModel : BindableRecipient, INavigationAware
         this.OpenFolderCommand = new AsyncRelayCommand<object?>(this.ExecuteOpenFolder);
         this.RemoveProjectCommand = new AsyncRelayCommand<object?>(this.RemoveProject);
         this.RestartProjectDownloadCommand = new AsyncRelayCommand<object?>(this.ExecuteRestartProjectDownload);
+        this.PauseProjectDownloadCommand = new AsyncRelayCommand<object?>(this.ExecutePauseProjectDownload);
         this.ShowDetailsCommand = new AsyncRelayCommand<object?>(this.ExecuteShowDetails);
         this.SourceView = CollectionViewSource.GetDefaultView(this.downloadService.Source);
     }
@@ -102,6 +103,14 @@ public partial class DownloadsViewModel : BindableRecipient, INavigationAware
     /// Gets the command to restart a project download.
     /// </summary>
     public IAsyncRelayCommand<object?> RestartProjectDownloadCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the command to pause a project download.
+    /// </summary>
+    public IAsyncRelayCommand<object?> PauseProjectDownloadCommand
     {
         get;
     }
@@ -258,6 +267,37 @@ public partial class DownloadsViewModel : BindableRecipient, INavigationAware
         catch (Exception ex)
         {
             this.logger?.LogError(ex, $"Unable to remove project [{p.FilePath}]");
+        }
+    }
+
+    private async Task ExecutePauseProjectDownload(object? param)
+    {
+        if (param is not Project p || p.Inspections is null)
+        {
+            return;
+        }
+
+        // Find jobs for the project and cancel them.
+        var jobs = this.downloadService.FindJobForProject(p);
+        while (jobs is not null && jobs.Any())
+        {
+            foreach (var j in jobs)
+            {
+                this.jobClient.Delete(j.Key);
+            }
+
+            await Task.Delay(500);
+            jobs = this.downloadService.FindJobForProject(p);
+        }
+
+        // Set the inspection state of each non-completed inspection to staged
+        foreach (var i in p.Inspections)
+        {
+            if (i.Inspection is not null &&
+            i.Inspection.State != DownloadInspection.States.Complete)
+            {
+                i.Inspection.State = DownloadInspection.States.Paused;
+            }
         }
     }
 

@@ -183,6 +183,11 @@ public partial class Project : BindableRecipient, IManifest
                 return DownloadInspection.States.Complete;
             }
 
+            if (this.Inspections?.All(h => h.Inspection?.State == DownloadInspection.States.Paused) == true)
+            {
+                return DownloadInspection.States.Paused;
+            }
+
             return DownloadInspection.States.Processing;
         }
     }
