@@ -565,7 +565,8 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                     });
                 }
 
-                if (this.Manifest.Inspections is not null)
+                if (this.Manifest.Inspections is not null &&
+                    this.Manifest.Inspections.Any())
                 {
                     var currentCount = 0;
                     foreach (var ele in this.Manifest.Inspections)
@@ -585,33 +586,37 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                             });
                     }
 
-                    if (this.Manifest.Inspections.Any())
+                    if (this.Manifest.CombinedReportIds?.Any() == true)
                     {
-                        if (this.Manifest.CombinedReportIds?.Any() == true)
-                        {
-                            await App.MainWindow.DispatcherQueue.EnqueueAsync(
-                                () =>
-                                {
-                                    this.Inspections.Add($"{(this.Manifest.DeliverableName ?? this.DownloadName)?.SanitizeFilename() ?? "Project report"}.pdf");
-                                });
-                        }
-
-                        if (this.Manifest.CombinedNASSCOExchangeGenerate == true)
-                        {
-                            await App.MainWindow.DispatcherQueue.EnqueueAsync(
-                                () =>
-                                {
-                                    this.Inspections.Add($"{(this.Manifest.DeliverableName ?? this.DownloadName)?.SanitizeFilename() ?? "NASSCO Exchange"}.mdb");
-                                });
-                        }
+                        await App.MainWindow.DispatcherQueue.EnqueueAsync(
+                            () =>
+                            {
+                                this.Inspections.Add($"{(this.Manifest.DeliverableName ?? this.DownloadName)?.SanitizeFilename() ?? "Project report"}.pdf");
+                            });
                     }
-                }
 
-                this.State = ManifestStates.Completed;
+                    if (this.Manifest.CombinedNASSCOExchangeGenerate == true)
+                    {
+                        await App.MainWindow.DispatcherQueue.EnqueueAsync(
+                            () =>
+                            {
+                                this.Inspections.Add($"{(this.Manifest.DeliverableName ?? this.DownloadName)?.SanitizeFilename() ?? "NASSCO Exchange"}.mdb");
+                            });
+                    }
+
+                    this.State = ManifestStates.Completed;
+                }
+                else
+                {
+                    this.logger?.LogWarning("No inspections received");
+                    this.LastError = "No inspections received.";
+                    this.State = ManifestStates.Errored;
+                }
             }
             else
             {
-                this.logger?.LogWarning("No manifest received");
+                this.logger?.LogWarning("No manifest received.");
+                this.LastError = "No manifest received.";
                 this.State = ManifestStates.Errored;
             }
         }
