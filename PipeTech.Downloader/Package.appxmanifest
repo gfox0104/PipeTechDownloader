@@ -13,7 +13,7 @@
 
   <Identity
     Name="PipeTechSoftware.2321091DEF58C"
-    Version="1.0.0.3"
+    Version="1.0.0.4"
 	Publisher="CN=34B18DFD-98E9-4162-9FE6-90AE9A34697B"/>
     
   <mp:PhoneIdentity PhoneProductId="57b41a39-1ed8-43bd-ad96-2ebadcd41de0" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
