@@ -6,6 +6,7 @@ using CacheManager.Core.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using PipeTech.Downloader.Contracts.Services;
+using PipeTech.Downloader.Helpers;
 using PipeTech.Downloader.ViewModels;
 using Windows.ApplicationModel.Activation;
 
@@ -52,6 +53,8 @@ public class AppProtocolActivationHandler : ActivationHandler<ProtocolActivatedE
         // Queue navigation with low priority to allow the UI to initialize.
         App.MainWindow.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
         {
+            var m = this.navigationService.Frame?.GetPageViewModel() as MainViewModel;
+            m?.CloseCommand?.Execute(null);
             this.navigationService.NavigateTo(typeof(MainViewModel).FullName!, parameter: uri);
             try
             {

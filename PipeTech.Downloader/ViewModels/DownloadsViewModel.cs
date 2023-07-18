@@ -33,6 +33,7 @@ public partial class DownloadsViewModel : BindableRecipient, INavigationAware
 
     private bool expanding = false;
     private ElementTheme requestedTheme = ElementTheme.Default;
+    private ContentDialog? dialog = null;
 
     /// <summary>
     /// Gets or sets the row visibility.
@@ -165,6 +166,9 @@ public partial class DownloadsViewModel : BindableRecipient, INavigationAware
     /// <inheritdoc/>
     public void OnNavigatedFrom()
     {
+        this.dialog?.Hide();
+        this.dialog = null;
+
         var messenger = this.serviceProvider.GetService(typeof(IMessenger)) as IMessenger;
         messenger?.Unregister<ThemeChangedMessage>(this);
 
@@ -195,7 +199,9 @@ public partial class DownloadsViewModel : BindableRecipient, INavigationAware
 
         try
         {
-            var dlg = new ContentDialog()
+            this.dialog?.Hide();
+
+            this.dialog = new ContentDialog()
             {
                 XamlRoot = App.MainWindow.Content.XamlRoot,
                 Title = string.Empty,
@@ -203,7 +209,7 @@ public partial class DownloadsViewModel : BindableRecipient, INavigationAware
                 CloseButtonText = "Close",
             };
 
-            await dlg.ShowAsync();
+            await this.dialog.ShowAsync();
         }
         catch (Exception)
         {
@@ -242,7 +248,9 @@ public partial class DownloadsViewModel : BindableRecipient, INavigationAware
 
         try
         {
-            var dlg = new ContentDialog()
+            this.dialog?.Hide();
+
+            this.dialog = new ContentDialog()
             {
                 XamlRoot = App.MainWindow.Content.XamlRoot,
                 Content = "Are you sure you want to remove the project download?\r\n\r\nNOTE: This operation will not remove the actual download",
@@ -250,7 +258,7 @@ public partial class DownloadsViewModel : BindableRecipient, INavigationAware
                 PrimaryButtonText = "Yes",
                 DefaultButton = ContentDialogButton.Close,
             };
-            var result = await dlg.ShowAsync();
+            var result = await this.dialog.ShowAsync();
             if (result != ContentDialogResult.Primary)
             {
                 return;

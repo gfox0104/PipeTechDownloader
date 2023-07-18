@@ -19,22 +19,6 @@
 
         <helpers:BindingProxy x:Key="Proxy" Data="{x:Bind ViewModel, Mode=OneWay}"/>
 
-        <!--<DataTemplate x:Key="ButtonComplete">
-            <TextBlock  Text="Complete" />
-        </DataTemplate>
-
-        <DataTemplate x:Key="ButtonCancelled">
-            <TextBlock  Text="Paused" />
-        </DataTemplate>
-
-        <DataTemplate x:Key="ButtonErrored">
-            <TextBlock  Text="Error" />
-        </DataTemplate>
-
-        <DataTemplate x:Key="ButtonLoading">
-            <TextBlock  Text="Loading" />
-        </DataTemplate>-->
-
         <DataTemplate x:Key="FolderTemplate" x:DataType="models:DownloadInspectionHandler">
             <TreeViewItem AutomationProperties.Name="{x:Bind Inspection.Name, Mode=OneWay}"
             ItemsSource="{x:Bind Inspection.Files, Mode=OneWay}" IsExpanded="True">
@@ -43,18 +27,34 @@
                     <TextBlock Margin="0,0,10,0"/>
                     <TextBlock Text="{x:Bind Inspection.Name, Mode=OneWay}" VerticalAlignment="Center" />
 
-                    <Button VerticalAlignment="Center"
+                    <StackPanel Orientation="Horizontal">
+                        <Button VerticalAlignment="Center"
                             Margin="15,0,0,0"
                             FontSize="{StaticResource XSmallFontSize}"
                             Command="{x:Bind ReloadCommand}">
-                        <Interactivity:Interaction.Behaviors>
-                            <behaviors:VisibilityButtonBehavior State="{x:Bind Inspection.State, Mode=OneWay}" />
-                        </Interactivity:Interaction.Behaviors>
-                        <Button.Content>
-                            <TextBlock Text="{x:Bind Inspection.State, Mode=OneWay, Converter={StaticResource EnumToStringConverter}}"/>
-                        </Button.Content>
-                    </Button>
+                            <Interactivity:Interaction.Behaviors>
+                                <behaviors:VisibilityUIElementBehavior State="{x:Bind Inspection.State, Mode=OneWay}" />
+                            </Interactivity:Interaction.Behaviors>
+                            <Button.Content>
+                                <TextBlock Text="{x:Bind Inspection.State, Mode=OneWay, Converter={StaticResource EnumToStringConverter}}"/>
+                            </Button.Content>
+                        </Button>
 
+                        <HyperlinkButton Content="View Details..." 
+                                         Command="{Binding Source={StaticResource Proxy}, Path=Data.ShowInspectionDetailsCommand}"
+                                         CommandParameter="{x:Bind}">
+                            <Interactivity:Interaction.Behaviors>
+                                <behaviors:VisibilityUIElementBehavior
+                                    State="{x:Bind Inspection.State, Mode=OneWay}" 
+                                    OnlyVisibleOnError="True"/>
+                            </Interactivity:Interaction.Behaviors>
+                            <HyperlinkButton.Resources>
+                                <StaticResource x:Key="HyperlinkButtonBackgroundPointerOver"
+                                                                    ResourceKey="SubtleFillColorTransparentBrush" />
+                            </HyperlinkButton.Resources>
+                        </HyperlinkButton>
+
+                    </StackPanel>
                 </StackPanel>
             </TreeViewItem>
         </DataTemplate>
@@ -161,7 +161,7 @@
 
                                 <behaviors:ContentPresenterTemplateManifestBehavior.ErroredTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">                                            
+                                        <StackPanel Orientation="Horizontal">
                                             <Button Margin="15,0,0,0" 
                                                     Content="Error"
                                                 Command="{Binding Source={StaticResource Proxy}, Path=Data.ManifestLoadCommand}" />
@@ -180,16 +180,6 @@
                         </Interactivity:Interaction.Behaviors>
                     </ContentPresenter>
 
-                    <!--<Button Margin="15,0,0,0" Command="{x:Bind ViewModel.ManifestLoadCommand}">
-                        <Interactivity:Interaction.Behaviors>
-                            <behaviors:ButtonContentTemplateManifestBehavior
-                                CancelledTemplate="{StaticResource ButtonCancelled}"
-                                LoadingTemplate="{StaticResource ButtonLoading}"
-                                ErroredTemplate="{StaticResource ButtonErrored}"
-                                CompletedTemplate="{StaticResource ButtonComplete}"
-                                State="{x:Bind ViewModel.State, Mode=OneWay}" />
-                        </Interactivity:Interaction.Behaviors>
-                    </Button>-->
                 </StackPanel>
                 <StackPanel Grid.Column="1" Margin="{StaticResource LargeLeftRightMargin}">
                     <TextBlock Text="Inspections" />

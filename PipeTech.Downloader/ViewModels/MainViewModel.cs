@@ -57,6 +57,8 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 
     private CancellationTokenSource? tokenSource;
 
+    private ContentDialog? dialog = null;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MainViewModel"/> class.
     /// </summary>
@@ -115,6 +117,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
         this.DownloadCommand = new AsyncRelayCommand(this.ExecuteDownload, this.CanExecuteDownload);
         this.BrowseFolderCommand = new RelayCommand(this.ExecuteBrowseDataFolder);
         this.ShowDetailsCommand = new AsyncRelayCommand(this.ExecuteShowDetails);
+        this.ShowInspectionDetailsCommand = new AsyncRelayCommand<object?>(this.ExecuteShowInspectionDetails);
 
         _ = Task.Run(async () =>
         {
@@ -157,6 +160,14 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
     /// Gets the show details command.
     /// </summary>
     public IAsyncRelayCommand ShowDetailsCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the show inspection details command.
+    /// </summary>
+    public IAsyncRelayCommand<object?> ShowInspectionDetailsCommand
     {
         get;
     }
@@ -259,6 +270,9 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
     /// <inheritdoc/>
     public void Dispose()
     {
+        this.dialog?.Hide();
+        this.dialog = null;
+
         this.logger?.LogDebug("Disposing");
         this.tokenSource?.Cancel();
         this.tokenSource?.Dispose();
@@ -357,7 +371,8 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
 
         try
         {
-            var dlg = new ContentDialog()
+            this.dialog?.Hide();
+            this.dialog = new ContentDialog()
             {
                 XamlRoot = App.MainWindow.Content.XamlRoot,
                 Title = string.Empty,
@@ -365,7 +380,33 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                 CloseButtonText = "Close",
             };
 
-            await dlg.ShowAsync();
+            await this.dialog.ShowAsync();
+        }
+        catch (Exception)
+        {
+        }
+    }
+
+    private async Task ExecuteShowInspectionDetails(object? param)
+    {
+        if (param is not DownloadInspectionHandler dlh ||
+            string.IsNullOrEmpty(dlh.LastError))
+        {
+            return;
+        }
+
+        try
+        {
+            this.dialog?.Hide();
+            this.dialog = new ContentDialog()
+            {
+                XamlRoot = App.MainWindow.Content.XamlRoot,
+                Title = string.Empty,
+                Content = dlh.LastError,
+                CloseButtonText = "Close",
+            };
+
+            await this.dialog.ShowAsync();
         }
         catch (Exception)
         {

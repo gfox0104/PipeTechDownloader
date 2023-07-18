@@ -8,6 +8,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 using PipeTech.Downloader.Contracts.Services;
+using PipeTech.Downloader.Helpers;
 using PipeTech.Downloader.ViewModels;
 
 namespace PipeTech.Downloader.Activation;
@@ -66,7 +67,24 @@ public class AppProtocolFromLaunchActivationHandler : ActivationHandler<LaunchAc
         // Queue navigation with low priority to allow the UI to initialize.
         App.MainWindow.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () =>
         {
+            var m = this.navigationService.Frame?.GetPageViewModel() as MainViewModel;
+            m?.CloseCommand?.Execute(null);
             this.navigationService.NavigateTo(typeof(MainViewModel).FullName!, parameter: uri);
+            try
+            {
+                App.MainWindow.IsAlwaysOnTop = true;
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                App.MainWindow.IsAlwaysOnTop = false;
+            }
+            catch (Exception)
+            {
+            }
         });
 
         await Task.CompletedTask;

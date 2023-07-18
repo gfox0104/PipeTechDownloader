@@ -150,13 +150,12 @@ public class DownloadService : ObservableObject, IDownloadService
 
                             project.FilePath = infoFilePath;
 
-                            ////await App.MainWindow.DispatcherQueue.EnqueueAsync(
-                            ////    () =>
-                            ////    {
                             if (!this.Source.Any(p => p.Id == project.Id))
                             {
-                                while (true)
+                                var count = 0;
+                                while (count <= 1000)
                                 {
+                                    count++;
                                     bool AddRemove()
                                     {
                                         try
@@ -201,7 +200,6 @@ public class DownloadService : ObservableObject, IDownloadService
                                     }
                                 }
                             }
-                            ////});
                         }
                         catch (Exception ex)
                         {
@@ -1847,212 +1845,104 @@ public class DownloadService : ObservableObject, IDownloadService
                 {
                     this.jobClient.Delete(j.Key);
                 }
-
-                ////var monitor = this.jobClient.Storage.GetMonitoringApi();
-                ////try
-                ////{
-                ////    // ASSUMPTION: We are going to assume that the number of
-                ////    // jobs will NEVER exceed an integer. (2,147,483,647)
-                ////    var jobs = monitor.EnqueuedJobs(
-                ////        "default",
-                ////        0,
-                ////        (int)Math.Min(int.MaxValue, monitor.EnqueuedCount("default")))
-                ////        .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-                ////        j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
-                ////        j.Value.Job.Args.Count >= 1 &&
-                ////        j.Value.Job.Args[0] is string path &&
-                ////        path.ToUpperInvariant() == p.FilePath.ToUpperInvariant());
-                ////    foreach (var j in jobs)
-                ////    {
-                ////        this.jobClient.Delete(j.Key);
-                ////    }
-
-                ////    var processing = monitor.ProcessingJobs(
-                ////        0,
-                ////        (int)Math.Min(int.MaxValue, monitor.ProcessingCount()))
-                ////        .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-                ////        j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
-                ////        j.Value.Job.Args.Count >= 1 &&
-                ////        j.Value.Job.Args[0] is string path &&
-                ////        path.ToUpperInvariant() == p.FilePath.ToUpperInvariant());
-                ////    foreach (var j in processing)
-                ////    {
-                ////        this.jobClient.Delete(j.Key);
-                ////    }
-
-                ////    var scheduled = monitor.ScheduledJobs(
-                ////        0,
-                ////        (int)Math.Min(int.MaxValue, monitor.ScheduledCount()))
-                ////        .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-                ////        j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
-                ////        j.Value.Job.Args.Count >= 1 &&
-                ////        j.Value.Job.Args[0] is string path &&
-                ////        path.ToUpperInvariant() == p.FilePath.ToUpperInvariant());
-                ////    foreach (var j in scheduled)
-                ////    {
-                ////        this.jobClient.Delete(j.Key);
-                ////    }
-                ////}
-                ////catch (Exception)
-                ////{
-                ////}
             }
         }
 
         if (e.NewItems is not null)
         {
             var localItems = e.NewItems.Cast<Project>().ToArray();
-            ////Task.Run(async () =>
-            ////{
-            foreach (var newItem in localItems)
+            Task.Run(async () =>
             {
-                if (newItem is not Project project || string.IsNullOrEmpty(project.FilePath))
+                foreach (var newItem in localItems)
                 {
-                    continue;
-                }
-
-                if (project.Inspections?.Count > 0)
-                {
-                    ////var job = this.FindJobForProject(project).FirstOrDefault().Value as Job;
-
-                    ////var job = default(Job);
-                    ////var monitor = this.jobClient.Storage.GetMonitoringApi();
-                    ////try
-                    ////{
-                    ////    // ASSUMPTION: We are going to assume that the number of
-                    ////    // jobs will NEVER exceed an integer. (2,147,483,647)
-                    ////    var jobs = monitor.EnqueuedJobs(
-                    ////        "default",
-                    ////        0,
-                    ////        (int)Math.Min(int.MaxValue, monitor.EnqueuedCount("default")))
-                    ////        .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-                    ////        j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
-                    ////        j.Value.Job.Args.Count >= 1 &&
-                    ////        j.Value.Job.Args[0] is string projectPath &&
-                    ////        projectPath.ToUpperInvariant() == project.FilePath!.ToUpperInvariant());
-                    ////    if (jobs.Any())
-                    ////    {
-                    ////        job = jobs.FirstOrDefault().Value.Job;
-                    ////    }
-
-                    ////    if (job == default)
-                    ////    {
-                    ////        var processing = monitor.ProcessingJobs(
-                    ////            0,
-                    ////            (int)Math.Min(int.MaxValue, monitor.ProcessingCount()))
-                    ////            .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-                    ////            j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
-                    ////            j.Value.Job.Args.Count >= 1 &&
-                    ////            j.Value.Job.Args[0] is string projectPath &&
-                    ////            projectPath.ToUpperInvariant() == project.FilePath!.ToUpperInvariant());
-                    ////        if (processing.Any())
-                    ////        {
-                    ////            job = processing.FirstOrDefault().Value.Job;
-                    ////        }
-                    ////    }
-
-                    ////    if (job == default)
-                    ////    {
-                    ////        var scheduled = monitor.ScheduledJobs(
-                    ////            0,
-                    ////            (int)Math.Min(int.MaxValue, monitor.ScheduledCount()))
-                    ////            .Where(j => j.Value.Job.Type == typeof(IDownloadService) &&
-                    ////            j.Value.Job.Method.Name == nameof(this.DownloadProject) &&
-                    ////            j.Value.Job.Args.Count >= 1 &&
-                    ////            j.Value.Job.Args[0] is string projectPath &&
-                    ////            projectPath.ToUpperInvariant() == project.FilePath!.ToUpperInvariant());
-                    ////        if (scheduled.Any())
-                    ////        {
-                    ////            job = scheduled.FirstOrDefault().Value.Job;
-                    ////        }
-                    ////    }
-                    ////}
-                    ////catch (Exception ex)
-                    ////{
-                    ////    this.logger?.LogError(ex, $"Error attempting to find existing jobs for project [{project.FilePath}]. Download will NOT be queued.");
-                    ////}
-
-                    if (this.FindJobForProject(project).FirstOrDefault().Value is not Job job)
+                    if (newItem is not Project project || string.IsNullOrEmpty(project.FilePath))
                     {
-                        var createJob = false;
-                        var userCreateJob = false;
+                        continue;
+                    }
 
-                        // There is no pre-existing job, so check if we need one.
-                        //
-                        // If any of the inspections in the project are not complete
-                        // or if any of the inspections in the project don't have a .ptdx that exists?
-                        if (!createJob && project.Inspections is not null &&
-                        project.Inspections
-                        .Any(i => i.Inspection?.State != DownloadInspection.States.Complete ||
-                            string.IsNullOrEmpty(i.Inspection?.DataCompletePath) ||
-                            !System.IO.File.Exists(i.Inspection.DataCompletePath)))
+                    if (project.Inspections?.Count > 0)
+                    {
+                        if (this.FindJobForProject(project).FirstOrDefault().Value is not Job job)
                         {
-                            // If all the inspections are errored or paused, we are not going to
-                            // automatically create this job. We'll let the user do it by hand.
-                            if (project.Inspections
-                            .Any(i => i.Inspection?.State != DownloadInspection.States.Errored &&
-                            i.Inspection?.State != DownloadInspection.States.Paused))
+                            var createJob = false;
+                            var userCreateJob = false;
+
+                            // There is no pre-existing job, so check if we need one.
+                            //
+                            // If any of the inspections in the project are not complete
+                            // or if any of the inspections in the project don't have a .ptdx that exists?
+                            if (!createJob && project.Inspections is not null &&
+                            project.Inspections
+                            .Any(i => i.Inspection?.State != DownloadInspection.States.Complete ||
+                                string.IsNullOrEmpty(i.Inspection?.DataCompletePath) ||
+                                !System.IO.File.Exists(i.Inspection.DataCompletePath)))
+                            {
+                                // If all the inspections are errored or paused, we are not going to
+                                // automatically create this job. We'll let the user do it by hand.
+                                if (project.Inspections
+                                .Any(i => i.Inspection?.State != DownloadInspection.States.Errored &&
+                                i.Inspection?.State != DownloadInspection.States.Paused))
+                                {
+                                    createJob = true;
+                                }
+                                else
+                                {
+                                    userCreateJob = true;
+                                }
+                            }
+
+                            // If the combined nassco exchange is required, is it there?
+                            if (!createJob && !userCreateJob &&
+                            project.CombinedNASSCOExchangeGenerate == true &&
+                            project.GetExchangeDBPath() is string dbPath &&
+                            !string.IsNullOrEmpty(dbPath) &&
+                            !System.IO.File.Exists(dbPath))
+                            {
+                                // Create the job
+                                createJob = true;
+                            }
+
+                            // If the combined reports are required, is it there?
+                            if (!createJob && !userCreateJob &&
+                            project.CombinedReportIds?.Any() == true &&
+                            project.GetCombinedReportPath() is string reportPath &&
+                            !string.IsNullOrEmpty(reportPath) &&
+                            !System.IO.File.Exists(reportPath))
+                            {
+                                // Create the job
+                                createJob = true;
+                            }
+
+                            // If any of the inspections require a report, is it there?
+                            if (!createJob && !userCreateJob &&
+                            project.Inspections is not null &&
+                            project.IndividualReportIds?.Any() == true &&
+                            project.Inspections
+                            .Any(i => string.IsNullOrEmpty(i.Inspection?.ReportCompletePath) ||
+                                !System.IO.File.Exists(i.Inspection.ReportCompletePath)))
                             {
                                 createJob = true;
                             }
-                            else
+
+                            // If any of the inspection require a NASSCO exchange database, is it there?
+                            if (!createJob && !userCreateJob &&
+                            project.Inspections is not null &&
+                            project.IndividualNASSCOExchangeGenerate == true &&
+                            project.Inspections
+                            .Any(i => string.IsNullOrEmpty(i.Inspection?.ExchangeDBCompletePath) ||
+                                !System.IO.File.Exists(i.Inspection.ExchangeDBCompletePath)))
                             {
-                                userCreateJob = true;
+                                createJob = true;
                             }
-                        }
 
-                        // If the combined nassco exchange is required, is it there?
-                        if (!createJob && !userCreateJob &&
-                        project.CombinedNASSCOExchangeGenerate == true &&
-                        project.GetExchangeDBPath() is string dbPath &&
-                        !string.IsNullOrEmpty(dbPath) &&
-                        !System.IO.File.Exists(dbPath))
-                        {
-                            // Create the job
-                            createJob = true;
-                        }
-
-                        // If the combined reports are required, is it there?
-                        if (!createJob && !userCreateJob &&
-                        project.CombinedReportIds?.Any() == true &&
-                        project.GetCombinedReportPath() is string reportPath &&
-                        !string.IsNullOrEmpty(reportPath) &&
-                        !System.IO.File.Exists(reportPath))
-                        {
-                            // Create the job
-                            createJob = true;
-                        }
-
-                        // If any of the inspections require a report, is it there?
-                        if (!createJob && !userCreateJob &&
-                        project.Inspections is not null &&
-                        project.IndividualReportIds?.Any() == true &&
-                        project.Inspections
-                        .Any(i => string.IsNullOrEmpty(i.Inspection?.ReportCompletePath) ||
-                            !System.IO.File.Exists(i.Inspection.ReportCompletePath)))
-                        {
-                            createJob = true;
-                        }
-
-                        // If any of the inspection require a NASSCO exchange database, is it there?
-                        if (!createJob && !userCreateJob &&
-                        project.Inspections is not null &&
-                        project.IndividualNASSCOExchangeGenerate == true &&
-                        project.Inspections
-                        .Any(i => string.IsNullOrEmpty(i.Inspection?.ExchangeDBCompletePath) ||
-                            !System.IO.File.Exists(i.Inspection.ExchangeDBCompletePath)))
-                        {
-                            createJob = true;
-                        }
-
-                        if (createJob && !userCreateJob)
-                        {
-                            this.CreateJobForProject(project);
+                            if (createJob && !userCreateJob)
+                            {
+                                await this.CreateJobForProject(project);
+                            }
                         }
                     }
                 }
-            }
-            ////});
+            });
         }
     }
 
