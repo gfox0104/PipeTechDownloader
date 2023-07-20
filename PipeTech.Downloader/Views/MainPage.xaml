@@ -21,7 +21,8 @@
 
         <DataTemplate x:Key="FolderTemplate" x:DataType="models:DownloadInspectionHandler">
             <TreeViewItem AutomationProperties.Name="{x:Bind Inspection.Name, Mode=OneWay}"
-            ItemsSource="{x:Bind Inspection.Files, Mode=OneWay}" IsExpanded="True">
+                          ItemsSource="{x:Bind Inspection.Files, Mode=OneWay}" 
+                          IsExpanded="True">
                 <StackPanel Orientation="Horizontal">
                     <Image Width="10" Source="../Assets/folder.png"/>
                     <TextBlock Margin="0,0,10,0"/>
@@ -54,6 +55,18 @@
                             </HyperlinkButton.Resources>
                         </HyperlinkButton>
 
+                        <ToggleSwitch Margin="{StaticResource MediumLeftMargin}"
+                                      VerticalAlignment="Center"
+                                      OnContent="Skip" 
+                                      OffContent="Overwrite" 
+                                      IsOn="{x:Bind Skip, Mode=TwoWay}">
+                            <Interactivity:Interaction.Behaviors>
+                                <behaviors:VisibilityUIElementBehavior
+                                    VisibleByExistence="True"
+                                    DataFolder="{Binding Source={StaticResource Proxy}, Path=Data.DataFolder, Mode=OneWay}"
+                                    DownloadHandler="{x:Bind Mode=OneWay}"/>
+                            </Interactivity:Interaction.Behaviors>
+                        </ToggleSwitch>
                     </StackPanel>
                 </StackPanel>
             </TreeViewItem>

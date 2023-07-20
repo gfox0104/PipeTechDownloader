@@ -797,6 +797,13 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
                 this.RaisePropertyChanged(nameof(this.InspectionCountString));
                 this.RaisePropertyChanged(nameof(this.TotalSize));
                 break;
+            case nameof(DownloadInspectionHandler.Skip):
+                if (this.DownloadCommand is IRelayCommand rc)
+                {
+                    rc.NotifyCanExecuteChanged();
+                }
+
+                break;
             default:
                 break;
         }
@@ -857,6 +864,10 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
             .Any(i => i!.Inspection?.State == DownloadInspection.States.Loading ||
             i.Inspection?.State == DownloadInspection.States.Errored ||
             i.Inspection?.State == DownloadInspection.States.Paused) &&
+            !this.Inspections
+            .Select(i => i as DownloadInspectionHandler)
+            .Where(i => i is not null)
+            .All(i => i!.Skip) &&
             !string.IsNullOrEmpty(this.DataFolder) &&
             Directory.Exists(this.DataFolder);
     }
@@ -903,7 +914,7 @@ public partial class MainViewModel : BindableRecipient, INavigationAware, IDispo
             p.Inspections!.AddRange(
                 this.Inspections
                 .Select(i => i as DownloadInspectionHandler)
-                .Where(i => i is not null));
+                .Where(i => i is not null && !i.Skip));
             if (p is IManifest m)
             {
                 m.AdditionalProperties = this.Manifest?.AdditionalProperties;

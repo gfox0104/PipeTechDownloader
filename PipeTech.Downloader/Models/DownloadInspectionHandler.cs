@@ -56,6 +56,12 @@ public partial class DownloadInspectionHandler : BindableRecipient, IDisposable
     private string? lastError;
 
     /// <summary>
+    /// Gets or sets a value indicating whether to skip.
+    /// </summary>
+    [ObservableProperty]
+    private bool skip;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="DownloadInspectionHandler"/> class.
     /// </summary>
     /// <param name="serviceProvider">Service provider.</param>
