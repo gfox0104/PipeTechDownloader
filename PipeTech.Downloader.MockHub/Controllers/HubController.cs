@@ -38,25 +38,24 @@ public class HubController : Controller
     [HttpHead("manifestfile")]
     public IActionResult GetManifestFile()
     {
-        //try
-        //{
-        //    if (this.Request.Method.Equals("HEAD"))
-        //    {
-        //        ////this.Response.ContentLength = new FileInfo("cool.json").Length;
-        //        this.Response.ContentLength = new FileInfo("123.json").Length;
-        //        return this.Ok();
-        //    }
-        //    else
-        //    {
-        //        ////return this.PhysicalFile(Path.GetFullPath("cool.json"), "application/json");
-        //        return this.PhysicalFile(Path.GetFullPath("123.json"), "application/json");
-        //    }
-        //}
-        //catch (Exception)
-        //{
-        //    throw;
-        //}
-
+        ////try
+        ////{
+        ////    if (this.Request.Method.Equals("HEAD"))
+        ////    {
+        ////        ////this.Response.ContentLength = new FileInfo("cool.json").Length;
+        ////        this.Response.ContentLength = new FileInfo("123.json").Length;
+        ////        return this.Ok();
+        ////    }
+        ////    else
+        ////    {
+        ////        ////return this.PhysicalFile(Path.GetFullPath("cool.json"), "application/json");
+        ////        return this.PhysicalFile(Path.GetFullPath("123.json"), "application/json");
+        ////    }
+        ////}
+        ////catch (Exception)
+        ////{
+        ////    throw;
+        ////}
         throw new Exception();
 
         ////return this.Ok(new Uri($"https://api.pipetechproject.com/manifests/{id}.json").ToString());
