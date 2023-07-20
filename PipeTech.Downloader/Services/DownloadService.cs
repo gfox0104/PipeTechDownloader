@@ -160,7 +160,7 @@ public class DownloadService : ObservableObject, IDownloadService
                                     {
                                         try
                                         {
-                                            this.Source.Add(project);
+                                            this.Source.Insert(0, project);
                                             return true;
                                         }
                                         catch (Exception)
