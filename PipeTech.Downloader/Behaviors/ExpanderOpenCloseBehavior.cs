@@ -25,7 +25,7 @@ public class ExpanderOpenCloseBehavior : Behavior<CommunityToolkit.WinUI.UI.Cont
             new Microsoft.UI.Xaml.PropertyMetadata(null));
 
     /// <summary>
-    /// Dependency property for IsEnabled.
+    /// Dependency property for VisibilityMode.
     /// </summary>
     public static readonly Microsoft.UI.Xaml.DependencyProperty VisibilityModeProperty =
         Microsoft.UI.Xaml.DependencyProperty.Register(
