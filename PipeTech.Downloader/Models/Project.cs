@@ -7,6 +7,8 @@ using System.ComponentModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
+using NPOI.OpenXmlFormats.Dml;
+using PipeTech.Downloader.Contracts.Services;
 using PipeTech.Downloader.Core.Contracts;
 
 namespace PipeTech.Downloader.Models;
@@ -42,6 +44,12 @@ public partial class Project : BindableRecipient, IManifest
     private string? filePath;
 
     /// <summary>
+    /// Gets or sets a value indicating whether the project was completed.
+    /// </summary>
+    [ObservableProperty]
+    private bool? wasCompleted;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Project"/> class.
     /// </summary>
     public Project()
@@ -56,6 +64,11 @@ public partial class Project : BindableRecipient, IManifest
     {
         get
         {
+            if (this.WasCompleted == true)
+            {
+                return 1m;
+            }
+
             decimal count = this.Inspections?
                 .Where(h => h.Inspection?.State == DownloadInspection.States.Complete &&
                  !string.IsNullOrEmpty(h.Inspection?.DataCompletePath) &&
@@ -151,14 +164,38 @@ public partial class Project : BindableRecipient, IManifest
     {
         get
         {
+            if (this.WasCompleted == true)
+            {
+                return DownloadInspection.States.Complete;
+            }
+
             if (this.Inspections?.Any(h => h.Inspection?.State == DownloadInspection.States.Errored) == true)
             {
                 return DownloadInspection.States.Errored;
             }
 
-            if (this.Inspections?.All(h => h.Inspection?.State == DownloadInspection.States.Complete &&
+            var completeWithData = this.Inspections?.All(h =>
+            h.Inspection?.State == DownloadInspection.States.Complete &&
             !string.IsNullOrEmpty(h.Inspection.DataCompletePath) &&
-            System.IO.File.Exists(h.Inspection.DataCompletePath)) == true)
+            System.IO.File.Exists(h.Inspection.DataCompletePath)) ?? false;
+
+            if (this.IndividualReportIds?.Any() == true)
+            {
+                completeWithData &= this.Inspections?.All(h =>
+                h.Inspection is not null &&
+                !string.IsNullOrEmpty(h.Inspection.ReportCompletePath) &&
+                System.IO.File.Exists(h.Inspection.ReportCompletePath)) ?? false;
+            }
+
+            if (this.IndividualNASSCOExchangeGenerate == true)
+            {
+                completeWithData &= this.Inspections?.All(h =>
+                h.Inspection is not null &&
+                !string.IsNullOrEmpty(h.Inspection.ExchangeDBCompletePath) &&
+                System.IO.File.Exists(h.Inspection.ExchangeDBCompletePath)) ?? false;
+            }
+
+            if (completeWithData)
             {
                 if (this.CombinedNASSCOExchangeGenerate == true)
                 {
@@ -166,7 +203,22 @@ public partial class Project : BindableRecipient, IManifest
                         string.IsNullOrEmpty(dbPath) ||
                         !System.IO.File.Exists(dbPath))
                     {
-                        return DownloadInspection.States.Processing;
+                        if (this.Inspections?.Any(h => h.Inspection?.State == DownloadInspection.States.Processing) == true)
+                        {
+                            return DownloadInspection.States.Processing;
+                        }
+                        else if (this.Inspections?.Any(h => h.Inspection?.State == DownloadInspection.States.Paused) == true)
+                        {
+                            return DownloadInspection.States.Paused;
+                        }
+
+                        var dlService = App.GetService<IDownloadService>();
+                        if (dlService?.FindJobForProject(this).Any() == true)
+                        {
+                            return DownloadInspection.States.Processing;
+                        }
+
+                        return DownloadInspection.States.Staged;
                     }
                 }
 
@@ -176,19 +228,44 @@ public partial class Project : BindableRecipient, IManifest
                         string.IsNullOrEmpty(reportPath) ||
                         !System.IO.File.Exists(reportPath))
                     {
-                        return DownloadInspection.States.Processing;
+                        if (this.Inspections?.Any(h => h.Inspection?.State == DownloadInspection.States.Processing) == true)
+                        {
+                            return DownloadInspection.States.Processing;
+                        }
+                        else if (this.Inspections?.Any(h => h.Inspection?.State == DownloadInspection.States.Paused) == true)
+                        {
+                            return DownloadInspection.States.Paused;
+                        }
+
+                        var dlService = App.GetService<IDownloadService>();
+                        if (dlService?.FindJobForProject(this).Any() == true)
+                        {
+                            return DownloadInspection.States.Processing;
+                        }
+
+                        return DownloadInspection.States.Staged;
                     }
                 }
 
                 return DownloadInspection.States.Complete;
             }
 
-            if (this.Inspections?.All(h => h.Inspection?.State == DownloadInspection.States.Paused) == true)
+            if (this.Inspections?.Any(h => h.Inspection?.State == DownloadInspection.States.Processing) == true)
+            {
+                return DownloadInspection.States.Processing;
+            }
+            else if (this.Inspections?.Any(h => h.Inspection?.State == DownloadInspection.States.Paused) == true)
             {
                 return DownloadInspection.States.Paused;
             }
 
-            return DownloadInspection.States.Processing;
+            var ds = App.GetService<IDownloadService>();
+            if (ds?.FindJobForProject(this).Any() == true)
+            {
+                return DownloadInspection.States.Processing;
+            }
+
+            return DownloadInspection.States.Staged;
         }
     }
 
@@ -239,6 +316,12 @@ public partial class Project : BindableRecipient, IManifest
                     p.DeliverableName = dName.ToString();
                 }
 
+                if (ele.Value.TryGetProperty(nameof(Project.WasCompleted), out var wasCompleted) &&
+                    bool.TryParse(wasCompleted.ToString(), out var b))
+                {
+                    p.WasCompleted = b;
+                }
+
                 if (ele.Value.TryGetProperty(nameof(Project.AdditionalProperties), out var additionalProps) &&
                     additionalProps.ValueKind != JsonValueKind.Null)
                 {
@@ -246,9 +329,9 @@ public partial class Project : BindableRecipient, IManifest
                 }
 
                 if (ele.Value.TryGetProperty(nameof(Project.CombinedNASSCOExchangeGenerate), out var combineGen) &&
-                    bool.TryParse(combineGen.ToString(), out var b))
+                    bool.TryParse(combineGen.ToString(), out var bCombineGen))
                 {
-                    p.CombinedNASSCOExchangeGenerate = b;
+                    p.CombinedNASSCOExchangeGenerate = bCombineGen;
                 }
 
                 if (ele.Value.TryGetProperty(nameof(Project.IndividualNASSCOExchangeGenerate), out var individualGen) &&
@@ -317,6 +400,7 @@ public partial class Project : BindableRecipient, IManifest
             this.CombinedReportIds,
             this.IndividualReportIds,
             this.IndividualNASSCOExchangeGenerate,
+            this.WasCompleted,
             Inspections = this.Inspections?.Select(i => i.Inspection),
         });
     }
@@ -327,9 +411,20 @@ public partial class Project : BindableRecipient, IManifest
     /// <returns>Exchange database path.</returns>
     public string GetExchangeDBPath()
     {
+        var name = this.DeliverableName;
+        if (string.IsNullOrEmpty(name))
+        {
+            name = this.Name;
+        }
+
+        if (string.IsNullOrEmpty(name))
+        {
+            name = "NASSCO Exchange";
+        }
+
         return Path.Combine(
             this.DownloadPath ?? string.Empty,
-            ((this.DeliverableName ?? this.Name) ?? "NASSCO Exchange").SanitizeFilename() + ".mdb");
+            name.SanitizeFilename() + ".mdb");
     }
 
     /// <summary>
@@ -338,9 +433,20 @@ public partial class Project : BindableRecipient, IManifest
     /// <returns>Combined report path.</returns>
     public string GetCombinedReportPath()
     {
+        var name = this.DeliverableName;
+        if (string.IsNullOrEmpty(name))
+        {
+            name = this.Name;
+        }
+
+        if (string.IsNullOrEmpty(name))
+        {
+            name = "Project report";
+        }
+
         return Path.Combine(
             this.DownloadPath ?? string.Empty,
-            $"{(this.DeliverableName ?? this.Name)?.SanitizeFilename() ?? "Project report"}.pdf");
+            $"{name.SanitizeFilename()}.pdf");
     }
 
     /// <summary>
@@ -349,6 +455,14 @@ public partial class Project : BindableRecipient, IManifest
     internal void RaiseProgressChanged()
     {
         this.RaisePropertyChanged(nameof(this.Progress));
+    }
+
+    /// <summary>
+    /// Inform that the state somehow changed.
+    /// </summary>
+    internal void RaiseStateChanged()
+    {
+        this.RaisePropertyChanged(nameof(this.State));
     }
 
     /// <inheritdoc/>

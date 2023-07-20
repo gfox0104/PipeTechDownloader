@@ -340,6 +340,19 @@ public class DownloadService : ObservableObject, IDownloadService
             }
         }
 
+        project.WasCompleted = null;
+        if (App.MainWindow.DispatcherQueue.HasThreadAccess)
+        {
+            project.RaiseStateChanged();
+        }
+        else
+        {
+            await App.MainWindow.DispatcherQueue.EnqueueAsync(() =>
+            {
+                project.RaiseStateChanged();
+            });
+        }
+
         await this.WriteProject(project);
         this.jobClient.Enqueue<IDownloadService>(
             s => s.DownloadProject(
@@ -387,7 +400,7 @@ public class DownloadService : ObservableObject, IDownloadService
 #if DEBUG
                         MaxDegreeOfParallelism = 1,
 #else
-                        MaxDegreeOfParallelism = 3,
+                        MaxDegreeOfParallelism = 1,
 #endif
                     },
                     async (handler, token) =>
@@ -1304,6 +1317,10 @@ public class DownloadService : ObservableObject, IDownloadService
                                         {
                                             success = exchange.Exchange();
                                         }
+                                        else
+                                        {
+                                            success = true;
+                                        }
 
                                         if (success && project.CombinedNASSCOExchangeGenerate == true)
                                         {
@@ -1672,11 +1689,6 @@ public class DownloadService : ObservableObject, IDownloadService
                 }
 
                 GC.Collect();
-
-                await dq.EnqueueAsync(() =>
-                {
-                    project?.RaiseProgressChanged();
-                });
             }
 
             if (project.Inspections is not null)
@@ -1695,6 +1707,18 @@ public class DownloadService : ObservableObject, IDownloadService
                             break;
                     }
                 }
+            }
+
+            if (project is not null)
+            {
+                await dq.EnqueueAsync(() =>
+                {
+                    project.WasCompleted = true;
+                    project.RaiseProgressChanged();
+                    project.RaiseStateChanged();
+                });
+
+                await this.WriteProject(project);
             }
         }
         catch (TaskCanceledException)
@@ -1862,7 +1886,7 @@ public class DownloadService : ObservableObject, IDownloadService
 
                     if (project.Inspections?.Count > 0)
                     {
-                        if (this.FindJobForProject(project).FirstOrDefault().Value is not Job job)
+                        if (this.FindJobForProject(project).FirstOrDefault().Value is not Job job && project.WasCompleted != true)
                         {
                             var createJob = false;
                             var userCreateJob = false;
