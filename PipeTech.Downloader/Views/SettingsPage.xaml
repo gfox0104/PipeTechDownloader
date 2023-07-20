@@ -94,7 +94,9 @@
                                      Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
                     <HyperlinkButton x:Uid="Settings_Support_RemoteLink" 
                                      Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
-
+                    <HyperlinkButton Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" 
+                                     Content="{x:Bind ViewModel.DiagnosticLogFolderContent}"
+                                     Command="{x:Bind ViewModel.LogFolderCommand}"/>
                 </StackPanel>
 
                 <TextBlock x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" />

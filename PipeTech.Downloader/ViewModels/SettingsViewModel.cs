@@ -81,6 +81,11 @@ public partial class SettingsViewModel : ObservableRecipient
             }
         });
 
+        this.LogFolderCommand = new AsyncRelayCommand(async () =>
+        {
+            await Launcher.LaunchFolderPathAsync(this.DiagnosticLogFolder);
+        });
+
         this.BrowseFolderCommand = new RelayCommand(() =>
         {
             var d = new CommonOpenFileDialog()
@@ -105,9 +110,30 @@ public partial class SettingsViewModel : ObservableRecipient
     }
 
     /// <summary>
+    /// Gets the diagnostic log folder.
+    /// </summary>
+    public string DiagnosticLogFolder => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+        "PipeTech",
+        "PipeTech.Downloader");
+
+    /// <summary>
+    /// Gets the diagnostic log folder content.
+    /// </summary>
+    public string DiagnosticLogFolderContent => $"Log folder: {this.DiagnosticLogFolder}";
+
+    /// <summary>
     /// Gets the email command.
     /// </summary>
     public IAsyncRelayCommand EmailCommand
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the log folder command.
+    /// </summary>
+    public IAsyncRelayCommand LogFolderCommand
     {
         get;
     }
