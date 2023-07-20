@@ -59,20 +59,31 @@ public class AppNotificationService : IAppNotificationService
         ////    });
         //// }
 
-        App.MainWindow.DispatcherQueue.TryEnqueue(() =>
-        {
-            App.MainWindow.ShowMessageDialogAsync(
-                "TODO: Handle notification invocations when your app is already running.",
-                "Notification Invoked");
+        ////App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+        ////{
+        ////    App.MainWindow.ShowMessageDialogAsync(
+        ////        "TODO: Handle notification invocations when your app is already running.",
+        ////        "Notification Invoked");
 
-            App.MainWindow.BringToFront();
-        });
+        ////    App.MainWindow.BringToFront();
+        ////});
     }
 
     /// <inheritdoc/>
     public bool Show(string payload)
     {
         var appNotification = new AppNotification(payload);
+
+        AppNotificationManager.Default.Show(appNotification);
+
+        return appNotification.Id != 0;
+    }
+
+    /// <inheritdoc/>
+    public bool Show(string payload, TimeSpan delay)
+    {
+        var appNotification = new AppNotification(payload);
+        appNotification.Expiration = DateTime.Now + delay;
 
         AppNotificationManager.Default.Show(appNotification);
 

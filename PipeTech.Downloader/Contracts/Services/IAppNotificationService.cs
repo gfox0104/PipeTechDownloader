@@ -24,6 +24,14 @@ public interface IAppNotificationService
     bool Show(string payload);
 
     /// <summary>
+    /// Show a notification that closes after a delay.
+    /// </summary>
+    /// <param name="payload">Payload.</param>
+    /// <param name="delay">Delay.</param>
+    /// <returns>An indicator whether notification is shown.</returns>
+    bool Show(string payload, TimeSpan delay);
+
+    /// <summary>
     /// Parse arguments.
     /// </summary>
     /// <param name="arguments">Arguments to parse.</param>

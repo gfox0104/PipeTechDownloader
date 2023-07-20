@@ -20,6 +20,11 @@ public interface ILocalSettingsService
     internal const string LastDataFolderKey = "LastDataFolder";
 
     /// <summary>
+    /// Key for the default data folder.
+    /// </summary>
+    internal const string CloseNotificationShownKey = "HasCloseNotificationBeenShown";
+
+    /// <summary>
     /// Read the setting.
     /// </summary>
     /// <typeparam name="T">Type to read.</typeparam>

@@ -13,6 +13,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 
 using PipeTech.Downloader.Contracts.Services;
+using PipeTech.Downloader.Helpers;
 using PipeTech.Downloader.Models;
 using PipeTech.Downloader.Views;
 using Windows.UI.ViewManagement;
@@ -42,11 +43,15 @@ public partial class ShellViewModel : BindableRecipient
     /// Initializes a new instance of the <see cref="ShellViewModel"/> class.
     /// </summary>
     /// <param name="navigationService">Navigation service.</param>
+    /// <param name="notificationService">Notification service.</param>
     public ShellViewModel(
-        INavigationService navigationService)
+        INavigationService navigationService,
+        IAppNotificationService notificationService)
     {
         this.NavigationService = navigationService;
         this.NavigationService.Navigated += this.OnNavigated;
+
+        this.NotificationService = notificationService;
 
         this.MenuFileExitCommand = new RelayCommand(this.OnMenuFileExit);
         this.MenuViewsDownloadsCommand = new RelayCommand(this.OnMenuViewsDownloads);
@@ -136,6 +141,14 @@ public partial class ShellViewModel : BindableRecipient
         get;
     }
 
+    /// <summary>
+    /// Gets the notification service.
+    /// </summary>
+    public IAppNotificationService NotificationService
+    {
+        get;
+    }
+
     /// <inheritdoc/>
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
@@ -159,6 +172,22 @@ public partial class ShellViewModel : BindableRecipient
         {
             args.Cancel = true;
             App.MainWindow.Hide(true);
+
+            try
+            {
+                var settingsService = App.GetService<ILocalSettingsService>();
+                if (settingsService.ReadSettingAsync<bool>(ILocalSettingsService.CloseNotificationShownKey).Result != true)
+                {
+                    this.NotificationService?.Show(
+                        "ClosingToTrayNotificationPayload".GetLocalized(),
+                        TimeSpan.FromSeconds(10));
+                    _ = settingsService.SaveSettingAsync(ILocalSettingsService.CloseNotificationShownKey, true);
+                }
+            }
+            catch (Exception)
+            {
+            }
+
             return;
         }
 
