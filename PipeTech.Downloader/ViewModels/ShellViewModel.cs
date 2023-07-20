@@ -173,20 +173,23 @@ public partial class ShellViewModel : BindableRecipient
             args.Cancel = true;
             App.MainWindow.Hide(true);
 
-            try
+            Task.Run(async () =>
             {
-                var settingsService = App.GetService<ILocalSettingsService>();
-                if (settingsService.ReadSettingAsync<bool>(ILocalSettingsService.CloseNotificationShownKey).Result != true)
+                try
                 {
-                    this.NotificationService?.Show(
-                        "ClosingToTrayNotificationPayload".GetLocalized(),
-                        TimeSpan.FromSeconds(10));
-                    _ = settingsService.SaveSettingAsync(ILocalSettingsService.CloseNotificationShownKey, true);
+                    var settingsService = App.GetService<ILocalSettingsService>();
+                    if (await settingsService.ReadSettingAsync<bool>(ILocalSettingsService.CloseNotificationShownKey) != true)
+                    {
+                        this.NotificationService?.Show(
+                            "ClosingToTrayNotificationPayload".GetLocalized(),
+                            TimeSpan.FromSeconds(10));
+                        _ = settingsService.SaveSettingAsync(ILocalSettingsService.CloseNotificationShownKey, true);
+                    }
                 }
-            }
-            catch (Exception)
-            {
-            }
+                catch (Exception)
+                {
+                }
+            });
 
             return;
         }
