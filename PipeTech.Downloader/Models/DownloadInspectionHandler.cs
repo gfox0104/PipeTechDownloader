@@ -184,6 +184,7 @@ public partial class DownloadInspectionHandler : BindableRecipient, IDisposable
                              })));
 
                     var tempFile = PathWrapper.GetTempFileNameUnique();
+                    var tempFileInfo = default(FileInfo);
                     try
                     {
                         if (token.IsCancellationRequested)
@@ -229,11 +230,20 @@ public partial class DownloadInspectionHandler : BindableRecipient, IDisposable
                             d.Dispose();
                         }
 
-                        var tempFileInfo = new FileInfo(tempFile);
+                        tempFileInfo = new FileInfo(tempFile);
+                        var dirTemp = Path.Combine(
+                            tempFileInfo.DirectoryName!,
+                            Path.GetFileNameWithoutExtension(tempFileInfo.Name));
+                        if (!Directory.Exists(dirTemp))
+                        {
+                            Directory.CreateDirectory(dirTemp);
+                        }
+
                         tempFileInfo.MoveTo(
                             Path.Combine(
-                                tempFileInfo.DirectoryName!,
-                                $"{tempPack.Metadata.Name}_v{tempPack.Metadata.Version}.pttemplate"));
+                                dirTemp,
+                                $"{tempPack.Metadata.Name}_v{tempPack.Metadata.Version}.pttemplate"),
+                            true);
 
                         await tm.ImportTemplateAsync(tempFileInfo.FullName, TemplateRegistryKnownLocationType.Machine);
 
@@ -252,6 +262,17 @@ public partial class DownloadInspectionHandler : BindableRecipient, IDisposable
                         if (System.IO.File.Exists(tempFile))
                         {
                             System.IO.File.Delete(tempFile);
+                        }
+
+                        if (tempFileInfo?.ExistsFeatRefresh() == true)
+                        {
+                            tempFileInfo.Delete();
+                        }
+
+                        if (tempFileInfo?.Directory is DirectoryInfo di &&
+                        di.Exists)
+                        {
+                            di.Delete(true);
                         }
                     }
                 }
