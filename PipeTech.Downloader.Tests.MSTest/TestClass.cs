@@ -4,7 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace PipeTech.Downloader.Tests.MSTest;
 
-// TODO: Write unit tests.
+// Write unit tests.
 // https://docs.microsoft.com/visualstudio/test/getting-started-with-unit-testing
 // https://docs.microsoft.com/visualstudio/test/using-microsoft-visualstudio-testtools-unittesting-members-in-unit-tests
 // https://docs.microsoft.com/visualstudio/test/run-unit-tests-with-test-explorer

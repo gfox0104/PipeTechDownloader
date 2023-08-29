@@ -192,6 +192,14 @@ public partial class App : Application
                 services.AddTransient<DownloadsViewModel>();
                 services.AddTransient<DownloadsPage>();
 
+                // TODO: New pages that will replace the ones above
+                services.AddTransient<SettingsUpdatedViewModel>();
+                services.AddTransient<SettingsUpdatedPage>();
+                services.AddTransient<DownloadsListViewModel>();
+                services.AddTransient<DownloadsListPage>();
+                services.AddTransient<DownloadDetailViewModel>();
+                services.AddTransient<DownloadDetailPage>();
+
                 services.AddHttpClient<IHubService, HubService>()
                     .ConfigureHttpMessageHandlerBuilder(builder =>
                     {
@@ -427,8 +435,13 @@ public partial class App : Application
 
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
-        // TODO: Log and handle exceptions as appropriate.
-        // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
+        try
+        {
+            App.GetService<ILogger<Program>>()?.LogError(e.Exception, "Unhandled error");
+        }
+        catch (Exception)
+        {
+        }
     }
 
     private async void OnActivated(object? sender, AppActivationArguments args)

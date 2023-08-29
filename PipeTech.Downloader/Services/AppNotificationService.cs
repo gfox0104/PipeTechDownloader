@@ -48,7 +48,7 @@ public class AppNotificationService : IAppNotificationService
     /// <param name="args">Arguments.</param>
     public void OnNotificationInvoked(AppNotificationManager sender, AppNotificationActivatedEventArgs args)
     {
-        // TODO: Handle notification invocations when your app is already running.
+        // TODO: Handle notification invocations when your app is already running, if REQUIRED (Currently not)
 
         //// // Navigate to a specific page based on the notification arguments.
         //// if (ParseArguments(args.Argument)["action"] == "Settings")

@@ -1,31 +1,30 @@
-﻿// <copyright file="SettingsPage.xaml.cs" company="Industrial Technology Group">
+// <copyright file="SettingsUpdatedPage.xaml.cs" company="Industrial Technology Group">
 // Copyright (c) Industrial Technology Group. All rights reserved.
 // </copyright>
 
 using Microsoft.UI.Xaml.Controls;
-
 using PipeTech.Downloader.ViewModels;
 
 namespace PipeTech.Downloader.Views;
 
 /// <summary>
-/// Setting page class.
+/// Settings updated page.
 /// </summary>
-public sealed partial class SettingsPage : Page
+public sealed partial class SettingsUpdatedPage : Page
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="SettingsPage"/> class.
+    /// Initializes a new instance of the <see cref="SettingsUpdatedPage"/> class.
     /// </summary>
-    public SettingsPage()
+    public SettingsUpdatedPage()
     {
-        this.ViewModel = App.GetService<SettingsViewModel>();
+        this.ViewModel = App.GetService<SettingsUpdatedViewModel>();
         this.InitializeComponent();
     }
 
     /// <summary>
     /// Gets the view model.
     /// </summary>
-    public SettingsViewModel ViewModel
+    public SettingsUpdatedViewModel ViewModel
     {
         get;
     }
